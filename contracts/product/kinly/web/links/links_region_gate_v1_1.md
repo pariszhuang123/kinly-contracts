@@ -1,3 +1,13 @@
+---
+Domain: Links
+Capability: Region gating
+Scope: frontend
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.1
+---
+
 # Contract — Region Gating & Interest Capture v1.1
 
 Domain: Links  

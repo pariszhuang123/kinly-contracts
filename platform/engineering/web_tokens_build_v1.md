@@ -1,3 +1,13 @@
+---
+Domain: Web Design System
+Capability: Token compilation and delivery
+Scope: platform
+Artifact-Type: process
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contract — Web Tokens Build & Delivery v1.0
 
 **Domain:** Web Design System  

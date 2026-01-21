@@ -1,3 +1,13 @@
+---
+Domain: Web UI
+Capability: Primitive-based UI composition
+Scope: shared
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contract — Web Primitives v1.0
 
 **Domain:** Web UI  
@@ -316,3 +326,4 @@ This contract is successful when:
 | Date | Change | Approved By |
 |------|--------|-------------|
 | 2025-01-20 | Initial contract created | Planner |
+# Contract — Web Primitives v1.0

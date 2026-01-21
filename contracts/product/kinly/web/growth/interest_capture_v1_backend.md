@@ -1,3 +1,13 @@
+---
+Domain: Growth
+Capability: Interest capture backend implementation
+Scope: backend
+Artifact-Type: contract
+Stability: evolving
+Status: draft
+Version: v1.0
+---
+
 # Interest Capture v1 — Backend Implementation Draft
 
 ## 1. Database Schema (PostgreSQL)

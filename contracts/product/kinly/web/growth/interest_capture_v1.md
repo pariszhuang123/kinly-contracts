@@ -1,3 +1,13 @@
+---
+Domain: Growth
+Capability: Interest capture (country + locale + email)
+Scope: frontend
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contract — Country + Locale + Email Capture v1.0
 
 ## Meta

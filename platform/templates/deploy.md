@@ -1,3 +1,13 @@
+---
+Domain: Deployment
+Capability: Kinly Web deployment
+Scope: platform
+Artifact-Type: guide
+Stability: evolving
+Status: draft
+Version: v1.0
+---
+
 # Deployment — Kinly Web
 
 This document describes how Kinly Web is deployed and operated.

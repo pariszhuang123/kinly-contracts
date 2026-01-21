@@ -1,3 +1,13 @@
+---
+Domain: Kinly Web
+Capability: Contracts registry
+Scope: frontend
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contracts Registry — Kinly Web
 
 This document is the **single source of truth** for all active contracts

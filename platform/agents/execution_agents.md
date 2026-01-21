@@ -1,3 +1,13 @@
+---
+Domain: Agents
+Capability: Execution agents
+Scope: platform
+Artifact-Type: process
+Stability: evolving
+Status: draft
+Version: v1.0
+---
+
 # Execution Agents — Kinly Web
 
 Execution agents are **automated enforcers**.

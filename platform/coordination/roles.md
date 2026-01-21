@@ -1,3 +1,13 @@
+---
+Domain: Coordination
+Capability: Roles
+Scope: platform
+Artifact-Type: process
+Stability: evolving
+Status: draft
+Version: v1.0
+---
+
 # Roles — Kinly Web
 
 This document defines **who owns what** in the Kinly Web repository.

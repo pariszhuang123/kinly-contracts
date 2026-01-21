@@ -1,3 +1,13 @@
+---
+Domain: Delivery
+Capability: Definition of done
+Scope: platform
+Artifact-Type: guide
+Stability: evolving
+Status: draft
+Version: v1.0
+---
+
 # Definition of Done (DoD) — Kinly Web
 
 A change is considered **done** only when all applicable items below are satisfied.

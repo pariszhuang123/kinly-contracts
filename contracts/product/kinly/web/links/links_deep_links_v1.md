@@ -1,3 +1,13 @@
+---
+Domain: Links
+Capability: Deep link mapping
+Scope: frontend
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contract — Deep Link Mapping & App Handoff v1.0
 
 Domain: Links  

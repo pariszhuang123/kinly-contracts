@@ -1,3 +1,13 @@
+---
+Domain: Links
+Capability: Fallback behavior
+Scope: frontend
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contract — Fallback Routing & Failure Handling v1.0
 
 Domain: Links  

@@ -1,3 +1,13 @@
+---
+Domain: Links
+Capability: Share links
+Scope: frontend
+Artifact-Type: contract
+Stability: evolving
+Status: active
+Version: v1.0
+---
+
 # Contract — Share Links & Canonical URLs v1.0
 
 Domain: Links  

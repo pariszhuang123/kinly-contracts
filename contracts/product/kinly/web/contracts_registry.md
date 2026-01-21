@@ -77,22 +77,7 @@ capability may be implied outside supported regions.
 | Domain | Capability       | Contract                        | Status |
 | ------ | ---------------- | ------------------------------- | ------ |
 | Growth | Interest Capture | `growth/interest_capture_v1.md` | Active |
-
----
-
-### Design System
-
-| Domain            | Capability                         | Contract                               | Status |
-| ----------------- | ---------------------------------- | -------------------------------------- | ------ |
-| Web Design System | Token compilation + theme delivery | `design-system/web_tokens_build_v1.md` | Active |
-
----
-
-### UI
-
-| Domain | Capability                     | Contract                  | Status |
-| ------ | ------------------------------ | ------------------------- | ------ |
-| Web UI | Primitive-based UI composition | `ui/web_primitives_v1.md` | Active |
+| Growth | Interest Capture Backend | `growth/interest_capture_v1_backend.md` | Active |
 
 ---
 

@@ -1,0 +1,84 @@
+# Business Capabilities Map
+# Maps modules to Business Capability Buckets.
+# Used to generate contracts/architecture/business_map.mmd
+
+# Buckets
+buckets:
+  IDENTITY:
+    - features.auth
+    - contracts.auth
+    - contracts.account
+    - core.auth
+    - core.account
+    - features.profile_settings
+    - contracts.profile
+    - contracts.profile_settings
+    - core.profile
+    - features.splash
+    - features.welcome
+
+  HOME:
+    - features.home
+    - features.home_membership
+    - contracts.homes
+    - features.harmony
+    - contracts.mood
+
+  FLOW:
+    - features.flow
+    - contracts.flow
+    - contracts.chores
+
+  SHARE:
+    - features.share
+    - contracts.share
+    - contracts.expenses
+    - core.share
+
+  MONETIZATION:
+    - features.paywall
+    - contracts.paywall
+    - core.purchases
+    - features.version_gating
+
+  ONBOARDING:
+    - core.onboarding
+    - contracts.onboarding
+    - features.nps
+
+  SURFACES:
+    - foundation.surfaces
+    - foundation.registry
+    - renderer
+    - main.dart
+    - app.router
+    - app.di
+    - generated
+
+  CORE:
+    - core.di
+    - core.config
+    - core.logging
+    - core.network
+    - core.notifications
+    - core.platform
+    - core.supabase
+    - core.theme
+    - core.ui
+    - core.utils
+    - core.time
+    - core.media
+    - core.forms
+    - contracts.time
+    - contracts.media
+
+  PREFERENCES:
+    - features.preferences
+    - contracts.preferences
+
+  OFFLINE:
+    - features.offline
+
+  OTHER:
+    - contracts.app_version
+    - core.app_version

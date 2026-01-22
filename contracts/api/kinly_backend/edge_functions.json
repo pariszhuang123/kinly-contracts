@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "notifications_daily": {
+      "path": "supabase/functions/notifications_daily"
+    },
+    "revenuecat_webhook": {
+      "path": "supabase/functions/revenuecat_webhook"
+    }
+  }
+}

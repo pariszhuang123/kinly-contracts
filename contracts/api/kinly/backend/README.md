@@ -1,11 +1,11 @@
 ---
-Domain: kinly
-Capability: api_snapshots
+Domain: backend
+Capability: api
 Scope: backend
-Artifact-Type: readme
+Artifact-Type: reference
 Stability: stable
 Status: active
-Version: v1
+Version: v1.0
 ---
 
 # Kinly Backend API Snapshots

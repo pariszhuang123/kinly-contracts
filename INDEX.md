@@ -129,6 +129,7 @@
 - [contracts/product/kinly/web/links/links_region_gate_v1_1.md](contracts/product/kinly/web/links/links_region_gate_v1_1.md)
 - [contracts/product/kinly/web/links/links_share_links_v1.md](contracts/product/kinly/web/links/links_share_links_v1.md)
 - [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
+- [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
 
 ## decisions
 - [decisions/ADR-0001-mvp-home-scope.md](decisions/ADR-0001-mvp-home-scope.md)

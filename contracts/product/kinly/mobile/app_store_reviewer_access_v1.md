@@ -1,13 +1,11 @@
 ---
-Domain: app_store_review
-Capability: deterministic_reviewer_access
-Scope: kinly (iOS + Android)
-Artifact-Type: contract
-Status: draft
-Stability: beta
-Version: v1.0.0
-Owner: paris
-Last-Updated: 2026-01-23
+Domain: product
+Capability: app_store_review
+Scope: frontend
+Artifact-Type: guide
+Stability: evolving
+Status: active
+Version: v1.0
 ---
 
 # Contract: Deterministic Reviewer Access (Email/Password, Normal Auth)

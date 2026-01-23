@@ -1,11 +1,11 @@
 ---
-Domain: kinly
-Capability: contracts_lifecycle
-Scope: repo
-Artifact-Type: architecture
+Domain: platform
+Capability: contracts
+Scope: platform
+Artifact-Type: process
 Stability: stable
 Status: active
-Version: v1
+Version: v1.0
 ---
 
 # Contract Lifecycle

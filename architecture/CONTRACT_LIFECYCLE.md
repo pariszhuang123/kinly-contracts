@@ -1,3 +1,13 @@
+---
+Domain: kinly
+Capability: contracts_lifecycle
+Scope: repo
+Artifact-Type: architecture
+Stability: stable
+Status: active
+Version: v1
+---
+
 # Contract Lifecycle
 
 This document formalises how **contracts** are authored, validated, promoted, and consumed across the Kinly ecosystem.

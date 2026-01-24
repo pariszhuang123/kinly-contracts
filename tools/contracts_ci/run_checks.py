@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.contracts_ci import check_contract_paths, check_doc_headers, check_index, check_links
+from tools.contracts_ci import check_contract_paths, check_doc_headers, check_index, check_links, check_registry, generate_registry
 from tools.contracts_ci.common import as_posix, in_scope_markdown_files, repo_root
 
 CheckResult = Tuple[str, bool, int, List[str]]
@@ -31,12 +31,17 @@ def run_check(
 def main() -> int:
     root = repo_root()
     print(f"Running contracts guardrails from {as_posix(root)}")
+    
+    # Auto-generate registry
+    print("Auto-generating registry...")
+    generate_registry.audit_contracts()
 
     checks: List[Tuple[str, Callable[[Path | None], Tuple[bool, int, List[str]]]]] = [
         ("Doc headers", check_doc_headers.run),
         ("Path integrity", check_contract_paths.run),
         ("Internal links", check_links.run),
         ("Index integrity", check_index.run),
+        ("Registry validity", check_registry.run),
     ]
 
     results: List[CheckResult] = []

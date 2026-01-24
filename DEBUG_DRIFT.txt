@@ -1,0 +1,3 @@
+DEBUG: Missing: C:\Users\tomzq\StudioProjects\kinly-contracts\contracts\api\kinly\backend\README.md
+DEBUG: Missing: C:\Users\tomzq\StudioProjects\kinly-contracts\contracts\design\reference\kinly\README.md
+DEBUG: Missing: C:\Users\tomzq\StudioProjects\kinly-contracts\contracts\product\kinly\shared\README.md

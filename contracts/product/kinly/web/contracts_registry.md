@@ -78,6 +78,7 @@ capability may be implied outside supported regions.
 | ------ | ---------------- | ------------------------------- | ------ |
 | Growth | Interest Capture | `growth/interest_capture_v1.md` | Active |
 | Growth | Interest Capture Backend | `growth/interest_capture_v1_backend.md` | Active |
+| Growth | Marketing Landing | `growth/marketing_landing_recognition_first_v1_1.md` | Active |
 
 ---
 

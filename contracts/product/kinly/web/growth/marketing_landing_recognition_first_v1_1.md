@@ -5,7 +5,7 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: active
-Version: v1.0
+Version: v1.1
 ---
 
 # Contract: Kinly Marketing Landing Page — Recognition Before Action
@@ -13,6 +13,8 @@ Version: v1.0
 ## Purpose
 
 This contract defines the required structure, ordering, tone, and interaction model for the Kinly marketing landing page at `go.makinglifeeasie.com`.
+
+This version adds an explicit **problem recognition first** requirement before any product promise or CTA.
 
 The page serves two entry cases:
 - Desktop visitors following a share link.
@@ -90,6 +92,29 @@ Reordering sections violates this contract.
 
 ---
 
+### 0. Problem Recognition (Above the Fold)
+
+**Intent**
+State the weight of shared living as normal and non-fault-based before any promise or product language.
+
+**Required elements**
+- Short recognition statement that acknowledges shared living getting heavy over time
+- Explicit removal of blame from individuals
+- No product promise, no CTA, no instructions
+
+**Default copy (may be localized)**
+```
+Shared living gets heavy.
+Even when no one is doing anything wrong.
+```
+
+**Enforceable signals**
+- MUST appear before any product promise or CTA
+- MUST NOT imply failure, dysfunction, or fixing people
+- MUST NOT use urgency, imperatives, or exclamation
+
+---
+
 ### 1. Hero — Emotional Anchor (Above the Fold)
 
 **Intent**  
@@ -133,6 +158,9 @@ Screens MUST NOT show:
 - onboarding flows
 - admin or ownership controls
 - calls to action
+
+Additional Today screen constraint:
+- Today may be shown only in a calm state with no visible tasks or metrics (e.g., a clear day message or shared presence card).
 
 Screens MUST communicate:
 - observation

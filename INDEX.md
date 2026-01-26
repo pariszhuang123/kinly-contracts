@@ -122,6 +122,7 @@
 - [contracts/product/kinly/shared/weekly_house_pulse_v1.md](contracts/product/kinly/shared/weekly_house_pulse_v1.md)
 
 - [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
+- [contracts/product/kinly/web/theme/theme_resolution_v1.md](contracts/product/kinly/web/theme/theme_resolution_v1.md)
 - [contracts/product/kinly/web/growth/interest_capture_v1.md](contracts/product/kinly/web/growth/interest_capture_v1.md)
 - [contracts/product/kinly/web/growth/interest_capture_v1_backend.md](contracts/product/kinly/web/growth/interest_capture_v1_backend.md)
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)

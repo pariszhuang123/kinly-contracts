@@ -72,6 +72,14 @@ capability may be implied outside supported regions.
 
 ---
 
+### UI Theme
+
+| Domain | Capability      | Contract                        | Status |
+| ------ | --------------- | ------------------------------- | ------ |
+| Theme  | Theme Resolution | `theme/theme_resolution_v1.md` | Active |
+
+---
+
 ### Growth
 
 | Domain | Capability       | Contract                        | Status |

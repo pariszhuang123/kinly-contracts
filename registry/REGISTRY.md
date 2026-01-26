@@ -98,6 +98,10 @@
 ### Domain: product\n
 * **growth** (v1.0): [contracts/product/kinly/web/growth/interest_capture_v1.md](contracts/product/kinly/web/growth/interest_capture_v1.md)
 * **marketing_landing** (v1.0): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
+* **marketing_landing** (v1.1): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md)
+
+### Domain: theme\n
+* **theme_resolution** (v1.0): [contracts/product/kinly/web/theme/theme_resolution_v1.md](contracts/product/kinly/web/theme/theme_resolution_v1.md)
 
 ### Domain: web_ui\n
 * **primitive_based_ui_composition** (v1.0): [contracts/design/copy/kinly/web/web_primitives_v1.md](contracts/design/copy/kinly/web/web_primitives_v1.md)

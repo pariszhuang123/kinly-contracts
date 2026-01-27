@@ -5,10 +5,10 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: active
-Version: v1.0
+Version: v1.1
 ---
 
-# Contracts Registry — Kinly Web
+# Contracts Registry - Kinly Web
 
 This document is the **single source of truth** for all active contracts
 governing the behavior of Kinly Web.
@@ -30,7 +30,7 @@ The Contracts Registry exists to:
 - preserve user trust over time
 - provide a stable reference for enforcement and review
 
-This file does **not** define behavior.\
+This file does **not** define behavior.  
 It declares **which contract versions are in force**.
 
 ---
@@ -55,12 +55,12 @@ Note: Region gating governs **app capability** (install / open), not just join
 flows. Preview-only routes remain readable globally, but no install or join
 capability may be implied outside supported regions.
 
-| Domain | Capability        | Contract                          | Status |
-| ------ | ----------------- | --------------------------------- | ------ |
-| Links  | Share Links       | `links/links_share_links_v1.md`   | Active |
-| Links  | Deep Links        | `links/links_deep_links_v1.md`    | Active |
-| Links  | Region Gating     | `links/links_region_gate_v1_1.md` | Active |
-| Links  | Fallback Behavior | `links/links_fallback_v1.md`      | Active |
+| Domain | Capability        | Contract                            | Status |
+| ------ | ----------------- | ----------------------------------- | ------ |
+| Links  | Share Links       | `links/links_share_links_v1_2.md`   | Active |
+| Links  | Deep Links        | `links/links_deep_links_v1_1.md`    | Active |
+| Links  | Region Gating     | `links/links_region_gate_v1_2.md`   | Active |
+| Links  | Fallback Behavior | `links/links_fallback_v1_1.md`      | Active |
 
 ---
 
@@ -74,19 +74,19 @@ capability may be implied outside supported regions.
 
 ### UI Theme
 
-| Domain | Capability      | Contract                        | Status |
-| ------ | --------------- | ------------------------------- | ------ |
-| Theme  | Theme Resolution | `theme/theme_resolution_v1.md` | Active |
+| Domain | Capability       | Contract                        | Status |
+| ------ | ---------------- | ------------------------------- | ------ |
+| Theme  | Theme Resolution | `theme/theme_resolution_v1.md`  | Active |
 
 ---
 
 ### Growth
 
-| Domain | Capability       | Contract                        | Status |
-| ------ | ---------------- | ------------------------------- | ------ |
-| Growth | Interest Capture | `growth/interest_capture_v1.md` | Active |
-| Growth | Interest Capture Backend | `growth/interest_capture_v1_backend.md` | Active |
-| Growth | Marketing Landing | `growth/marketing_landing_recognition_first_v1_1.md` | Active |
+| Domain | Capability                 | Contract                                       | Status |
+| ------ | -------------------------- | ---------------------------------------------- | ------ |
+| Growth | Interest Capture           | `growth/interest_capture_v1.md`                | Active |
+| Growth | Interest Capture Backend   | `growth/interest_capture_v1_backend.md`        | Active |
+| Growth | Marketing Landing          | `growth/marketing_landing_recognition_first_v1_1.md` | Active |
 
 ---
 
@@ -112,13 +112,13 @@ This registry does **not** govern:
 
 ## Versioning Policy
 
-- Patch changes (typos, clarifications)\
-  → update contract file without version bump\
-  → registry unchanged
+- Patch changes (typos, clarifications)  
+  -> update contract file without version bump  
+  -> registry unchanged
 
-- Behavioral changes (semantics, rules, allowed flows)\
-  → new contract version file\
-  → registry MUST be updated
+- Behavioral changes (semantics, rules, allowed flows)  
+  -> new contract version file  
+  -> registry MUST be updated
 
 Version naming convention:
 <domain>_<capability>v<major><minor>.md
@@ -161,9 +161,10 @@ deployment.
 
 ## Change Log
 
-| Date       | Change                            | Approved By |
-| ---------- | --------------------------------- | ----------- |
-| YYYY-MM-DD | Initial contract registry created | Planner     |
+| Date       | Change                                             | Approved By |
+| ---------- | -------------------------------------------------- | ----------- |
+| 2026-01-26 | Activated links contracts v1.1/v1.2; encoding tidy | Planner     |
+| YYYY-MM-DD | Initial contract registry created                  | Planner     |
 
 ---
 

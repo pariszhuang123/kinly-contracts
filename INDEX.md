@@ -128,9 +128,13 @@
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md)
 - [contracts/product/kinly/web/links/links_deep_links_v1.md](contracts/product/kinly/web/links/links_deep_links_v1.md)
+- [contracts/product/kinly/web/links/links_deep_links_v1_1.md](contracts/product/kinly/web/links/links_deep_links_v1_1.md)
 - [contracts/product/kinly/web/links/links_fallback_v1.md](contracts/product/kinly/web/links/links_fallback_v1.md)
+- [contracts/product/kinly/web/links/links_fallback_v1_1.md](contracts/product/kinly/web/links/links_fallback_v1_1.md)
 - [contracts/product/kinly/web/links/links_region_gate_v1_1.md](contracts/product/kinly/web/links/links_region_gate_v1_1.md)
+- [contracts/product/kinly/web/links/links_region_gate_v1_2.md](contracts/product/kinly/web/links/links_region_gate_v1_2.md)
 - [contracts/product/kinly/web/links/links_share_links_v1.md](contracts/product/kinly/web/links/links_share_links_v1.md)
+- [contracts/product/kinly/web/links/links_share_links_v1_2.md](contracts/product/kinly/web/links/links_share_links_v1_2.md)
 - [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
 - [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
 

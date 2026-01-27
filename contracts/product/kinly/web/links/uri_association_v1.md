@@ -121,43 +121,61 @@ R3.1 The assetlinks file must:
 R3.2 Each Kinly app declaration must:
 - specify the Android package name
 - specify the SHA-256 certificate fingerprint(s)
-- declare relations only for its canonical path prefix
 
-R3.3 No Android package may claim paths owned by another Kinly app.
+R3.3 Path scoping is **not** supported in `assetlinks.json`. Ownership by path
+must be enforced in the Android manifest (see R4).
 
-### R4 — Web Manifest (PWA metadata)
+R3.4 No Android package entry should be included if the app does not own at
+least one canonical path prefix on that domain.
 
-R4.1 The web manifest is metadata only and must not be relied upon for
+### R4 — Android app manifest (path ownership)
+
+R4.1 Each Kinly Android app must declare an intent filter per owned canonical
+path prefix with:
+- `android:autoVerify="true"`
+- scheme `https`
+- host matching the Kinly domain
+- `android:pathPrefix` set to the canonical path prefix
+
+R4.2 No app may declare a wildcard path (e.g., missing `pathPrefix`) on a
+shared Kinly domain.
+
+R4.3 For any given domain + path prefix, exactly one app may register a
+matching intent filter to avoid OS app-chooser fallbacks.
+
+### R5 — Web Manifest (PWA metadata)
+
+R5.1 The web manifest is metadata only and must not be relied upon for
 OS-verified link trust.
 
-R4.2 Any app identity information in the web manifest must be consistent with:
+R5.2 Any app identity information in the web manifest must be consistent with:
 - the app identifiers declared in AASA
 - the package identities declared in assetlinks.json
 
-### R5 — Environment Separation (dev / staging / prod)
+### R6 — Environment Separation (dev / staging / prod)
 
-R5.1 Production domains must publish production app identities only.
+R6.1 Production domains must publish production app identities only.
 
-R5.2 Non-production domains may publish non-production identities, but must
+R6.2 Non-production domains may publish non-production identities, but must
 not publish production identities unless explicitly documented.
 
-R5.3 Canonical path ownership must remain consistent across environments.
+R6.3 Canonical path ownership must remain consistent across environments.
 
-### R6 — Backward Compatibility and Redirects
+### R7 — Backward Compatibility and Redirects
 
-R6.1 Legacy or deprecated paths may exist at the web layer, but must redirect
+R7.1 Legacy or deprecated paths may exist at the web layer, but must redirect
 to a canonical, app-owned path.
 
-R6.2 Only canonical paths may be declared in association files.
+R7.2 Only canonical paths may be declared in association files.
 
-### R7 — Caching and Propagation
+### R8 — Caching and Propagation
 
-R7.1 Implementations must assume OS-level caching.
+R8.1 Implementations must assume OS-level caching.
 
-R7.2 Release procedures must account for propagation delays and cached state
+R8.2 Release procedures must account for propagation delays and cached state
 (for example reinstall, cache reset, or wait period).
 
-R7.3 Association endpoints should set intentional cache headers to avoid
+R8.3 Association endpoints should set intentional cache headers to avoid
 accidental permanent caching during rollout.
 
 ---

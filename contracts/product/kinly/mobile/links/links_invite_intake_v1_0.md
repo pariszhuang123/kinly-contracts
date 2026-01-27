@@ -53,8 +53,9 @@ Out of scope:
   - internal storage field MUST be `invite_code`
   - join RPC argument value MUST be `invite_code`
 - RPC mapping:
-  - Backend join RPC is `public.homes_join(p_code text)`.
-  - The app MUST call it with `p_code = invite_code` (positional or named).
+  - Supabase function name: `public.homes_join(p_code text)`.
+  - Exposed RPC name (client call): `homes.join`.
+  - The app MUST call `supabase.rpc('homes_join', params: { 'p_code': invite_code })` (or equivalent) so the client-visible RPC remains `homes.join` in line with Kinly naming conventions.
 
 ## Definitions
 
@@ -83,6 +84,12 @@ Pending Join Intent MUST survive:
 - app restarts
 - authentication transitions
 - router resets
+
+Storage scope (MUST):
+- store the Pending Join Intent in app-scoped secure storage
+- bind the stored intent to the currently authenticated user
+- clear on sign-out
+- never reuse an intent across different authenticated users on the same device
 
 ## Core Principles
 
@@ -116,7 +123,7 @@ Minimum requirements (MUST):
 - trimmed of whitespace
 - normalized to uppercase
 - exactly 6 characters
-- characters limited to `A–H, J–N, P–Z, 2–9` (excludes `I`, `O`, `0`, `1`)
+- characters limited to `A-H, J-N, P-Z, 2-9` (excludes `I`, `O`, `0`, `1`); regex form (case-insensitive input): `^[A-HJ-NP-Z2-9]{6}$`
 
 If validation fails:
 - ignore the invite intent
@@ -173,6 +180,9 @@ The app MAY attempt join resolution only when:
 - authentication state is known, and
 - the user is authenticated.
 
+Existing-membership short-circuit (required):
+- If the authenticated user already has an active home membership (same signal used by the auth/start/Today router), clear any Pending Join Intent and route to Today without calling the join RPC.
+
 If authentication is unknown or unauthenticated:
 - defer join resolution
 - route to Welcome
@@ -218,7 +228,7 @@ If RPC returns `status = "success"`:
 - If `code = "already_member"`: clear Pending Join Intent; navigate to Today.
 
 If RPC returns `status = "blocked"`:
-- If `code = "member_cap"`: clear Pending Join Intent; route to Start; show a non-paywall message indicating the home is not accepting new members and the owner was notified.
+- If `code = "member_cap"`: clear Pending Join Intent; route to Start; show a non-paywall message indicating the home is not accepting new members and the owner was notified (notification emitted by `public._member_cap_enqueue_request` inside `homes_join`).
 - The app MAY display/store `request_id` for support or UI confirmation.
 
 If RPC raises an error:

@@ -95,6 +95,7 @@
 * **region_gating** (v1.2): [contracts/product/kinly/web/links/links_region_gate_v1_2.md](contracts/product/kinly/web/links/links_region_gate_v1_2.md)
 * **share_links** (v1.0): [contracts/product/kinly/web/links/links_share_links_v1.md](contracts/product/kinly/web/links/links_share_links_v1.md)
 * **share_links** (v1.2): [contracts/product/kinly/web/links/links_share_links_v1_2.md](contracts/product/kinly/web/links/links_share_links_v1_2.md)
+* **uri_association** (v1.0): [contracts/product/kinly/web/links/uri_association_v1.md](contracts/product/kinly/web/links/uri_association_v1.md)
 
 ### Domain: norms\n
 * **public_norms** (v1.0): [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)

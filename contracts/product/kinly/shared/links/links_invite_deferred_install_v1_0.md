@@ -8,7 +8,7 @@ Status: active
 Version: v1.0
 ---
 
-# Contract — Deferred Invite Intent Across Install Boundary — v1.0
+# Contract - Deferred Invite Intent Across Install Boundary - v1.0
 
 Registry: `contracts/contracts_registry.md`
 
@@ -28,8 +28,8 @@ This contract covers:
 
 ## Canonical Path & Naming (Normative)
 
-- Canonical invite URL: `https://go.makinglifeeasie.com/join/:inviteCode`
-- Accepted legacy alias: `/kinly/join/:inviteCode` (MAY be consumed but MUST normalize to the canonical path and payload).
+- Canonical invite URL: `https://go.makinglifeeasie.com/kinly/join/:inviteCode`
+- Accepted legacy alias: `/join/:inviteCode` (MAY be consumed but MUST normalize to the canonical path and payload).
 - Canonical internal name: `invite_code`
 - Android referrer key: `kinly_invite_code`
 - Optional source tag: `src=web_join` (or other short reason codes). MUST NOT include tokens, user IDs, or home identifiers.
@@ -53,25 +53,29 @@ This object is the only output of this contract and MUST feed into `links_invite
 
 ---
 
-## Android — Web → Play Store → App (Required)
+## Android - Web -> Play Store -> App (Required)
 
 **Web handoff**
-- Construct Play Store URL: `https://play.google.com/store/apps/details?id=<PACKAGE>&referrer=<REFERRER>`
-- `<REFERRER>` MUST be percent-encoded once with the form:  
+- Construct Play Store URL: `https://play.google.com/store/apps/details?id=com.makinglifeeasie.kinly&referrer=<REFERRER>`.
+- `<REFERRER>` MUST be percent-encoded once with the form `kinly_invite_code=<inviteCode>[&src=web_join]`.
   `kinly_invite_code=<inviteCode>[&src=web_join]`
+  - `<REFERRER>` MUST be percent-encoded once with the form `kinly_invite_code=<inviteCode>[&src=web_join]`.
   - `inviteCode` MUST be URL-encoded (reserved chars escaped, no double-encoding).
   - Entire referrer string MUST remain under Play Store referrer length limits (<= 2000 chars; invite codes are short so this is satisfied).
 - MUST NOT include any other parameters, tokens, or PII.
-) to prevent repeat processing.
-- If missing or invalid:
+- If referrer construction fails, fall back to the bare store URL (no referrer) and DO NOT append unvalidated data.
+
 **App intake**
 - On first app open post-install, kinly-app MUST read the install referrer string.
 - Parse `kinly_invite_code`; accept `kinly_invite` as an alias but normalize to `invite_code`.
 - If present and valid after validation rules in `links_invite_intake_v1_0.md`:
   - Build a `JoinIntent` with `source="android_install_referrer"` and `captured_at` = current timestamp.
   - Persist as a **Pending Join Intent** using the same store and semantics as `links_invite_intake_v1_0.md`.
-  - Immediately mark `deferred_invite_checked` (or equivalent
-  - Do nothing further; app startup MUST continue without blocking.
+  - Immediately mark `deferred_invite_checked` (or equivalent flag) to prevent repeat processing.
+- If missing or invalid after parsing:
+  - Record reason `REFERRER_MISSING` (or `INVALID_INVITE_CODE` after validation) without clearing any higher-precedence pending intent.
+  - Mark `deferred_invite_checked` (or equivalent) and exit without creating a Pending Join Intent.
+- App startup MUST continue without blocking regardless of referrer presence or validity.
 
 **Binding / Clearing / Idempotency (Shared Rules)**
 - Pending Join Intent MUST be stored in the same secure, app-scoped store used by `links_invite_intake_v1_0.md`.
@@ -82,12 +86,13 @@ This object is the only output of this contract and MUST feed into `links_invite
 
 ---
 
-## iOS — Manual Confirm Fallback (Required)
+## iOS - Manual Confirm Fallback (Required)
 
 Because iOS lacks reliable install referrer:
 
-- Provide a calm, optional entry point on Start (or Welcome if unauthenticated): “Have an invite link?”.
+- Provide a calm, optional entry point on Start (or Welcome if unauthenticated): "Have an invite link?".
 - Accept either full URL or raw invite code; parse to `invite_code` using the same validation rules as `links_invite_intake_v1_0.md`.
+
 - On valid code:
   - Create `JoinIntent` with `source="ios_manual_confirm"` and persist as Pending Join Intent (same store, same binding/clearing/idempotency rules).
 - On invalid code:
@@ -126,7 +131,7 @@ Once a higher-precedence intent begins resolution, all lower-precedence intents 
 ## Final Assertion
 
 Kinly MUST:
-- offer `/join/:inviteCode` as the canonical invite URL (accepting `/kinly/join/:inviteCode` as a legacy alias)
+- offer `/kinly/join/:inviteCode` as the canonical invite URL (accepting `/join/:inviteCode` as a legacy alias)
 - encode Android Play Store referrers as `kinly_invite_code=<inviteCode>[&src=web_join]` with single percent-encoding and no PII
 - recover install referrer on Android, normalize to `invite_code`, and persist as Pending Join Intent
 - provide an iOS manual confirm that feeds the same Pending Join Intent pipeline

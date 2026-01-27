@@ -99,6 +99,7 @@
 - [contracts/product/kinly/mobile/weekly_house_pulse_v1.md](contracts/product/kinly/mobile/weekly_house_pulse_v1.md)
 - [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
 - [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)
+- [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
 
 - [contracts/product/kinly/shared/app_v1.md](contracts/product/kinly/shared/app_v1.md)
 - [contracts/product/kinly/shared/chores_v1.md](contracts/product/kinly/shared/chores_v1.md)

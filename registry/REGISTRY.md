@@ -82,6 +82,8 @@
 ## Surface: shared\n
 ### Domain: product\n
 * **readme** (v1.0): [contracts/product/kinly/shared/README.md](contracts/product/kinly/shared/README.md)
+### Domain: links\n
+* **invite_deferred_install** (v1.0): [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
 
 ## Surface: web\n
 ### Domain: kinly_web\n

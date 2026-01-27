@@ -60,6 +60,7 @@ capability may be implied outside supported regions.
 | Links  | URI Association   | `links/uri_association_v1.md`       | Active |
 | Links  | Share Links       | `links/links_share_links_v1_2.md`   | Active |
 | Links  | Deep Links        | `links/links_deep_links_v1_1.md`    | Active |
+| Links  | Deferred Install Invite | `links/links_invite_deferred_install_v1_0.md` | Active |
 | Links  | Region Gating     | `links/links_region_gate_v1_2.md`   | Active |
 | Links  | Fallback Behavior | `links/links_fallback_v1_1.md`      | Active |
 

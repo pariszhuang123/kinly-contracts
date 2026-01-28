@@ -19,6 +19,9 @@
 * **users** (v1.0): [contracts/api/kinly/identity/users_v1.md](contracts/api/kinly/identity/users_v1.md)
 * **users_deactivation** (v1.0): [contracts/api/kinly/identity/users_deactivation_v1.md](contracts/api/kinly/identity/users_deactivation_v1.md)
 
+### Domain: monetization\n
+* **plan_status_query** (v1.0): [contracts/api/kinly/homes/get_plan_status_v1.md](contracts/api/kinly/homes/get_plan_status_v1.md)
+
 ### Domain: platform\n
 * **testing** (v1.0): [contracts/api/kinly/platform/testing_v1.md](contracts/api/kinly/platform/testing_v1.md)
 
@@ -54,6 +57,9 @@
 * **house_vibe_share_contract** (v1.0): [contracts/product/kinly/mobile/house_vibe_share_contract_v1.md](contracts/product/kinly/mobile/house_vibe_share_contract_v1.md)
 * **hub_personal_preferences_visibility** (v1.0): [contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md](contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md)
 * **welcome_avatar_personal_profile** (v1.0): [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
+
+### Domain: monetization\n
+* **plan_status_visibility___entry_point** (v1.0): [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
 
 ### Domain: product\n
 * **app_store_review** (v1.1): [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)

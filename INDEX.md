@@ -52,6 +52,7 @@
 - [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
 - [contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md](contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md)
 - [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
+- [contracts/api/kinly/homes/get_plan_status_v1.md](contracts/api/kinly/homes/get_plan_status_v1.md)
 - [contracts/api/kinly/identity/users_deactivation_v1.md](contracts/api/kinly/identity/users_deactivation_v1.md)
 - [contracts/api/kinly/identity/users_v1.md](contracts/api/kinly/identity/users_v1.md)
 - [contracts/api/kinly/platform/testing_v1.md](contracts/api/kinly/platform/testing_v1.md)
@@ -142,6 +143,7 @@
 - [contracts/product/kinly/web/links/uri_association_v1.md](contracts/product/kinly/web/links/uri_association_v1.md)
 - [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
 - [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
+- [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
 
 ## decisions
 - [decisions/ADR-0001-mvp-home-scope.md](decisions/ADR-0001-mvp-home-scope.md)

@@ -47,11 +47,13 @@
 * **shared_understanding_copy** (v1.0): [contracts/design/copy/kinly/shared_understanding_copy_v1.md](contracts/design/copy/kinly/shared_understanding_copy_v1.md)
 
 ## Surface: mobile\n
+### Domain: links\n
+* **deep_link_intake___invite_join_resolution** (v1.0): [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)
+
 ### Domain: mobile\n
 * **house_vibe_share_contract** (v1.0): [contracts/product/kinly/mobile/house_vibe_share_contract_v1.md](contracts/product/kinly/mobile/house_vibe_share_contract_v1.md)
 * **hub_personal_preferences_visibility** (v1.0): [contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md](contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md)
 * **welcome_avatar_personal_profile** (v1.0): [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
-* **links_invite_intake** (v1.0): [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)
 
 ### Domain: product\n
 * **app_store_review** (v1.1): [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
@@ -80,10 +82,11 @@
 * **weekly_house_pulse** (v1.0): [contracts/product/kinly/mobile/weekly_house_pulse_v1.md](contracts/product/kinly/mobile/weekly_house_pulse_v1.md)
 
 ## Surface: shared\n
+### Domain: links\n
+* **deferred_install_boundary_invite_intent** (v1.0): [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
+
 ### Domain: product\n
 * **readme** (v1.0): [contracts/product/kinly/shared/README.md](contracts/product/kinly/shared/README.md)
-### Domain: links\n
-* **invite_deferred_install** (v1.0): [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
 
 ## Surface: web\n
 ### Domain: kinly_web\n

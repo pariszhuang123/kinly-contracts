@@ -20,6 +20,7 @@
 - [architecture/diagrams/home_membership/ownership_model.md](architecture/diagrams/home_membership/ownership_model.md)
 - [architecture/diagrams/home_membership/permissions_flow.md](architecture/diagrams/home_membership/permissions_flow.md)
 - [architecture/diagrams/home_membership/transfer_owner_flow.md](architecture/diagrams/home_membership/transfer_owner_flow.md)
+- [architecture/diagrams/links/invite_link_e2e_flow.md](architecture/diagrams/links/invite_link_e2e_flow.md)
 - [architecture/diagrams/home_membership/transfer_owner_sequence.md](architecture/diagrams/home_membership/transfer_owner_sequence.md)
 - [architecture/diagrams/mood_nps/mood_nps_er.md](architecture/diagrams/mood_nps/mood_nps_er.md)
 - [architecture/diagrams/mood_nps/mood_nps_flow.md](architecture/diagrams/mood_nps/mood_nps_flow.md)

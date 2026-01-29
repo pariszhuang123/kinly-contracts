@@ -63,6 +63,7 @@ capability may be implied outside supported regions.
 | Links  | Deferred Install Invite | `links/links_invite_deferred_install_v1_0.md` | Active |
 | Links  | Region Gating     | `links/links_region_gate_v1_2.md`   | Active |
 | Links  | Fallback Behavior | `links/links_fallback_v1_1.md`      | Active |
+| Links  | Marketing Surface Namespacing | `links/links_marketing_surface_namespacing_v1.md` | Active |
 
 ---
 

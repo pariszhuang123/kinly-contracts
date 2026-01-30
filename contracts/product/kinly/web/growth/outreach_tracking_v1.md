@@ -39,6 +39,19 @@ Storage, validation, canonical source resolution (including alias mapping), rate
 | `/kinly/general`     | General entry page           |
 | `/kinly/marketing/*` | All marketing campaign pages |
 
+**Page keys (normative mapping):**
+
+| Path                                | `page_key`                     |
+|-------------------------------------|--------------------------------|
+| `/kinly/general`                    | `kinly_general`                |
+| `/kinly/marketing/<slug>`           | `kinly_marketing_<slug>`       |
+| `/kinly/marketing/<slug>/<subslug>` | `kinly_marketing_<slug>_<sub>` |
+
+Rules:
+- `page_key` MUST be lowercase snake_case, using URL path segments joined with `_`.
+- Dynamic segments MUST be URL-decoded before joining.
+- No other prefixes are allowed.
+
 All tracked pages MUST:
 - render readable content in a browser
 - never auto-open the app
@@ -52,11 +65,11 @@ All tracked pages MUST:
 
 Tracked pages MUST accept **GA-style UTM parameters**:
 
-| Parameter        | Required | Description |
-|------------------|----------|-------------|
-| `utm_campaign`   | yes*     | Campaign identifier (e.g., `first_year_2026`) |
-| `utm_medium`     | yes*     | Channel type (e.g., `qr`, `poster`, `share`, `interest_page`, `direct`, `email`, `social`) |
-| `utm_source`     | yes*     | Raw source identifier from the world (e.g., `fish&chips_ilam`, `uc_ilam`, `instagram_bio`) |
+| Parameter      | Required | Description |
+|----------------|----------|-------------|
+| `utm_campaign` | yes*     | Campaign identifier (e.g., `first_year_2026`) |
+| `utm_medium`   | yes*     | Channel type (e.g., `qr`, `poster`, `share`, `interest_page`, `direct`, `email`, `social`) |
+| `utm_source`   | yes*     | Raw source identifier from the world (e.g., `fish&chips_ilam`, `uc_ilam`, `instagram_bio`) |
 
 \* “Required” here means the **client MUST send a value** for each parameter. If absent/blank in the URL, the client MUST send `"unknown"`.
 
@@ -126,6 +139,11 @@ Allowed `store` values:
 - `web`
 - `unknown`
 
+CTA scope (normative):
+- Treat any outbound install intent (App Store, Google Play) as CTA.
+- Treat first-party conversion CTAs that move the user deeper into Kinly web (e.g., “Express interest”, “Start on web”) as `store = "web"`.
+- Do NOT emit CTA for purely informational toggles or in-page scroll actions.
+
 ---
 
 ## 7. Event Schema (Normative)
@@ -164,8 +182,10 @@ Notes:
   "country": "NZ",
   "ui_locale": "en-NZ"
 }
+```
 
-Example — cta_click
+Example — `cta_click`
+```json
 {
   "event": "cta_click",
   "app_key": "kinly-web",
@@ -179,142 +199,127 @@ Example — cta_click
   "country": "NZ",
   "ui_locale": "en-NZ"
 }
+```
 
-8. Client Tracking Algorithm (Normative)
+---
+
+## 8. Client Tracking Algorithm (Normative)
 
 This contract intentionally does not mandate a specific framework implementation.
 However, the following client-side algorithm is normative to ensure events are
 consistent with backend RPC validation and expected semantics.
 
-8.1 Session Identifier (Normative)
+### 8.1 Session Identifier (Normative)
 
-session_id exists solely to:
-
-de-duplicate page_view events
-
-support aggregate analytics and backend rate limiting
+Purpose: de-duplicate `page_view` events and support aggregate analytics / rate limiting only.
 
 Rules:
-
-MUST be generated client-side
-
-MUST be stored in localStorage under a stable key (e.g., kinly.outreach.session_id)
-
-MUST match: ^anon_[A-Za-z0-9_-]{16,32}$
-
-SHOULD rotate after 30 days (best-effort)
-
-MUST NOT be stored in cookies
-
-MUST NOT be linked to authentication or identity
+- MUST be generated client-side.
+- MUST be stored in `localStorage` at key **`kinly.outreach.session`** with JSON shape:
+  ```json
+  { "id": "anon_<token>", "createdAt": <unix_ms_number> }
+  ```
+- MUST match regex: `^anon_[A-Za-z0-9_-]{16,32}$`.
+- SHOULD rotate after 30 days (best-effort) based on `createdAt`.
+- MUST NOT be stored in cookies.
+- MUST NOT be linked to authentication or identity.
 
 Generation rules:
+- Token portion (after `anon_`) MUST use URL-safe characters `[A-Za-z0-9_-]`.
+- Length MUST be 16–32 characters (excluding the `anon_` prefix).
+- UUID strings MUST NOT be used directly (may violate length/format rules).
 
-The token portion (after anon_) MUST be URL-safe characters: [A-Za-z0-9_-]
+### 8.2 Tab-Session De-duplication for `page_view` (Normative)
 
-Length MUST be 16–32 characters (excluding the anon_ prefix)
-
-UUID strings MUST NOT be used directly (may violate length/format rules)
-
-8.2 Tab-Session De-duplication for page_view (Normative)
-
-page_view MUST be emitted at most once per session_id + page_key + tab session.
+`page_view` MUST be emitted at most once per `session_id` + `page_key` + tab session.
 
 Implementation guidance:
+- The client MAY implement a tab-scoped guard using `sessionStorage`, such as:
+  - `kinly.outreach.page_view.sent.<page_key>.<session_id> = "1"`
+- The client MAY use an in-memory guard in addition to `sessionStorage`.
+- The client MUST still attempt to emit on initial load (best-effort).
 
-The client MAY implement a tab-scoped guard using sessionStorage, such as:
-kinly.outreach.page_view.sent.<page_key> = "1"
-
-The client MAY use an in-memory guard in addition to sessionStorage.
-
-The client MUST still attempt to emit on initial load (best-effort).
-
-8.3 UTM Read + Normalization (Normative)
+### 8.3 UTM Read + Normalization (Normative)
 
 On each tracked page load, the client MUST:
-
-read utm_campaign, utm_medium, utm_source from the URL query string
-
-if missing/blank, set each to "unknown"
+- read `utm_campaign`, `utm_medium`, `utm_source` from the URL query string
+- if missing/blank, set each to `"unknown"`
 
 Rules:
+- The client MUST NOT attempt to resolve `utm_source` into a canonical registry id.
+- The client SHOULD lowercase `utm_source` and `utm_medium` before sending.
 
-The client MUST NOT attempt to resolve utm_source into a canonical registry id.
-
-The client SHOULD lowercase utm_source and utm_medium before sending.
-
-8.4 CTA Click Logging (Normative)
+### 8.4 CTA Click Logging (Normative)
 
 On CTA click, the client MUST:
-
-emit cta_click
-
-set store to the correct value (ios_app_store | google_play | web | unknown)
-
-proceed with navigation regardless of tracking outcome
+- emit `cta_click`
+- set `store` to the correct value (`ios_app_store` | `google_play` | `web` | `unknown`)
+- proceed with navigation regardless of tracking outcome
 
 Idempotency:
+- The client SHOULD generate a fresh `client_event_id` (UUID) for each `cta_click`.
+- The client MAY also send `client_event_id` for `page_view` if desired.
 
-The client SHOULD generate a fresh client_event_id (UUID) for each cta_click.
+### 8.5 Country & Locale (Normative)
 
-The client MAY also send client_event_id for page_view if desired.
+- `country` SHOULD be derived from the existing geo edge header already used in `getDetectedCountryCode`; if unavailable, omit the field.
+- `ui_locale` SHOULD be populated from `navigator.languages[0]` (fallback `navigator.language`), normalized to BCP-47 casing; if unavailable/invalid, omit the field.
 
-9. Privacy & Identity Boundary (Hard Rules)
+### 8.6 Diagnostics (Normative)
+
+- Clients MAY log debug information to the console in non-production environments to aid validation.
+- Debug logging MUST be disabled in production builds.
+
+---
+
+## 9. Privacy & Identity Boundary (Hard Rules)
 
 The page MUST NOT:
+- collect names, emails, or phone numbers via tracking
+- collect or store IP addresses
+- fingerprint devices
+- reference authentication state
+- attempt identity correlation after app install
+- store identifiers in cookies
+- use third-party tracking scripts
 
-collect names, emails, or phone numbers via tracking
+---
 
-collect or store IP addresses
-
-fingerprint devices
-
-reference authentication state
-
-attempt identity correlation after app install
-
-store identifiers in cookies
-
-use third-party tracking scripts
-
-10. Failure Handling (Normative)
+## 10. Failure Handling (Normative)
 
 If tracking fails (network error, validation error, rate limit):
 
-the page MUST still load normally
+- the page MUST still load normally
+- CTA buttons MUST still function
+- no user-visible error may be shown
+- the client MAY log to console for debugging in non-production environments (MUST be disabled in production)
 
-CTA buttons MUST still function
+---
 
-no user-visible error may be shown
-
-the client MAY log to console for debugging in non-production environments
-
-11. Non-Goals (Explicit)
+## 11. Non-Goals (Explicit)
 
 This contract does NOT support:
 
-install attribution
+- install attribution
+- behavioral analytics or funnels
+- retargeting or advertising
+- cross-surface identity tracking
+- A/B testing infrastructure
 
-behavioral analytics or funnels
+---
 
-retargeting or advertising
-
-cross-surface identity tracking
-
-A/B testing infrastructure
-
-12. Success Criteria
+## 12. Success Criteria
 
 This contract is successful if Kinly can reliably answer:
 
-how many people accessed each marketing page
-
-which CTA buttons were clicked
-
-which campaigns and sources are most effective
+- how many people accessed each marketing page
+- which CTA buttons were clicked
+- which campaigns and sources are most effective
 
 …without compromising user trust.
 
-13. Guiding Principle
+---
+
+## 13. Guiding Principle
 
 Measure lightly. Respect privacy. Start simple.

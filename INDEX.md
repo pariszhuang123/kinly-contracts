@@ -1,6 +1,7 @@
 # Index
 
 ## architecture
+
 - [architecture/architecture_guardrails_v1_1.md](architecture/architecture_guardrails_v1_1.md)
 - [architecture/architecture_guardrails_amendment_foundation_surfaces_v1.md](architecture/architecture_guardrails_amendment_foundation_surfaces_v1.md)
 - [architecture/complexity_budget_v1.md](architecture/complexity_budget_v1.md)
@@ -43,6 +44,7 @@
 - [architecture/report.md](architecture/report.md)
 
 ## contracts
+
 - [contracts/api/kinly/backend/README.md](contracts/api/kinly/backend/README.md)
 - [contracts/api/kinly/forms/form_hydration_v1.md](contracts/api/kinly/forms/form_hydration_v1.md)
 - [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
@@ -59,6 +61,7 @@
 - [contracts/api/kinly/share/expenses_v1.md](contracts/api/kinly/share/expenses_v1.md)
 - [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
 - [contracts/api/kinly/share/share_recurring_api_v1.md](contracts/api/kinly/share/share_recurring_api_v1.md)
+- [contracts/api/kinly/growth/outreach_tracking_v1.md](contracts/api/kinly/growth/outreach_tracking_v1.md)
 
 - [contracts/design/copy/kinly/copy_taste_v1_1.md](contracts/design/copy/kinly/copy_taste_v1_1.md)
 - [contracts/design/copy/kinly/house_vibe_label_registry_contract_v1.md](contracts/design/copy/kinly/house_vibe_label_registry_contract_v1.md)
@@ -131,6 +134,7 @@
 - [contracts/product/kinly/web/growth/interest_capture_v1_backend.md](contracts/product/kinly/web/growth/interest_capture_v1_backend.md)
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md)
+- [contracts/product/kinly/web/growth/outreach_tracking_v1.md](contracts/product/kinly/web/growth/outreach_tracking_v1.md)
 - [contracts/product/kinly/web/links/links_deep_links_v1.md](contracts/product/kinly/web/links/links_deep_links_v1.md)
 - [contracts/product/kinly/web/links/links_deep_links_v1_1.md](contracts/product/kinly/web/links/links_deep_links_v1_1.md)
 - [contracts/product/kinly/web/links/links_fallback_v1.md](contracts/product/kinly/web/links/links_fallback_v1.md)
@@ -147,6 +151,7 @@
 - [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
 
 ## decisions
+
 - [decisions/ADR-0001-mvp-home-scope.md](decisions/ADR-0001-mvp-home-scope.md)
 - [decisions/ADR-0001-user-auth-and-account-lifecycle.md](decisions/ADR-0001-user-auth-and-account-lifecycle.md)
 - [decisions/ADR-0002-invites-permanent-codes.md](decisions/ADR-0002-invites-permanent-codes.md)
@@ -154,6 +159,7 @@
 - [decisions/ADR-0004-links-service-on-vercel.md](decisions/ADR-0004-links-service-on-vercel.md)
 
 ## platform
+
 - [platform/agents/deep_linking.md](platform/agents/deep_linking.md)
 - [platform/agents/docs.md](platform/agents/docs.md)
 - [platform/agents/execution_agents.md](platform/agents/execution_agents.md)

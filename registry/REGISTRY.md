@@ -28,6 +28,20 @@
 ### Domain: platform\n
 * **testing** (v1.0): [contracts/api/kinly/platform/testing_v1.md](contracts/api/kinly/platform/testing_v1.md)
 
+### Domain: product\n
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_ai_classifier_v1.md](contracts/api/kinly/complaint/complaint_rewrite_ai_classifier_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_ai_routing_providers_v1.md](contracts/api/kinly/complaint/complaint_rewrite_ai_routing_providers_v1.md)
+* **complaint_rewrite** (v1.2): [contracts/api/kinly/complaint/complaint_rewrite_async_jobs_v1.md](contracts/api/kinly/complaint/complaint_rewrite_async_jobs_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_backend_context_pack_v1.md](contracts/api/kinly/complaint/complaint_rewrite_backend_context_pack_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_states.md](contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_states.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_v1.md](contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_eval_and_lexicon_v1.md](contracts/api/kinly/complaint/complaint_rewrite_eval_and_lexicon_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_queue_processing_v1.md](contracts/api/kinly/complaint/complaint_rewrite_queue_processing_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_storage_schema_v1.md](contracts/api/kinly/complaint/complaint_rewrite_storage_schema_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_system_map.md](contracts/api/kinly/complaint/complaint_rewrite_system_map.md)
+* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_two_lanes_async_v1.md](contracts/api/kinly/complaint/complaint_rewrite_two_lanes_async_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/examples/README.md](contracts/api/kinly/complaint/examples/README.md)
+
 ### Domain: share\n
 * **expenses** (v1.0): [contracts/api/kinly/share/expenses_v1.md](contracts/api/kinly/share/expenses_v1.md)
 * **expenses** (v2.0): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
@@ -94,7 +108,13 @@
 ### Domain: links\n
 * **deferred_install_boundary_invite_intent** (v1.0): [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
 
+### Domain: marketing_ops\n
+* **qr_generator** (v1.0): [contracts/product/kinly/shared/qr_generator_hub_v1.md](contracts/product/kinly/shared/qr_generator_hub_v1.md)
+
 ### Domain: product\n
+* **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_harmony_v1.md](contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_harmony_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_index_v1.md](contracts/product/kinly/shared/complaint_rewrite_index_v1.md)
+* **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md](contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md)
 * **readme** (v1.0): [contracts/product/kinly/shared/README.md](contracts/product/kinly/shared/README.md)
 
 ## Surface: web\n

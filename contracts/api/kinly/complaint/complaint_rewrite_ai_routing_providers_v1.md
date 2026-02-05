@@ -5,9 +5,9 @@ Scope: backend
 Artifact-Type: contract
 Stability: stable
 Status: active
-Version: v1.0
+Version: v1.3
 Audience: internal
-Last updated: 2026-01-31
+Last updated: 2026-02-04
 ---
 
 # AI Routing and Providers (complaint_rewrite_ai_routing_providers_v1)
@@ -26,7 +26,7 @@ The router answers: **Given this rewrite task, which AI configuration should be 
 ## 2) Core Principles
 1. Provider-agnostic: OpenAI, Google, or future providers are interchangeable.
 2. Backend-controlled: frontend and orchestrator never select models.
-3. Deterministic: same inputs → same routing output.
+3. Deterministic: same inputs -> same routing output.
 4. Cost-aware: prefer batching, caching, and cheaper models when safe.
 5. Fail-closed: if routing cannot be determined, abort rewrite safely.
 
@@ -37,7 +37,7 @@ Called only by the edge orchestrator.
 ```json
 {
   "task": "complaint_rewrite",
-  "surface": "weekly_harmony | direct_message | other",
+  "surface": "weekly_feedback | weekly_harmony | direct_message | other",
   "rewrite_strength": "light_touch | full_reframe",
   "language_pair": {
     "from": "bcp47",
@@ -49,15 +49,20 @@ Called only by the edge orchestrator.
 ```
 Router MUST NOT receive raw message text, recipient preferences, power mode, or emotion labels. Routing decisions are policy-based, not content-based.
 
+Surface handling:
+- Prefer `weekly_feedback`; accept `weekly_harmony` as an alias and normalize it to `weekly_feedback` for routing keys.
+
 ## 4) Outputs
 ### 4.1 RoutingDecisionV1
 ```json
 {
   "provider": "openai | google | other",
+  "adapter_kind": "openai_responses | openai_chat | gemini_generate | ...",
+  "base_url": "https://api.openai.com/v1 | null",
   "model": "string",
   "prompt_version": "v1",
   "policy_version": "string",
-  "execution_mode": "sync | async | batch",
+  "execution_mode": "async | batch",
   "supports_translation": true,
   "cache_eligible": true,
   "max_retries": 2
@@ -73,7 +78,7 @@ Routing MUST consider only:
 - full_reframe: emotionally sensitive; must use higher-quality model.
 
 ### 5.2 Execution surface
-- weekly_harmony: non-urgent; async or batch preferred; latency tolerant.
+- weekly_feedback/weekly_harmony: non-urgent; async or batch preferred; latency tolerant.
 - direct_message (future): may need faster turnaround; still non-real-time by default.
 
 ### 5.3 Language pair
@@ -85,10 +90,10 @@ Illustrative only; actual values live in config.
 
 | Rewrite strength | Language pair | Surface          | Provider | Model        | Mode  |
 |------------------|---------------|------------------|----------|--------------|-------|
-| light_touch      | same          | weekly_harmony   | openai   | gpt-5.2-nano | batch |
-| full_reframe     | same          | weekly_harmony   | openai   | gpt-5.2      | async |
-| full_reframe     | cross-lang    | weekly_harmony   | openai   | gpt-5.2      | async |
-| light_touch      | same          | direct_message   | google   | gemini-lite  | sync  |
+| light_touch      | same          | weekly_feedback  | openai   | gpt-5.2-nano | batch |
+| full_reframe     | same          | weekly_feedback  | openai   | gpt-5.2      | async |
+| full_reframe     | cross-lang    | weekly_feedback  | openai   | gpt-5.2      | async |
+| light_touch      | same          | direct_message   | google   | gemini-lite  | async |
 
 ## 7) Prompt versioning
 ### 7.1 Prompt identity
@@ -102,9 +107,8 @@ Illustrative only; actual values live in config.
 - Produce RewriteResponseV1 only.
 
 ## 8) Execution modes
-- sync: sparing use; for future low-latency surfaces; not recommended for Weekly Harmony.
-- async: default; job-based; allows retries and safety checks.
-- batch: preferred when supported; cost-optimized; higher latency acceptable; results processed asynchronously.
+- async: per-job provider calls; allows retries and safety checks.
+- batch: preferred when supported; cost-optimized; higher latency acceptable; results processed asynchronously. Step 1 uses `adapter_kind = openai_responses` only, with batch submitter/collector edge functions.
 
 ## 9) Caching and cost controls
 ### 9.1 Cache eligibility
@@ -119,8 +123,8 @@ Illustrative only; actual values live in config.
 ## 10) Provider adapters (non-normative)
 Each provider adapter MUST:
 - accept normalized routing decision.
-- translate RewriteRequestV1 → provider API.
-- normalize provider output → RewriteResponseV1.
+- translate RewriteRequestV1 -> provider API.
+- normalize provider output -> RewriteResponseV1.
 - surface provider errors cleanly.
 
 Adapters MUST NOT inject policy, modify rewrite intent, or leak provider metadata downstream.
@@ -131,11 +135,12 @@ Adapters MUST NOT inject policy, modify rewrite intent, or leak provider metadat
 
 ## 12) Routing sanity checklist (hard validation)
 - `task` MUST equal `complaint_rewrite`; reject otherwise.
-- `surface` MUST be one of `weekly_harmony | direct_message | other`; reject unknown.
+- `surface` MUST be one of `weekly_feedback | weekly_harmony | direct_message | other`; reject unknown.
 - `rewrite_strength` MUST be `light_touch` or `full_reframe`; reject unknown.
 - `language_pair.from` and `.to` MUST be valid BCP-47 strings; reject missing/empty.
-- `lane` MUST be present and ∈ {same_language, cross_language}.
+- `lane` MUST be present and in {same_language, cross_language}.
 - `policy_version` MUST be present.
+- `adapter_kind` MUST be present and supported for the chosen provider/model; `base_url` optional override (null uses provider default).
 - Routing table lookup MUST succeed; if no row matches, fail-closed (no implicit fallback).
 - `execution_mode` and `prompt_version` MUST be provided; reject if missing.
 
@@ -146,9 +151,9 @@ Log every routing decision with provider, model, prompt_version, execution_mode,
 - Router MUST NOT inspect message content, infer sentiment or tone, select recipients, override orchestrator decisions, or leak routing info to frontend.
 
 ## 15) Versioning rules
-- Adding providers or models → no version bump.
-- Changing routing logic semantics → MAJOR bump.
-- Changing default routes → config change only.
+- Adding providers or models -> no version bump.
+- Changing routing logic semantics -> MAJOR bump.
+- Changing default routes -> config change only.
 
 ## 16) Summary
 The AI routing layer isolates risk, contains cost, enables experimentation, and protects user-facing behavior. If the orchestrator is the brain, the router is the switchboard: it connects calls, it does not listen to them.

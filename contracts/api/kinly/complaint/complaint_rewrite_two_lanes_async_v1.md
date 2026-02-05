@@ -5,9 +5,9 @@ Scope: backend
 Artifact-Type: contract
 Stability: stable
 Status: active
-Version: v1.3
+Version: v1.5
 Audience: internal
-Last updated: 2026-02-01
+Last updated: 2026-02-03
 ---
 
 # Two-Lane Async Complaint Rewrite (complaint_rewrite_two_lanes_async_v1)
@@ -55,7 +55,7 @@ Ensures per-recipient personalization, deterministic locale resolution (never "u
   - cross_language: rewrite+translate; output in target_locale only; no separate translation artifact.
 
 ## 7) Job lifecycle
-States: `created → queued → processing → completed`, with failure path to `failed`. Monotonic transitions.
+States: `queued → processing → batch_submitted → completed`, with failure path to `failed` and optional admin/system cancel to `canceled`. Monotonic transitions.
 
 ## 8) Job payload (sole unit of execution)
 ```json
@@ -71,19 +71,21 @@ States: `created → queued → processing → completed`, with failure path to 
   "source_locale": "en",
   "target_locale": "es",
   "lane": "cross_language",
+  "provider_batch_id": "string | null",
   "classifier_result": { "ClassifierResultV1": true },
-  "routing_decision": { "RoutingDecisionV1": true },
+  "routing_decision": { "RoutingDecisionV1": true }, // includes adapter_kind + base_url when present
   "rewrite_request": { "RewriteRequestV1": true },
   "execution_mode": "async | batch",
   "attempt": 1,
   "max_attempts": 2
 }
 ```
-Invariants: `(rewrite_request_id, recipient_user_id)` maps to one output slot; snapshot IDs stable; locales and lane match persisted request; output MUST be in target_locale.
+Invariants: `(rewrite_request_id, recipient_user_id)` maps to one output slot; snapshot IDs stable; locales and lane match persisted request; output MUST be in target_locale; if `provider_batch_id` is set it MUST remain stable across retries.
+Note: jobs SHOULD store only identifiers and routing metadata; the serialized `rewrite_request` is sourced from `rewrite_requests.rewrite_request` at execution time.
 
 ## 9) Processing rules
 - Lock per execution unit (advisory lock on rewrite_request_id + recipient_user_id). MUST NOT lock by home_id.
-- Steps: acquire lock → mark processing → call provider adapter per routing_decision → ensure output language = target_locale → validate RewriteResponseV1 + lexicon in target_locale → persist per execution unit → mark completed with timestamps.
+- Steps: acquire lock → mark processing → (batch mode: submitter sets `provider_batch_id` + `batch_submitted`; collector polls provider and resumes) → call provider adapter per routing_decision → ensure output language = target_locale → validate RewriteResponseV1 + lexicon in target_locale → persist per execution unit → mark completed with timestamps.
 - Idempotency: if already completed for the execution unit, skip provider call and no-op.
 
 ## 10) Batching rules
@@ -100,7 +102,7 @@ Invariants: `(rewrite_request_id, recipient_user_id)` maps to one output slot; s
 - On success: persist output, set `rewrite_completed_at`; sender reveal timing handled upstream; async layer does not deliver or reveal.
 
 ## 13) Observability and audit (metadata only)
-- Record: rewrite_request_id, job_id, home_id, sender_user_id, recipient_user_id, recipient_snapshot_id, recipient_preference_snapshot_id, source_locale, target_locale, lane, classifier_version, detected_language, language_confidence, provider, model, prompt_version, policy_version, execution_mode, batch_group_key, batch_id, batch_item_index, attempts, timestamps, status. Never log raw or rewritten text.
+- Record: rewrite_request_id, job_id, home_id, sender_user_id, recipient_user_id, recipient_snapshot_id, recipient_preference_snapshot_id, source_locale, target_locale, lane, classifier_version, detected_language, language_confidence, provider, model, prompt_version, policy_version, execution_mode, provider_batch_id, batch_group_key, batch_id, batch_item_index, attempts, timestamps, status. Never log raw or rewritten text.
 
 ## 14) Security and privacy
 - No raw or rewritten text in logs. In-memory text only during processing. Enforce per-item mapping; no cross-home/user leakage.

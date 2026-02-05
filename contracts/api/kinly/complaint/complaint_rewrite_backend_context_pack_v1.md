@@ -5,9 +5,9 @@ Scope: backend
 Artifact-Type: contract
 Stability: stable
 Status: active
-Version: v1.0
+Version: v1.1
 Audience: internal
-Last updated: 2026-01-31
+Last updated: 2026-02-04
 ---
 
 # Backend: Recipient Context Pack (complaint_rewrite_backend_context_pack_v1)
@@ -91,6 +91,9 @@ Last updated: 2026-01-31
   ]
 }
 ```
+Notes:
+- `instructions.avoid` and `instructions.do_not_add` are open string-code lists; they MUST be non-empty. Recommended codes appear in section 7, and additional codes are allowed.
+- Communication preferences (`communication_directness`, `communication_channel`, `conflict_resolution_style`) are always forwarded when present, regardless of classifier topic, so the rewriter can honor per-recipient tone/channel even for off-topic complaints.
 
 ## 4. Preference -> instruction mapping (deterministic)
 ### 4.1 communication_directness
@@ -111,30 +114,59 @@ Values: low | medium | high
 - medium -> framing: "mindful hours" phrasing.  
 - high -> framing: avoid overstating; focus on specific impact if present.
 
-### 4.4 privacy_room_entry / privacy_notifications
+### 4.4 schedule_quiet_hours_preference
+Values: early_evening | late_evening_or_night | none  
+- early_evening -> framing: avoid late-night requests; suggest daytime without exact times.  
+- late_evening_or_night -> framing: allow later timing; avoid exact times unless provided.  
+- none -> no additional timing constraints.
+
+### 4.5 routine_planning_style
+Values: planner | mixed | spontaneous  
+- planner -> framing: provide heads-up, propose planning; avoid last-minute tone.  
+- mixed -> no change.  
+- spontaneous -> framing: keep request lightweight; avoid heavy planning language.
+
+### 4.6 privacy_room_entry / privacy_notifications
 - privacy_room_entry=always_ask -> framing: "please check first" as a request, not a rule.  
 - privacy_notifications=none -> avoid after-hours requests; suggest "tomorrow" without inventing times.
 
-### 4.5 cleanliness_shared_space_tolerance
+### 4.7 communication_channel
+Values: text | call | in_person  
+- text -> framing: written request is okay; keep concise and calm.  
+- call -> framing: offer a quick call when convenient; avoid urgency.  
+- in_person -> framing: offer a brief in-person check-in; avoid pressure.
+
+### 4.8 cleanliness_shared_space_tolerance
 - low -> prefer "reset" / "tidy-up" framing; avoid "messy" accusations.  
 - high -> keep request minimal; avoid policing tone.
 
-### 4.6 social_togetherness / social_hosting_frequency
+### 4.9 social_togetherness / social_hosting_frequency
+social_togetherness values: mostly_solo | balanced | mostly_together  
 - mostly_solo -> avoid pushing group talk; keep 1:1 framing.  
-- rare hosting comfort -> emphasize heads-up and consent for visitors.
+- balanced -> no change.  
+- mostly_together -> allow optional shared check-in language; do not pressure.  
+social_hosting_frequency values: rare | sometimes | often  
+- rare -> emphasize heads-up and consent for visitors.  
+- sometimes -> gentle heads-up language.  
+- often -> avoid judgment; keep request specific and time-bounded.
 
 ## 5. Topic-scoped inclusion rules (critical)
 ### 5.1 Topic -> preference IDs
 - noise: `environment_noise_tolerance`, `schedule_quiet_hours_preference`, `conflict_resolution_style`, `communication_directness`.
 - privacy: `privacy_room_entry`, `privacy_notifications`, `communication_channel`, `conflict_resolution_style`.
 - cleanliness: `cleanliness_shared_space_tolerance`, `routine_planning_style`, `communication_directness`.
+- guests: `social_hosting_frequency`, `social_togetherness`, `communication_directness`, `conflict_resolution_style`.
+- schedule: `schedule_quiet_hours_preference`, `routine_planning_style`, `communication_directness`, `conflict_resolution_style`.
+- communication: `communication_channel`, `communication_directness`, `conflict_resolution_style`.
+- other: (no preferences; defaults only)
 
 ### 5.2 Inclusion algorithm
-1) For each detected topic, collect its preference IDs.  
-2) Union and de-duplicate.  
-3) Fetch only those recipient answers.  
-4) Emit signals + instructions for present answers; if missing, do NOT invent — omit and fall back to defaults.  
-5) Default safe baseline still applies (section 7).
+1) If `topics = ["other"]`, do not collect preferences; emit defaults and empty `included_preference_ids`.  
+2) For each detected topic, collect its preference IDs.  
+3) Union and de-duplicate.  
+4) Fetch only those recipient answers.  
+5) Emit signals + instructions for present answers; if missing, do NOT invent — omit and fall back to defaults.  
+6) Default safe baseline still applies (section 7).
 
 ## 6. Power mode computation (tone only)
 - Roles from `home_roles`: owner = owner/head tenant; housemate = everyone else.

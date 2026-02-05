@@ -5,15 +5,15 @@ Scope: frontend
 Artifact-Type: contract
 Stability: stable
 Status: active
-Version: v1.0
+Version: v1.1
 Audience: internal
-Last updated: 2026-01-31
+Last updated: 2026-02-05
 ---
 
-# Frontend: Weekly Harmony AI Rewrite Flow
+# Frontend: Weekly Feedback AI Rewrite Flow
 
 ## 1. Purpose
-- Define the frontend UX and server interaction for submitting an emotionally difficult message from the Weekly Harmony Review into the complaint rewrite system.
+- Define the frontend UX and server interaction for submitting an emotionally difficult message from the Weekly Feedback Review into the complaint rewrite system.
 - Ensure users can opt into a calmer rewrite without exposing their original wording to the recipient.
 - Keep the experience opt-in, non-real-time, non-enforcing, and strictly one-to-one.
 
@@ -22,7 +22,7 @@ Reflection and translation assist — not a complaint, reporting, moderation, or
 
 ## 3. Entry conditions (hard gating)
 The rewrite option MUST render only when all are true:
-- Weekly Harmony Review completed.
+- Weekly Feedback Review completed.
 - Emotion ∈ {rainy, thunderstorm}.
 - User selects “Share with one person”.
 - Recipient is in the same `home_id` and has completed personal preferences (explicit opt-in).
@@ -45,7 +45,7 @@ If any condition fails: do not render rewrite option; user remains in private re
 7) On confirm: submit; input locks; no edit/undo; original is never shown again.
 
 ## 5. Client → server interaction
-RPC: `weekly_harmony_message_create_v1`
+RPC: `weekly_feedback_rewrite_create_v1`
 
 Payload (frontend controlled):
 ```json

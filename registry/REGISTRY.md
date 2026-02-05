@@ -17,6 +17,7 @@
 * **house_vibe_canonical_preference_schema** (v1.0): [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
 * **house_vibe_compute_rpc_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md](contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md)
 * **house_vibe_mapping_effects** (v1.0): [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
+* **shopping_list** (v1.0): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
 
 ### Domain: identity\n
 * **users** (v1.0): [contracts/api/kinly/identity/users_v1.md](contracts/api/kinly/identity/users_v1.md)
@@ -114,6 +115,9 @@
 * **weekly_house_pulse** (v1.0): [contracts/product/kinly/mobile/weekly_house_pulse_v1.md](contracts/product/kinly/mobile/weekly_house_pulse_v1.md)
 
 ## Surface: shared\n
+### Domain: homes\n
+* **shopping_list** (v1.0): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
+
 ### Domain: links\n
 * **deferred_install_boundary_invite_intent** (v1.0): [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
 

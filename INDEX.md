@@ -55,6 +55,7 @@
 - [contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md](contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md)
 - [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
 - [contracts/api/kinly/homes/get_plan_status_v1.md](contracts/api/kinly/homes/get_plan_status_v1.md)
+- [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
 - [contracts/api/kinly/identity/users_deactivation_v1.md](contracts/api/kinly/identity/users_deactivation_v1.md)
 - [contracts/api/kinly/identity/users_v1.md](contracts/api/kinly/identity/users_v1.md)
 - [contracts/api/kinly/platform/testing_v1.md](contracts/api/kinly/platform/testing_v1.md)
@@ -151,6 +152,7 @@
 - [contracts/product/kinly/shared/preference_taxonomy_v1.md](contracts/product/kinly/shared/preference_taxonomy_v1.md)
 - [contracts/product/kinly/shared/reflective_generation_v1.md](contracts/product/kinly/shared/reflective_generation_v1.md)
 - [contracts/product/kinly/shared/share_recurring_product_v1.md](contracts/product/kinly/shared/share_recurring_product_v1.md)
+- [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
 - [contracts/product/kinly/shared/weekly_house_pulse_v1.md](contracts/product/kinly/shared/weekly_house_pulse_v1.md)
  - [contracts/product/kinly/shared/qr_generator_hub_v1.md](contracts/product/kinly/shared/qr_generator_hub_v1.md)
 

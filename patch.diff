@@ -1,0 +1,9 @@
+﻿*** Begin Patch
+*** Update File: INDEX.md
+@@
+ - [contracts/product/kinly/shared/reflective_generation_v1.md](contracts/product/kinly/shared/reflective_generation_v1.md)
+ - [contracts/product/kinly/shared/share_recurring_product_v1.md](contracts/product/kinly/shared/share_recurring_product_v1.md)
++- [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
+ - [contracts/product/kinly/shared/weekly_house_pulse_v1.md](contracts/product/kinly/shared/weekly_house_pulse_v1.md)
+  - [contracts/product/kinly/shared/qr_generator_hub_v1.md](contracts/product/kinly/shared/qr_generator_hub_v1.md)
+*** End Patch

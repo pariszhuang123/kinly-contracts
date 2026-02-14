@@ -12,6 +12,8 @@
 ### Domain: homes\n
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
+* **house_norms_api** (v1.0): [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
+* **house_rules_api** (v1.0): [contracts/api/kinly/homes/house_rules_api_v1.md](contracts/api/kinly/homes/house_rules_api_v1.md)
 * **house_vibe_aggregation_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md](contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md)
 * **house_vibe_asset_resolution** (v1.0): [contracts/api/kinly/homes/house_vibe_asset_resolution_v1.md](contracts/api/kinly/homes/house_vibe_asset_resolution_v1.md)
 * **house_vibe_canonical_preference_schema** (v1.0): [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
@@ -82,6 +84,7 @@
 
 ### Domain: mobile\n
 * **house_vibe_share_contract** (v1.0): [contracts/product/kinly/mobile/house_vibe_share_contract_v1.md](contracts/product/kinly/mobile/house_vibe_share_contract_v1.md)
+* **hub_house_norms_visibility** (v1.0): [contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md](contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md)
 * **hub_personal_preferences_visibility** (v1.0): [contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md](contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md)
 * **welcome_avatar_personal_profile** (v1.0): [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
 
@@ -129,6 +132,12 @@
 * **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_index_v1.md](contracts/product/kinly/shared/complaint_rewrite_index_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md](contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md)
 * **readme** (v1.0): [contracts/product/kinly/shared/README.md](contracts/product/kinly/shared/README.md)
+
+### Domain: shared\n
+* **house_norms** (v1.0): [contracts/product/kinly/shared/house_norms_v1.md](contracts/product/kinly/shared/house_norms_v1.md)
+* **house_norms_scenarios** (v1.0): [contracts/product/kinly/shared/house_norms_scenarios_v1.md](contracts/product/kinly/shared/house_norms_scenarios_v1.md)
+* **house_norms_taxonomy** (v1.0): [contracts/product/kinly/shared/house_norms_taxonomy_v1.md](contracts/product/kinly/shared/house_norms_taxonomy_v1.md)
+* **house_rules** (v1.0): [contracts/product/kinly/shared/house_rules_v1.md](contracts/product/kinly/shared/house_rules_v1.md)
 
 ## Surface: web\n
 ### Domain: kinly\n

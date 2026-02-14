@@ -1,0 +1,307 @@
+---
+Domain: Shared
+Capability: House Norms
+Scope: shared
+Artifact-Type: contract
+Stability: evolving
+Status: draft
+Version: v1.0
+---
+
+# Kinly House Norms Contract v1
+
+Status: Proposed (Create Home MVP)
+
+Scope: Scenario-based capture and generation of a home-level House Norms
+document (non-enforceable), owner-governed edits, and member read-only
+visibility.
+
+Audience: Product, design, engineering, AI agents.
+
+Depends on:
+- Homes v2 (memberships + roles)
+- House Norms Scenarios v1
+- House Norms Taxonomy v1
+- House Rules v1
+- Kinly product philosophy (care, not control)
+- Kinly Project Brief
+
+1. Purpose
+
+House Norms help a home align on everyday defaults that prevent tension:
+rhythm, shared spaces, guests, responsibility flow, repair style, and home
+identity.
+
+House Norms are:
+- Descriptive ("how we want this home to feel").
+- Light ("starting point, not a rulebook").
+- Editable by the owner ("stewardship, not policing").
+
+House Norms are not:
+- Rules, enforcement, permissions, or compliance checks.
+- A scoring system.
+- A replacement for conversation.
+
+2. Core Principles
+
+- Harmony over enforcement.
+- Recognition over configuration (scenario moments, not surveys).
+- Transparency without pressure (everyone can view; only owner can change).
+- Calm UX (no guilt, no setup-required framing, no progress metaphors).
+- Safe language in generated text (no "must/always/never", no blame, no
+  consequences).
+
+3. Ownership and Permissions
+
+3.1 Viewing
+- All current home members MAY view House Norms.
+
+3.2 Create, regenerate, and edit (owner-only)
+- Only the home owner MAY:
+  - Create House Norms.
+  - Regenerate House Norms.
+  - Edit House Norms content.
+- Non-owner members MUST NOT:
+  - Edit.
+  - Propose changes.
+  - Comment.
+  - Request edits through an in-product channel in v1.
+
+Rationale:
+House Norms reflect stewardship of the home. Read-only visibility preserves
+shared understanding without politicizing language or creating social pressure.
+
+3.3 Norms vs Rules
+- House Norms remain descriptive and non-enforceable.
+- House Rules are explicit policy statements and are maintained in a separate
+  contract (`house_rules_v1`).
+- Policy-like constraints (for example smoking policy, pets policy, severe
+  shared allergen restrictions) MUST be routed to House Rules, not House Norms.
+- House Norms MUST NOT be used as a hidden rules engine.
+
+4. Lifecycle
+
+4.1 Creation moment
+- House Norms are created during Create Home by the home owner.
+- Generation requires completion of:
+  - 2 required context anchors.
+  - 6 required directional scenarios.
+- In MVP, generation publishes immediately after creation.
+
+4.2 Status
+- `published`: current visible norms.
+- `out_of_date`: inputs changed (for example owner re-ran scenarios or template
+  changed) but the owner has not republished.
+- Template updates MUST NOT auto-overwrite published content.
+
+4.3 Regeneration rules
+- Regenerate only when the owner explicitly requests it.
+- Regeneration replaces `generated_content`.
+- `published_content` updates only when owner publishes the regenerated draft.
+- MVP MAY combine generate and publish in one owner action.
+
+5. Generated Output Model
+
+5.1 Output intent
+- Title: "House norms"
+- Subtitle: "A shared starting point - not a rulebook."
+- Tone constraints:
+  - Use "we" language.
+  - Use "aim", "try", "usually", and "prefer".
+  - Avoid "must", "always", and "never".
+  - Avoid naming individuals or assigning fault.
+
+5.2 Required structure (v1)
+Generated content MUST include:
+- `summary` (title, subtitle, framing paragraph)
+- `context` (anchors rendered as neutral context line)
+- `sections` (6 sections aligned to scenario IDs)
+
+Optional:
+- Owner-facing footer note: "You can revisit these anytime."
+
+5.3 Anchor-aware phrasing
+- Output MAY adjust wording based on anchors (property context and relationship
+  model), but MUST NOT change permissions or imply enforcement.
+
+6. Editing and Revisions (owner-only)
+
+6.1 Edit scope
+- Owner edits MAY update:
+  - Section text.
+  - Summary framing paragraph.
+- Owner edits MUST NOT:
+  - Add enforceable language.
+  - Add monitoring or tracking language.
+  - Add punishments or consequences.
+  - Name individuals.
+  - Introduce permissions.
+
+6.2 Revision tracking
+- All edits create a revision row.
+- Store both original `generated_content` and current `published_content`.
+- Allow owner revert-to-generated for any section.
+
+7. Data Access and APIs (Proposed RPCs)
+
+7.1 Read (member)
+- `house_norms_get_for_home(p_home_id uuid, p_locale text) -> jsonb`
+  - Caller MUST be authenticated.
+  - Caller MUST be a current home member.
+  - Returns published content when it exists, else null/empty.
+
+7.2 Generate (owner-only)
+- `house_norms_generate_for_home(p_home_id uuid, p_template_key text, p_locale text, p_inputs jsonb, p_force boolean) -> jsonb`
+  - Caller MUST be authenticated.
+  - Caller MUST be a current home member.
+  - Caller MUST have role `owner`.
+  - Generates `generated_content`.
+  - If `p_force = true`, MAY overwrite prior generated draft.
+  - MVP MAY publish immediately as part of owner flow.
+
+7.3 Publish (owner-only, optional split)
+- If generation and publish are split:
+  - `house_norms_publish_for_home(p_home_id uuid, p_locale text) -> jsonb`
+  - Owner-only.
+  - Copies `generated_content` to `published_content`.
+
+7.4 Edit section text (owner-only)
+- `house_norms_edit_section_text(p_home_id uuid, p_locale text, p_section_key text, p_new_text text, p_change_summary text default null) -> jsonb`
+  - Owner-only.
+  - Edits published section text only.
+  - Records a revision.
+
+8. Storage Model (Supabase, Proposed)
+
+8.1 Tables
+
+`house_norms`
+- `home_id` (uuid, PK, FK homes)
+- `template_key` (text)
+- `locale` (text)
+- `status` (text: `published` | `out_of_date`)
+- `inputs` (jsonb) // anchors + scenario option indices
+- `generated_content` (jsonb)
+- `published_content` (jsonb)
+- `generated_at` (timestamptz)
+- `published_at` (timestamptz)
+- `last_edited_at` (timestamptz|null)
+- `last_edited_by` (uuid|null)
+
+`house_norms_revisions`
+- `id` (uuid, PK)
+- `home_id` (uuid, FK)
+- `editor_user_id` (uuid)
+- `edited_at` (timestamptz)
+- `content` (jsonb)
+- `change_summary` (text|null)
+
+8.2 RLS
+- RPC-only model.
+- Direct table DML denied for `authenticated`.
+- `SECURITY DEFINER` RPCs must assert:
+  - Authenticated caller.
+  - Current home membership.
+  - Role=`owner` for write operations.
+
+9. Safety and Non-Goals
+
+9.1 Forbidden outcomes
+- Turning norms into policing or threats.
+- Showing who caused a norm.
+- Prompting non-owners to negotiate wording inside the product.
+
+9.2 Non-goals (v1)
+- Voting and approvals.
+- Comment threads.
+- Suggest-an-edit workflows.
+- Auto-reminders based on norms.
+- Policy enforcement workflows (belongs to House Rules track).
+
+10. Invariants
+
+- House Norms increase shared understanding, not compliance.
+- Only owners can create, regenerate, and edit; all members can view.
+- Generated and published text must avoid enforcement language
+  ("must/always/never").
+- No Kinly feature may be gated by House Norms.
+
+```contracts-json
+{
+  "domain": "house_norms",
+  "version": "v1",
+  "entities": {
+    "HouseNorms": {
+      "homeId": "uuid",
+      "templateKey": "text",
+      "locale": "text",
+      "status": "text",
+      "inputs": "jsonb",
+      "generatedContent": "jsonb",
+      "publishedContent": "jsonb",
+      "generatedAt": "timestamptz",
+      "publishedAt": "timestamptz",
+      "lastEditedAt": "timestamptz|null",
+      "lastEditedBy": "uuid|null"
+    },
+    "HouseNormsRevision": {
+      "id": "uuid",
+      "homeId": "uuid",
+      "editorUserId": "uuid",
+      "editedAt": "timestamptz",
+      "content": "jsonb",
+      "changeSummary": "text|null"
+    }
+  },
+  "functions": {
+    "houseNorms.getForHome": {
+      "type": "rpc",
+      "caller": "member",
+      "impl": "public.house_norms_get_for_home",
+      "args": {
+        "p_home_id": "uuid",
+        "p_locale": "text"
+      },
+      "returns": "jsonb"
+    },
+    "houseNorms.generateForHome": {
+      "type": "rpc",
+      "caller": "owner-only",
+      "impl": "public.house_norms_generate_for_home",
+      "args": {
+        "p_home_id": "uuid",
+        "p_template_key": "text",
+        "p_locale": "text",
+        "p_inputs": "jsonb",
+        "p_force": "boolean"
+      },
+      "returns": "jsonb"
+    },
+    "houseNorms.publishForHome": {
+      "type": "rpc",
+      "caller": "owner-only",
+      "status": "optional",
+      "impl": "public.house_norms_publish_for_home",
+      "args": {
+        "p_home_id": "uuid",
+        "p_locale": "text"
+      },
+      "returns": "jsonb"
+    },
+    "houseNorms.editSectionText": {
+      "type": "rpc",
+      "caller": "owner-only",
+      "impl": "public.house_norms_edit_section_text",
+      "args": {
+        "p_home_id": "uuid",
+        "p_locale": "text",
+        "p_section_key": "text",
+        "p_new_text": "text",
+        "p_change_summary": "text|null"
+      },
+      "returns": "jsonb"
+    }
+  },
+  "rls": []
+}
+```

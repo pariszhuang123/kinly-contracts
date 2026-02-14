@@ -49,6 +49,8 @@
 - [contracts/api/kinly/forms/form_hydration_v1.md](contracts/api/kinly/forms/form_hydration_v1.md)
 - [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 - [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
+- [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
+- [contracts/api/kinly/homes/house_rules_api_v1.md](contracts/api/kinly/homes/house_rules_api_v1.md)
 - [contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md](contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md)
 - [contracts/api/kinly/homes/house_vibe_asset_resolution_v1.md](contracts/api/kinly/homes/house_vibe_asset_resolution_v1.md)
 - [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
@@ -113,6 +115,7 @@
 - [contracts/product/kinly/mobile/house_vibe_mapping_contract_v1.md](contracts/product/kinly/mobile/house_vibe_mapping_contract_v1.md)
 - [contracts/product/kinly/mobile/house_vibe_overview_v1.md](contracts/product/kinly/mobile/house_vibe_overview_v1.md)
 - [contracts/product/kinly/mobile/house_vibe_share_contract_v1.md](contracts/product/kinly/mobile/house_vibe_share_contract_v1.md)
+- [contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md](contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md)
 - [contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md](contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md)
 - [contracts/product/kinly/mobile/member_cap_paywall_v1.md](contracts/product/kinly/mobile/member_cap_paywall_v1.md)
 - [contracts/product/kinly/mobile/mood_nps.md](contracts/product/kinly/mobile/mood_nps.md)
@@ -140,6 +143,10 @@
 - [contracts/product/kinly/shared/gratitude_mentions_v1.md](contracts/product/kinly/shared/gratitude_mentions_v1.md)
 - [contracts/product/kinly/shared/gratitude_wall_v1.md](contracts/product/kinly/shared/gratitude_wall_v1.md)
 - [contracts/product/kinly/shared/home_dynamics_v1.md](contracts/product/kinly/shared/home_dynamics_v1.md)
+- [contracts/product/kinly/shared/house_rules_v1.md](contracts/product/kinly/shared/house_rules_v1.md)
+- [contracts/product/kinly/shared/house_norms_scenarios_v1.md](contracts/product/kinly/shared/house_norms_scenarios_v1.md)
+- [contracts/product/kinly/shared/house_norms_taxonomy_v1.md](contracts/product/kinly/shared/house_norms_taxonomy_v1.md)
+- [contracts/product/kinly/shared/house_norms_v1.md](contracts/product/kinly/shared/house_norms_v1.md)
 - [contracts/product/kinly/shared/house_vibe_mapping_contract_v1.md](contracts/product/kinly/shared/house_vibe_mapping_contract_v1.md)
 - [contracts/product/kinly/shared/house_vibe_overview_v1.md](contracts/product/kinly/shared/house_vibe_overview_v1.md)
 - [contracts/product/kinly/shared/member_cap_paywall_v1.md](contracts/product/kinly/shared/member_cap_paywall_v1.md)
@@ -185,6 +192,7 @@
 - [decisions/ADR-0002-invites-permanent-codes.md](decisions/ADR-0002-invites-permanent-codes.md)
 - [decisions/ADR-0003-expenses-rpc-only-access.md](decisions/ADR-0003-expenses-rpc-only-access.md)
 - [decisions/ADR-0004-links-service-on-vercel.md](decisions/ADR-0004-links-service-on-vercel.md)
+- [decisions/ADR-0005-house-rules-owner-authority-v1.md](decisions/ADR-0005-house-rules-owner-authority-v1.md)
 
 ## platform
 

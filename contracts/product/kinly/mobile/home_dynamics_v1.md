@@ -12,7 +12,7 @@ Version: v1.0
 
 Status: Canonical rationale (non-breaking)
 
-Scope: Preference capture, vibe calculation, rule generation, sharing, enforcement.
+Scope: Preference capture, vibe calculation, rule generation, sharing, governance.
 
 Audience: Product, design, engineering, AI agents.
 
@@ -106,11 +106,15 @@ Examples: quiet hours, guest norms, responsibility expectations, communication
 norms, money handling.
 
 Properties
-- Declared by the home owner (with member acceptance).
+- Declared by the home owner.
 - Explicit and discrete.
-- Normative and enforceable.
+- Normative and owner-authoritative.
 - Versioned.
-- Change only via intentional edits.
+- Change only via intentional owner edits.
+
+v1 implementation note
+- Home rules are authoritative text and social policy.
+- Home rules are not automatically app-gated in v1.
 
 Home rules are decisions, not signals.
 
@@ -135,7 +139,7 @@ Personal Preferences (rich, fuzzy, individual)
         ->
 Home Vibe (emergent, descriptive, collective)
         ->
-Home Rules (explicit, minimal, enforceable)
+Home Rules (explicit, minimal, owner-authoritative)
 
 Key invariants
 - Preferences influence vibe.
@@ -176,7 +180,7 @@ Personal preferences require taxonomy because they are signals that must be
 interpreted.
 Home vibe is an emergent description derived from preferences.
 Home rules do not require taxonomy because they are explicit agreements.
-Each layer has different ownership, change semantics, and enforcement rules.
+Each layer has different ownership, change semantics, and governance rules.
 Mixing these layers is a design error.
 
 Preferences are language. Vibe is meaning. Rules are law.

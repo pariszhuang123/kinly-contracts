@@ -54,7 +54,7 @@ They do not imply priority.
 
 `norms_property_context`
 - `domain`: `context`
-- `value_keys`: [`rental`, `owner_occupied`, `mixed_owner_renters`]
+- `value_keys`: [`owner_occupied`, `rental`, `room_rental_shared_home`]
 
 `norms_relationship_model`
 - `domain`: `context`
@@ -103,7 +103,7 @@ They do not imply priority.
     {
       "id": "norms_property_context",
       "domain": "context",
-      "value_keys": ["rental", "owner_occupied", "mixed_owner_renters"]
+      "value_keys": ["owner_occupied", "rental", "room_rental_shared_home"]
     },
     {
       "id": "norms_relationship_model",

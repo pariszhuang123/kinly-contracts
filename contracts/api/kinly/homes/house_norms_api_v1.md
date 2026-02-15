@@ -44,7 +44,8 @@ permissions, automation, or compliance behavior.
 - `p_template_key` identifies the generation template (for example
   `house_norms_v1`).
 - `p_locale` accepts base or region forms (for example `en`, `en-NZ`).
-- Server SHOULD normalize locale to a base locale and fallback to `en`.
+- Server normalizes locale to lowercase base locale (`locale_base`) and falls
+  back to `en`.
 
 3.2 Scenario input payload (`p_inputs`)
 `p_inputs` is a JSON object with required keys and integer values `0..2`.
@@ -62,7 +63,8 @@ Required keys:
 Validation:
 - Missing keys MUST fail.
 - Values outside `0..2` MUST fail.
-- Unknown keys SHOULD fail to avoid semantic drift.
+- Unknown keys MUST fail to avoid semantic drift.
+- Payload size above guardrails (2KB) MUST fail.
 
 4. RPC Contracts
 
@@ -71,9 +73,9 @@ Validation:
 Caller: current member.
 
 Behavior:
-- Returns published House Norms for the home when present.
+- Returns draft + published House Norms metadata when present.
 - Returns null payload when no document exists yet.
-- If internal status is `out_of_date`, still return latest published content.
+- Returns both requested locale base and stored document locale base.
 
 Response shape:
 
@@ -81,12 +83,18 @@ Response shape:
 {
   "ok": true,
   "home_id": "uuid",
-  "locale": "en",
+  "requested_locale_base": "en",
+  "doc_locale_base": "en",
   "house_norms": {
     "template_key": "house_norms_v1",
     "status": "published|out_of_date",
+    "inputs": {},
+    "draft_content": {},
+    "draft_updated_at": "timestamptz",
     "published_content": {},
-    "published_at": "timestamptz",
+    "published_at": "timestamptz|null",
+    "is_published": true,
+    "has_unpublished_changes": false,
     "last_edited_at": "timestamptz|null",
     "last_edited_by": "uuid|null"
   }
@@ -99,7 +107,7 @@ When absent:
 {
   "ok": true,
   "home_id": "uuid",
-  "locale": "en",
+  "requested_locale_base": "en",
   "house_norms": null
 }
 ```
@@ -110,12 +118,12 @@ Caller: current owner.
 
 Behavior:
 - Validates owner role, template, locale, and `p_inputs`.
-- Generates `generated_content` from template + taxonomy-backed inputs.
-- MVP profile is single-step: generation publishes immediately.
+- Generates draft content (`generated_content`) from template + taxonomy-backed
+  inputs.
+- Does not update `published_content`.
 - When `p_force = false`, implementation MAY short-circuit if equivalent inputs
-  are already published.
-- When `p_force = true`, implementation MAY overwrite prior generated draft
-  state before publish.
+  are already in the existing document.
+- When `p_force = true`, implementation overwrites draft state.
 
 Response shape:
 
@@ -124,23 +132,24 @@ Response shape:
   "ok": true,
   "home_id": "uuid",
   "template_key": "house_norms_v1",
-  "locale": "en",
-  "status": "published",
-  "generated_content": {},
+  "locale_base": "en",
+  "status": "published|out_of_date",
+  "draft_content": {},
+  "draft_updated_at": "timestamptz",
   "published_content": {},
-  "generated_at": "timestamptz",
-  "published_at": "timestamptz"
+  "published_at": "timestamptz|null",
+  "short_circuited": false
 }
 ```
 
-4.3 `house_norms_publish_for_home(p_home_id uuid, p_locale text) -> jsonb` (optional split mode)
+4.3 `house_norms_publish_for_home(p_home_id uuid, p_locale text) -> jsonb`
 
 Caller: current owner.
 
 Behavior:
-- Optional RPC for flows that separate generate from publish.
+- Explicit publish RPC for web/share snapshot updates.
 - Copies `generated_content` to `published_content`.
-- Idempotent when no unpublished generated draft exists.
+- Marks status as `published`.
 
 Response shape:
 
@@ -148,9 +157,12 @@ Response shape:
 {
   "ok": true,
   "home_id": "uuid",
+  "requested_locale_base": "en",
+  "doc_locale_base": "en",
   "status": "published",
   "published_content": {},
-  "published_at": "timestamptz"
+  "published_at": "timestamptz",
+  "has_unpublished_changes": false
 }
 ```
 
@@ -159,10 +171,33 @@ Response shape:
 Caller: current owner.
 
 Behavior:
-- Edits only the target section in `published_content`.
+- Edits only the target editable field in `generated_content` (draft).
 - Creates a revision row in `house_norms_revisions`.
 - Must reject unsafe language (enforcement, punishment, threat framing).
 - Must reject unknown `p_section_key`.
+
+Allowed `p_section_key` values:
+- `summary_framing`
+- `norms_rhythm_quiet`
+- `norms_shared_spaces`
+- `norms_guests_social`
+- `norms_responsibility_flow`
+- `norms_repair_style`
+- `norms_home_identity`
+
+Field mapping:
+- `summary_framing` maps to `generated_content.summary.framing`.
+- Norms section keys map to `generated_content.sections.<section_key>.text`.
+
+Validation requirements:
+- `p_section_key` outside allowlist MUST fail with `HOUSE_NORMS_INVALID_SECTION`.
+- Empty edited text MUST fail with `HOUSE_NORMS_INVALID_INPUTS`.
+- Edited text > 2000 chars MUST fail with `HOUSE_NORMS_INVALID_INPUTS`.
+- `summary_framing` text > 500 chars MUST fail with
+  `HOUSE_NORMS_INVALID_INPUTS`.
+- `p_change_summary` > 280 chars MUST fail with `HOUSE_NORMS_INVALID_INPUTS`.
+- Unsafe text MUST fail with `HOUSE_NORMS_UNSAFE_TEXT` for English
+  (`locale_base='en'`).
 
 Response shape:
 
@@ -170,8 +205,14 @@ Response shape:
 {
   "ok": true,
   "home_id": "uuid",
+  "requested_locale_base": "en",
+  "doc_locale_base": "en",
   "section_key": "norms_shared_spaces",
-  "published_content": {},
+  "draft_content": {},
+  "draft_updated_at": "timestamptz",
+  "published_at": "timestamptz|null",
+  "status": "published|out_of_date",
+  "has_unpublished_changes": true,
   "last_edited_at": "timestamptz",
   "last_edited_by": "uuid"
 }
@@ -199,7 +240,8 @@ Errors follow `{ code, message, details }` envelope semantics used in Homes APIs
 
 Proposed codes:
 - `UNAUTHORIZED`
-- `HOMES_NOT_MEMBER`
+- `NOT_HOME_MEMBER`
+- `INVALID_LOCALE`
 - `FORBIDDEN_OWNER_ONLY`
 - `HOME_INACTIVE`
 - `HOUSE_NORMS_NOT_FOUND`
@@ -215,7 +257,19 @@ Proposed codes:
 - Non-owners can read but cannot mutate.
 - Template updates MUST NOT silently overwrite published content.
 
-8. References
+8. Contract Test Scenarios
+
+- Owner edits `summary_framing` successfully.
+- Non-owner edit attempt fails with owner-only authorization error.
+- `summary.title` and `summary.subtitle` cannot be edited through
+  `house_norms_edit_section_text`.
+- Unknown `p_section_key` fails with `HOUSE_NORMS_INVALID_SECTION`.
+- Unsafe text fails with `HOUSE_NORMS_UNSAFE_TEXT` for English locale.
+- Text > 2000 and summary framing > 500 fail with `HOUSE_NORMS_INVALID_INPUTS`.
+- Successful edit creates a row in `house_norms_revisions`.
+- Publish copies draft to published and clears unpublished-change flag.
+
+9. References
 
 - [House Norms v1](../../../product/kinly/shared/house_norms_v1.md)
 - [House Norms Scenarios v1](../../../product/kinly/shared/house_norms_scenarios_v1.md)
@@ -230,13 +284,13 @@ Proposed codes:
     "HouseNorms": {
       "homeId": "uuid",
       "templateKey": "text",
-      "locale": "text",
+      "localeBase": "text",
       "status": "text",
       "inputs": "jsonb",
       "generatedContent": "jsonb",
-      "publishedContent": "jsonb",
+      "publishedContent": "jsonb|null",
       "generatedAt": "timestamptz",
-      "publishedAt": "timestamptz",
+      "publishedAt": "timestamptz|null",
       "lastEditedAt": "timestamptz|null",
       "lastEditedBy": "uuid|null"
     },
@@ -276,7 +330,6 @@ Proposed codes:
     "houseNorms.publishForHome": {
       "type": "rpc",
       "caller": "owner-only",
-      "status": "optional",
       "impl": "public.house_norms_publish_for_home",
       "args": {
         "p_home_id": "uuid",

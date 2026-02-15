@@ -7,10 +7,10 @@ Stability: stable
 Status: active
 Version: v1.3
 Audience: internal
-Last updated: 2026-02-04
+Last updated: 2026-02-14
 ---
 
-# Complaint Rewrite Queue Processing and Backpressure (complaint_rewrite_queue_processing_v1)
+# Complaint Rewrite Queue Processing & Backpressure (complaint_rewrite_queue_processing_v1)
 
 ## 1) Purpose
 Define how Kinly processes queued complaint rewrite jobs safely and predictably under load.
@@ -18,14 +18,14 @@ Define how Kinly processes queued complaint rewrite jobs safely and predictably 
 Goals:
 - Prevent cost spikes and retry storms.
 - Ensure deterministic throughput (jobs either process or wait).
-- Make "waiting for next cron run" an explicit, documented behavior.
+- Make “waiting for next scheduled run” an explicit, documented behavior.
 - Keep frontend unaware of provider mechanics and queue limits.
 
-Scope: queue semantics, per-run limits, deferral, claiming and locking, retry/failure, audit signals. This complements `complaint_rewrite_async_jobs_v1` (execution rules) by specifying how jobs are picked up.
+Scope: queue semantics, per-run limits, deferral, claiming/locking, retry/failure, audit signals. This complements `complaint_rewrite_async_jobs_v1` (execution rules) by specifying how jobs are picked up.
 
 ## 2) Key definitions
 - Job: one rewrite task stored in DB.
-- Worker run: one Edge Function invocation (cron or admin trigger).
+- Worker run: one Edge Function invocation (scheduled or admin trigger).
 - Backpressure: when queued jobs exceed per-run capacity; excess remain queued.
 
 ## 3) Job lifecycle states (canonical vocabulary)
@@ -46,7 +46,7 @@ Jobs MUST NOT skip directly from `queued` to `completed` without `processing` un
   "job_id": "uuid",
   "rewrite_request_id": "uuid",
   "task": "complaint_rewrite",
-  "surface": "weekly_feedback | weekly_harmony | direct_message | other",
+  "surface": "weekly_harmony | direct_message | other",
   "rewrite_strength": "light_touch | full_reframe",
   "language_pair": { "from": "bcp47", "to": "bcp47" },
   "recipient_user_id": "uuid",
@@ -81,13 +81,14 @@ Jobs MUST NOT skip directly from `queued` to `completed` without `processing` un
   }
 }
 ```
-Notes: `(rewrite_request_id, recipient_user_id)` MUST be unique (idempotent execution unit). Raw message text MUST NOT be stored in `routing_decision`. `not_before_at` enables deliberate deferral and batching windows. Timestamps are UTC.
+Notes: `(rewrite_request_id, recipient_user_id)` MUST be unique (idempotent execution unit). Raw message text MUST NOT be stored in `routing_decision`. `not_before_at` enables deliberate deferral/batching windows. Timestamps are UTC.
 
 ## 5) Worker trigger
-- Recommended: DB scheduler (e.g., pg_cron) on fixed cadence for cost control.
-- Batch lane uses two schedulers: `complaint_rewrite_batch_submitter_15m` and `complaint_rewrite_batch_collector_30m`.
+- Recommended: scheduled Edge Functions on fixed cadence for cost control.
+- Batch lane uses two scheduled functions: `rewrite_batch_submitter` (15m) and `rewrite_batch_collector` (30m).
 - Optional: admin-only manual trigger for recovery.
 - Frontend MUST NOT trigger workers.
+- Scheduler dispatchers SHOULD check pending work before invoking Edge functions. If pending count is zero, skip invocation and record a skip event.
 
 ## 6) Worker run configuration (backpressure)
 Example config:
@@ -114,7 +115,7 @@ If `status = processing` and `claimed_at` older than `claim_timeout_seconds`, MA
 
 ## 8) Retry and failure rules
 ### 8.1 Retry (normative)
-On provider or transient failure: increment `attempt_count`, set `status = queued`, set `not_before_at = now + backoff(attempt_count)` using deterministic `retry_backoff_seconds`.
+On provider/transient failure: increment `attempt_count`, set `status = queued`, set `not_before_at = now + backoff(attempt_count)` using deterministic `retry_backoff_seconds`.
 
 ### 8.2 Permanent failure (normative)
 If `attempt_count >= max_attempts`: set `status = failed`, populate `last_error` and `last_error_at`. No silent fallback to other providers (aligns with routing contract).
@@ -125,11 +126,12 @@ If `attempt_count >= max_attempts`: set `status = failed`, populate `last_error`
 
 ## 10) Observability and audit (minimum)
 Each worker run logs: `run_id`, started_at, finished_at, `max_jobs_per_run`, claimed_count, succeeded_count, failed_count, requeued_count, per-provider/model counts, rate-limit/capacity errors.  
-Each job records: final status, attempt_count, routing_decision, timestamps.  
+Each job records: final status, attempt_count, routing_decision, timestamps.
 Logging MUST NOT include raw sender text or rewritten text; use opaque IDs only.
+- If no work is pending, dispatcher logs a deterministic no-op event (for example `rewrite_batch_* skipped: no pending items`) instead of surfacing errors.
 
 ## 11) Frontend contract (behavioral guarantee)
-Frontend assumes rewrites complete asynchronously; timing not guaranteed. Job states come from DB (or Realtime), not edge "check status" endpoints.
+Frontend assumes rewrites complete asynchronously; timing not guaranteed. Job states come from DB (or Realtime), not edge “check status” endpoints.
 
 ## 12) MUST NOT
 - Worker MUST NOT process unlimited jobs in one run.
@@ -138,12 +140,12 @@ Frontend assumes rewrites complete asynchronously; timing not guaranteed. Job st
 - Router MUST NOT receive raw message content (per routing contract).
 
 ## 13) Versioning rules
-Changing defaults (e.g., `max_jobs_per_run`, cron cadence) -> config change only.  
-Changing state machine semantics or claiming rules -> MAJOR bump.
+Changing defaults (e.g., `max_jobs_per_run`, schedule cadence) → config change only.  
+Changing state machine semantics or claiming rules → MAJOR bump.
 
 ## 14) Suggested environment defaults (config, not contract)
-- **Dev**: cron every 2h; `max_jobs_per_run = 5`; `max_runtime_seconds = 120`; backoff `[120, 600]`; `claim_timeout_seconds = 300`.
-- **Stage**: cron every 30m; `max_jobs_per_run = 30`; `max_runtime_seconds = 180`; backoff `[300, 1800]`; `claim_timeout_seconds = 900`.
-- **Prod**: cron every 60-120m; `max_jobs_per_run = 200` (scale to hourly arrival rate); `max_runtime_seconds = 240`; backoff `[3600, 21600]`; `claim_timeout_seconds = 3600`.
+- **Dev**: schedule every 2h; `max_jobs_per_run = 5`; `max_runtime_seconds = 120`; backoff `[120, 600]`; `claim_timeout_seconds = 300`.
+- **Stage**: schedule every 30m; `max_jobs_per_run = 30`; `max_runtime_seconds = 180`; backoff `[300, 1800]`; `claim_timeout_seconds = 900`.
+- **Prod**: schedule every 60–120m; `max_jobs_per_run = 200` (scale to hourly arrival rate); `max_runtime_seconds = 240`; backoff `[3600, 21600]`; `claim_timeout_seconds = 3600`.
 
-Rationale: longer cadence reduces scheduler cost; per-run cap sized to drain hourly arrivals; long backoff prevents retry storms between long cron intervals.
+Rationale: longer cadence reduces scheduler cost; per-run cap sized to drain hourly arrivals; long backoff prevents retry storms between long schedule intervals.

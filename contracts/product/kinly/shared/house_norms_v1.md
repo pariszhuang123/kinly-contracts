@@ -22,7 +22,6 @@ Depends on:
 - Homes v2 (memberships + roles)
 - House Norms Scenarios v1
 - House Norms Taxonomy v1
-- House Rules v1
 - Kinly product philosophy (care, not control)
 - Kinly Project Brief
 
@@ -73,10 +72,8 @@ shared understanding without politicizing language or creating social pressure.
 
 3.3 Norms vs Rules
 - House Norms remain descriptive and non-enforceable.
-- House Rules are explicit policy statements and are maintained in a separate
-  contract (`house_rules_v1`).
 - Policy-like constraints (for example smoking policy, pets policy, severe
-  shared allergen restrictions) MUST be routed to House Rules, not House Norms.
+  shared allergen restrictions) are out-of-scope for House Norms v1.
 - House Norms MUST NOT be used as a hidden rules engine.
 
 4. Lifecycle
@@ -86,19 +83,20 @@ shared understanding without politicizing language or creating social pressure.
 - Generation requires completion of:
   - 2 required context anchors.
   - 6 required directional scenarios.
-- In MVP, generation publishes immediately after creation.
+- In v1 backend semantics, generation creates/updates draft content.
+- Publishing to web/share is explicit and owner-triggered.
 
 4.2 Status
-- `published`: current visible norms.
-- `out_of_date`: inputs changed (for example owner re-ran scenarios or template
-  changed) but the owner has not republished.
+- `published`: draft and published snapshots match.
+- `out_of_date`: draft differs from published snapshot, or no published snapshot
+  exists yet.
 - Template updates MUST NOT auto-overwrite published content.
 
 4.3 Regeneration rules
 - Regenerate only when the owner explicitly requests it.
 - Regeneration replaces `generated_content`.
-- `published_content` updates only when owner publishes the regenerated draft.
-- MVP MAY combine generate and publish in one owner action.
+- Regeneration updates draft only (`generated_content`).
+- `published_content` updates only when owner explicitly publishes.
 
 5. Generated Output Model
 
@@ -113,9 +111,10 @@ shared understanding without politicizing language or creating social pressure.
 
 5.2 Required structure (v1)
 Generated content MUST include:
-- `summary` (title, subtitle, framing paragraph)
+- `summary` (`title_key`, `subtitle_key`, framing paragraph)
 - `context` (anchors rendered as neutral context line)
-- `sections` (6 sections aligned to scenario IDs)
+- `sections` (6 sections aligned to scenario IDs; each section includes
+  `title_key` and `text`)
 
 Optional:
 - Owner-facing footer note: "You can revisit these anytime."
@@ -128,8 +127,18 @@ Optional:
 
 6.1 Edit scope
 - Owner edits MAY update:
-  - Section text.
-  - Summary framing paragraph.
+  - `summary.framing` narrative tone text only.
+  - Section text for:
+    - `norms_rhythm_quiet`
+    - `norms_shared_spaces`
+    - `norms_guests_social`
+    - `norms_responsibility_flow`
+    - `norms_repair_style`
+    - `norms_home_identity`
+- Owner edits MUST NOT update:
+  - `summary.title`
+  - `summary.subtitle`
+  - Content structure/schema.
 - Owner edits MUST NOT:
   - Add enforceable language.
   - Add monitoring or tracking language.
@@ -139,7 +148,7 @@ Optional:
 
 6.2 Revision tracking
 - All edits create a revision row.
-- Store both original `generated_content` and current `published_content`.
+- Store draft snapshot (`generated_content`) after each edit.
 - Allow owner revert-to-generated for any section.
 
 7. Data Access and APIs (Proposed RPCs)
@@ -148,27 +157,29 @@ Optional:
 - `house_norms_get_for_home(p_home_id uuid, p_locale text) -> jsonb`
   - Caller MUST be authenticated.
   - Caller MUST be a current home member.
-  - Returns published content when it exists, else null/empty.
+  - Returns draft + published snapshot metadata when document exists, else null.
 
 7.2 Generate (owner-only)
 - `house_norms_generate_for_home(p_home_id uuid, p_template_key text, p_locale text, p_inputs jsonb, p_force boolean) -> jsonb`
   - Caller MUST be authenticated.
   - Caller MUST be a current home member.
   - Caller MUST have role `owner`.
-  - Generates `generated_content`.
+  - Generates/updates draft (`generated_content`).
+  - Never updates `published_content`.
   - If `p_force = true`, MAY overwrite prior generated draft.
-  - MVP MAY publish immediately as part of owner flow.
 
-7.3 Publish (owner-only, optional split)
-- If generation and publish are split:
-  - `house_norms_publish_for_home(p_home_id uuid, p_locale text) -> jsonb`
+7.3 Publish (owner-only)
+- `house_norms_publish_for_home(p_home_id uuid, p_locale text) -> jsonb`
   - Owner-only.
   - Copies `generated_content` to `published_content`.
+  - Marks document `published`.
 
 7.4 Edit section text (owner-only)
 - `house_norms_edit_section_text(p_home_id uuid, p_locale text, p_section_key text, p_new_text text, p_change_summary text default null) -> jsonb`
   - Owner-only.
-  - Edits published section text only.
+  - Edits `generated_content.summary.framing` when `p_section_key=summary_framing`.
+  - Edits draft section text for the six norms section keys.
+  - Does not mutate `published_content`.
   - Records a revision.
 
 8. Storage Model (Supabase, Proposed)
@@ -178,13 +189,13 @@ Optional:
 `house_norms`
 - `home_id` (uuid, PK, FK homes)
 - `template_key` (text)
-- `locale` (text)
+- `locale_base` (text, lowercase ISO 639-1)
 - `status` (text: `published` | `out_of_date`)
 - `inputs` (jsonb) // anchors + scenario option indices
 - `generated_content` (jsonb)
-- `published_content` (jsonb)
+- `published_content` (jsonb|null)
 - `generated_at` (timestamptz)
-- `published_at` (timestamptz)
+- `published_at` (timestamptz|null)
 - `last_edited_at` (timestamptz|null)
 - `last_edited_by` (uuid|null)
 
@@ -226,6 +237,13 @@ Optional:
   ("must/always/never").
 - No Kinly feature may be gated by House Norms.
 
+11. Assumptions and Defaults (v1)
+
+- Owner is the only editor in v1.
+- `summary.framing` is text-only personalization, not policy.
+- `summary.title` and `summary.subtitle` remain template-controlled.
+- Draft and published snapshots are intentionally separate.
+
 ```contracts-json
 {
   "domain": "house_norms",
@@ -234,13 +252,13 @@ Optional:
     "HouseNorms": {
       "homeId": "uuid",
       "templateKey": "text",
-      "locale": "text",
+      "localeBase": "text",
       "status": "text",
       "inputs": "jsonb",
       "generatedContent": "jsonb",
-      "publishedContent": "jsonb",
+      "publishedContent": "jsonb|null",
       "generatedAt": "timestamptz",
-      "publishedAt": "timestamptz",
+      "publishedAt": "timestamptz|null",
       "lastEditedAt": "timestamptz|null",
       "lastEditedBy": "uuid|null"
     },
@@ -280,7 +298,6 @@ Optional:
     "houseNorms.publishForHome": {
       "type": "rpc",
       "caller": "owner-only",
-      "status": "optional",
       "impl": "public.house_norms_publish_for_home",
       "args": {
         "p_home_id": "uuid",

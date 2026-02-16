@@ -86,6 +86,7 @@
 * **house_vibe_share_contract** (v1.0): [contracts/product/kinly/mobile/house_vibe_share_contract_v1.md](contracts/product/kinly/mobile/house_vibe_share_contract_v1.md)
 * **hub_house_norms_visibility** (v1.0): [contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md](contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md)
 * **hub_personal_preferences_visibility** (v1.0): [contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md](contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md)
+* **today_house_norms_prompt** (v1.0): [contracts/product/kinly/mobile/today_house_norms_prompt_v1.md](contracts/product/kinly/mobile/today_house_norms_prompt_v1.md)
 * **welcome_avatar_personal_profile** (v1.0): [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
 
 ### Domain: monetization\n

@@ -97,6 +97,20 @@ The Hub uses House Norms RPCs (see House Norms v1). No new APIs are required.
 - The detail page MUST be readable by all current members.
 - Create and edit actions on the detail page MUST be owner-only.
 
+4.5 Detail page content and actions
+- The detail page MUST show the full House Norms document structure:
+  - Summary block (`title`, `subtitle`, framing text).
+  - Full norms list covering all six directional sections.
+- Members (non-owners) are strictly read-only:
+  - No edit controls.
+  - No publish controls.
+  - No suggest/comment/request-change affordances.
+- Owner actions on detail:
+  - Owner MAY edit draft framing/section text according to House Norms v1.
+  - Owner MAY publish from a low-emphasis action at the bottom of the detail
+    page.
+- Hub card semantics remain low-weight and non-urgent regardless of owner role.
+
 5. Empty States
 
 5.1 Hub empty state

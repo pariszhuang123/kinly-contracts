@@ -127,6 +127,7 @@
 - [contracts/product/kinly/mobile/preference_taxonomy_v1.md](contracts/product/kinly/mobile/preference_taxonomy_v1.md)
 - [contracts/product/kinly/mobile/reflective_generation_v1.md](contracts/product/kinly/mobile/reflective_generation_v1.md)
 - [contracts/product/kinly/mobile/share_recurring_product_v1.md](contracts/product/kinly/mobile/share_recurring_product_v1.md)
+- [contracts/product/kinly/mobile/today_house_norms_prompt_v1.md](contracts/product/kinly/mobile/today_house_norms_prompt_v1.md)
 - [contracts/product/kinly/mobile/weekly_house_pulse_v1.md](contracts/product/kinly/mobile/weekly_house_pulse_v1.md)
 - [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
 - [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)

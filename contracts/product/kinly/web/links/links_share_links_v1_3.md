@@ -67,6 +67,10 @@ Preview routes:
 - MUST NOT imply app availability
 - MUST NOT initiate install or join
 - MUST always resolve to a readable web page
+- For norms routes, `homePublicId` is a stable public identifier; republish of
+  norms content does not rotate the URL.
+- House norms share/copy UX MUST use the canonical route
+  `/norms/:homePublicId` as the public identity link.
 
 ---
 

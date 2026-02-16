@@ -10,7 +10,7 @@ Version: v1.0
 
 # Kinly House Norms Contract v1
 
-Status: Proposed (Create Home MVP)
+Status: Proposed (Home MVP)
 
 Scope: Scenario-based capture and generation of a home-level House Norms
 document (non-enforceable), owner-governed edits, and member read-only
@@ -79,12 +79,25 @@ shared understanding without politicizing language or creating social pressure.
 4. Lifecycle
 
 4.1 Creation moment
-- House Norms are created during Create Home by the home owner.
+- House Norms are owner-triggered from mobile surfaces (for example, a Today
+  prompt card) when no House Norms document exists yet for the home.
+- In v1, owner-triggered creation from Today is the default creation entry
+  point.
 - Generation requires completion of:
   - 2 required context anchors.
   - 6 required directional scenarios.
 - In v1 backend semantics, generation creates/updates draft content.
 - Publishing to web/share is explicit and owner-triggered.
+
+4.1.1 Today prompt visibility rule (owner-only)
+- A Today "Create House Norms" prompt MAY be shown only when all of the
+  following are true:
+  - Caller is a current member with role `owner`.
+  - `house_norms_get_for_home(home_id, locale)` returns
+    `house_norms = null`.
+- Non-owner members MUST NOT see a House Norms creation prompt.
+- The prompt MUST be calm and low-pressure, not styled as a required setup
+  step.
 
 4.2 Status
 - `published`: draft and published snapshots match.

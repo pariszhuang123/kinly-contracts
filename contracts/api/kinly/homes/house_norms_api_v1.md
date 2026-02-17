@@ -320,6 +320,7 @@ Caller: public (anon or authenticated).
 Behavior:
 - Resolves public route `/norms/:homePublicId`.
 - Returns only published norms snapshot (never draft).
+- When `available=true`, `house_norms_public.status` MUST be `published`.
 - This RPC is the public API compatibility/fallback path; primary web delivery
   for scale is storage artifact + Vercel cache.
 - Must not return draft content.
@@ -338,7 +339,7 @@ Response shape (available):
   "requested_locale_base": "en",
   "doc_locale_base": "en",
   "house_norms_public": {
-    "status": "published|out_of_date",
+    "status": "published",
     "published_content": {},
     "published_at": "timestamptz",
     "published_version": "text"

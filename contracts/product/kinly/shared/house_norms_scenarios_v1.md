@@ -10,9 +10,10 @@ Version: v1.0
 
 # Kinly House Norms Scenarios Contract v1
 
-Status: Proposed (Create Home MVP)
+Status: Proposed (Home MVP)
 
-Scope: Scenario-based capture model for House Norms during Create Home.
+Scope: Scenario-based capture model for owner-triggered House Norms creation
+from Today/onboarding surfaces.
 
 Audience: Product, design, engineering, AI agents.
 

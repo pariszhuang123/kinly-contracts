@@ -25,7 +25,7 @@ Version: v1.0
 
 ## Invocation
 
-- Required enum: `ReflectiveGenerationMode { personal_preferences, house_rules, generic }`.  
+- Required enum: `ReflectiveGenerationMode { personal_preferences, house_rules, house_norms, generic }`.  
 - Mode is mandatory; missing mode must assert/fail at build time.
 
 ## Three-phase ritual (locked)
@@ -35,6 +35,13 @@ Version: v1.0
 3. **Reveal moment** — Subtle transition (fade-up/slide). Title appears first, then content, CTA last. No “success” toasts; the artifact itself is confirmation.
 
 Hard constraints: minimum duration 600 ms, maximum 1800 ms, ideal 1000–1200 ms. One reflective generation per flow; never stacked; skip reflection on backend errors.
+
+House Norms onboarding exception (v1 mobile):
+- House Norms onboarding uses the same reflective pacing as current personal
+  preferences implementation for digestibility:
+  - acknowledgement: 500ms
+  - pause: 4s
+- This exception applies only to owner-triggered House Norms generation flow.
 
 ## Modes (copy packs)
 
@@ -59,6 +66,21 @@ Hard constraints: minimum duration 600 ms, maximum 1800 ms, ideal 1000–1200 ms
 - **Primary copy (options):** “Putting the home’s expectations into words.” *(recommended)* / “Clarifying how this home works.” / “Writing this down so there are no surprises.” / “Stating the home’s boundaries clearly.”  
 - **Secondary copy (options):** “So everyone knows what to expect.” *(recommended)* / “Set by the home owner, shared openly.” / “Clear, visible, and easy to refer back to.” / “Not enforced — just stated.”  
 - **Exclusions:** No collective language (“we agreed”), enforcement, consequences, penalties, system defaults.
+
+### house_norms
+- **Authorship:** Single author = home owner. Read-only for other members in-app.  
+- **Meaning:** A shared reference for how the home tends to work; not a rulebook.  
+- **Tone:** Warm, reflective, non-enforcing, non-punitive.  
+- **Primary copy (options):**  
+  - “Reflecting what this home shared.” *(recommended default)*  
+  - “Putting this home’s rhythm into words.”  
+  - “Shaping a shared starting point for this home.”  
+- **Secondary copy (options):**  
+  - “So everyone can understand how this home tends to work.” *(recommended default)*  
+  - “A shared reference, not a rulebook.”  
+  - “Calm defaults you can revisit anytime.”  
+- **Exclusions:** No rules/compliance language, no consequences, no threats, no
+  blame.
 
 ### generic
 - **Authorship:** Context-dependent; non-identity-forming.  

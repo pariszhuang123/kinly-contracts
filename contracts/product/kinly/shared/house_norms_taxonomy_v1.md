@@ -10,7 +10,7 @@ Version: v1.0
 
 # Kinly House Norms Taxonomy Contract v1
 
-Status: Proposed (Create Home MVP)
+Status: Proposed (Home MVP)
 
 Scope: Stable taxonomy for House Norms scenario IDs and option value keys.
 

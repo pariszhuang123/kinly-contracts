@@ -59,8 +59,10 @@ Owner write requirements:
 - `p_template_key` identifies the generation template (for example
   `house_norms_v1`).
 - `p_locale` accepts base or region forms (for example `en`, `en-NZ`).
-- Server normalizes locale to lowercase base locale (`locale_base`) and falls
-  back to `en`.
+- Server normalizes locale to lowercase base locale (`locale_base`).
+- Generation resolves template locale by:
+  - exact match on `(template_key, locale_base)` in `house_norm_templates`
+  - fallback to `en` when requested locale template is missing
 - Private responses include locale metadata (`requested_locale_base`,
   `doc_locale_base`) for deterministic rendering.
 
@@ -361,11 +363,17 @@ Response shape (unavailable):
 Tables:
 - `house_norms`
 - `house_norms_revisions`
+- `house_norm_templates`
 
 `house_norms` additions:
 - `home_public_id` (CITEXT, unique, nullable until first publish)
 - `published_version` (text, nullable before first publish; monotonic per
   norms document)
+
+`house_norm_templates`:
+- One row per `(template_key, locale_base)`.
+- Stores structured generation copy in `body` for summary/context/sections.
+- Template rows are backend-managed (not client writable).
 
 ID-only persistence rules:
 - Persist `home_public_id` only.
@@ -408,6 +416,7 @@ Required private codes:
 - `HOUSE_NORMS_NOT_FOUND`
 - `HOUSE_NORMS_INVALID_INPUTS`
 - `HOUSE_NORMS_INVALID_TEMPLATE`
+- `HOUSE_NORMS_TEMPLATE_NOT_FOUND`
 - `HOUSE_NORMS_INVALID_SECTION`
 - `HOUSE_NORMS_UNSAFE_TEXT`
 - `HOUSE_NORMS_PUBLISH_ARTIFACT_FAILED`

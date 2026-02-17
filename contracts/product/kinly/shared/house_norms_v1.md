@@ -110,6 +110,8 @@ shared understanding without politicizing language or creating social pressure.
 - Regeneration replaces `generated_content`.
 - Regeneration updates draft only (`generated_content`).
 - `published_content` updates only when owner explicitly publishes.
+- Regeneration copy is resolved from `house_norm_templates` by locale:
+  requested locale first, fallback to `en` when missing.
 
 5. Generated Output Model
 
@@ -223,6 +225,14 @@ Optional:
 - `content` (jsonb)
 - `change_summary` (text|null)
 
+`house_norm_templates`
+- `id` (uuid, PK)
+- `template_key` (text)
+- `locale_base` (text, lowercase ISO 639-1)
+- `body` (jsonb; structured summary/context/section option copy)
+- `created_at` (timestamptz)
+- `updated_at` (timestamptz)
+
 8.2 RLS
 - RPC-only model.
 - Direct table DML denied for `authenticated`.
@@ -288,6 +298,14 @@ Optional:
       "editedAt": "timestamptz",
       "content": "jsonb",
       "changeSummary": "text|null"
+    },
+    "HouseNormTemplate": {
+      "id": "uuid",
+      "templateKey": "text",
+      "localeBase": "text",
+      "body": "jsonb",
+      "createdAt": "timestamptz",
+      "updatedAt": "timestamptz"
     }
   },
   "functions": {

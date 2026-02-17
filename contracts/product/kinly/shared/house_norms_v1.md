@@ -209,8 +209,11 @@ Optional:
 - `published_content` (jsonb|null)
 - `generated_at` (timestamptz)
 - `published_at` (timestamptz|null)
+- `home_public_id` (citext|null, unique, immutable once assigned)
+- `published_version` (text|null, monotonic `vNNNNNN` per publish)
 - `last_edited_at` (timestamptz|null)
 - `last_edited_by` (uuid|null)
+- `updated_at` (timestamptz)
 
 `house_norms_revisions`
 - `id` (uuid, PK)
@@ -272,8 +275,11 @@ Optional:
       "publishedContent": "jsonb|null",
       "generatedAt": "timestamptz",
       "publishedAt": "timestamptz|null",
+      "homePublicId": "citext|null",
+      "publishedVersion": "text|null",
       "lastEditedAt": "timestamptz|null",
-      "lastEditedBy": "uuid|null"
+      "lastEditedBy": "uuid|null",
+      "updatedAt": "timestamptz"
     },
     "HouseNormsRevision": {
       "id": "uuid",

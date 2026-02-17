@@ -229,7 +229,7 @@ Behavior:
     `public_norms/home/{home_public_id}/manifest.json`
 - Artifact payload MUST include only:
   - `home_public_id`
-  - `published_at`
+  - `published_at` (canonical UTC ISO string, same shape as JS `Date(...).toISOString()`)
   - `published_version`
   - `template_key`
   - `locale_base`
@@ -238,7 +238,7 @@ Behavior:
   - versioned snapshot:
     `public, max-age=31536000, immutable`
   - manifest:
-    `public, max-age=0, must-revalidate`
+    `no-store`
 - Publish atomicity:
   - if artifact or manifest write fails, publish RPC MUST fail (no success
     response for partial publish state).
@@ -336,7 +336,7 @@ Response shape (available):
   "requested_locale_base": "en",
   "doc_locale_base": "en",
   "house_norms_public": {
-    "status": "published",
+    "status": "published|out_of_date",
     "published_content": {},
     "published_at": "timestamptz",
     "published_version": "text"

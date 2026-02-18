@@ -59,7 +59,7 @@ https://go.makinglifeeasie.com
 | Route | Purpose |
 |----|--------|
 | `/` | Generic Kinly landing |
-| `/norms/:homePublicId` | Public house norms (if published) |
+| `/kinly/norms/:homePublicId` | Public house norms (if published) |
 | `/fallback` | Safe fallback for invalid links |
 
 Preview routes:
@@ -70,7 +70,7 @@ Preview routes:
 - For norms routes, `homePublicId` is a stable public identifier; republish of
   norms content does not rotate the URL.
 - House norms share/copy UX MUST use the canonical route
-  `/norms/:homePublicId` as the public identity link.
+  `/kinly/norms/:homePublicId` as the public identity link.
 
 ---
 
@@ -90,7 +90,7 @@ Join routes:
 | Region | Behavior |
 |--------|----------|
 | Supported (NZ, SG) | MAY redirect directly to app store (see Store-First Redirect) |
-| Unsupported | MUST redirect to `/get` for interest capture |
+| Unsupported | MUST redirect to `/kinly/get` for interest capture |
 
 #### Invite code format
 - Exactly 6 characters
@@ -100,7 +100,7 @@ Join routes:
 
 ---
 
-## Store-First Redirect (v1.3)
+## Store-First Redirect (v1.4)
 
 For join routes in **supported regions**, the web layer MAY redirect directly to the platform app store instead of rendering a landing page.
 
@@ -186,11 +186,11 @@ Intent inference:
 - Does NOT auto-open app
 
 ### Unsupported Region
-- Redirect to `/get` for interest capture
+- Redirect to `/kinly/get` for interest capture
 - No store links shown
 
 ### Desktop
-- Link opens web landing or redirects to `/get`
+- Link opens web landing or redirects to `/kinly/get`
 - Store links may be shown but desktop cannot install
 
 ---
@@ -242,7 +242,7 @@ If:
 - region check fails
 
 Then:
-- route to `/fallback` or `/get` as appropriate
+- route to `/fallback` or `/kinly/get` as appropriate
 - provide readable explanation
 - never surface raw errors
 
@@ -285,7 +285,7 @@ This tradeoff is accepted in favor of reduced funnel friction for the majority o
 
 | Version | Change |
 |------|--------|
-| v1.3 | Allow store-first redirect for join routes in supported regions; document iOS referrer tradeoff |
+| v1.3 | Allow store-first redirect for join routes in supported regions; document iOS referrer tradeoff; Move public norms canonical route to /kinly/norms/:homePublicId |
 | v1.2 | Defined invite code format (6-char typeable set, uppercase normalization) |
 | v1.1 | Deduplicated canonical host section; clarified references; cleaned encoding |
 | v1.0 | Initial share links and canonical URL contract |
@@ -302,3 +302,4 @@ A Kinly share link must:
 - never auto-open the app
 
 If a link does anything else, it violates this contract.
+

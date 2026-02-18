@@ -106,7 +106,7 @@ Deep link handling MUST respect this ordering.
 | Web Route | App Destination |
 |---------|----------------|
 | `/` | Welcome or Start (auth-aware) |
-| `/norms/:homePublicId` | Welcome or Start (auth-aware) |
+| `/kinly/norms/:homePublicId` | Welcome or Start (auth-aware) |
 
 Preview routes:
 - MUST NOT deep link automatically
@@ -119,7 +119,7 @@ Preview routes:
 
 | Web Route | App Destination |
 |---------|----------------|
-| `/join/:inviteCode` | Start -> Pending Join |
+| `/kinly/join/:inviteCode` | Start -> Pending Join |
 
 Join routes:
 - MAY offer deep link CTA if region is supported
@@ -241,7 +241,7 @@ Those concerns belong to the mobile app.
 
 | Version | Change |
 |------|--------|
-| v1.1 | Cleaned encoding; referenced updated region gate contract |
+| v1.1 | Cleaned encoding; referenced updated region gate contract Align Kinly namespaced routes for preview/join (`/kinly/norms`, `/kinly/join`) |
 | v1.0 | Initial deep link mapping with Start-screen fallback |
 
 ---
@@ -257,3 +257,4 @@ A Kinly deep link must:
 
 Any deep link behavior violating these principles
 is a contract breach.
+

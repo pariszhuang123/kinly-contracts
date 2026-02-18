@@ -169,6 +169,7 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-02-17 | Activated norms and links route updates for /kinly/norms | Planner     |
 | 2026-01-29 | Added outreach tracking contracts v1               | Planner     |
 | 2026-01-26 | Activated links contracts v1.1/v1.2; encoding tidy | Planner     |
 | YYYY-MM-DD | Initial contract registry created                  | Planner     |
@@ -186,3 +187,4 @@ If the registry is unclear, incomplete, or outdated:
 - update the registry first
 
 The registry exists so Kinly Web can grow without losing its intent.
+

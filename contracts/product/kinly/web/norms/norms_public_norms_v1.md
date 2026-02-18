@@ -64,7 +64,7 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
 4. Routing and sharing
 
 - Public route shape follows active web link contract for norms pages:
-  `/norms/:homePublicId`.
+  `/kinly/norms/:homePublicId`.
 - `home_public_id` is the canonical persisted identifier for public norms
   routing.
 - `public_url` is derived from canonical host + route template + `home_public_id`
@@ -85,6 +85,10 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
   - versioned snapshot:
     `public_norms/home/{home_public_id}/published_{published_version}.json`
 - Storage artifact paths MUST use `home_public_id` (never `home_id`).
+- Storage URL derivation for Web MUST be deterministic and environment-based:
+  - base: `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/households`
+  - manifest: `${base}/public_norms/home/{home_public_id}/manifest.json`
+  - snapshot: `${base}/{latest_snapshot_path}` from manifest.
 
 5.2 API compatibility path
 - `house_norms_get_public_by_home_public_id(home_public_id, locale)` remains a
@@ -100,7 +104,7 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
 
 5.4 Freshness model
 - Correctness MUST be driven by explicit owner publish actions and backend
-  on-demand revalidation for `/norms/{home_public_id}`.
+  on-demand revalidation for `/kinly/norms/{home_public_id}`.
 - Freshness MUST NOT depend on fixed time-based TTL expiry.
 
 6. Non-goals
@@ -113,3 +117,4 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
 
 Public Norms is a read-only projection of published House Norms. If content is
 not published and available, the public page must not display norms text.
+

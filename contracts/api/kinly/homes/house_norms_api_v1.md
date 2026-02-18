@@ -23,7 +23,7 @@ Depends on:
 - House Norms v1
 - House Norms Scenarios v1
 - House Norms Taxonomy v1
-- Links share links v1.3
+- Links share links v1.4
 
 1. Purpose
 
@@ -86,7 +86,7 @@ Validation:
 - Payload size above guardrails (2KB) MUST fail.
 
 3.3 Public route id
-- `p_home_public_id` is the route identity value for `/norms/:homePublicId`.
+- `p_home_public_id` is the route identity value for `/kinly/norms/:homePublicId`.
 - Stored as CITEXT.
 - Case-insensitive for lookup; canonical casing MAY be normalized in responses.
 
@@ -104,7 +104,7 @@ Behavior:
   prompt eligibility.
 - Owner-facing URL/control metadata is included only for owner callers.
 - Owner-facing `public_url` is derived from canonical host +
-  `/norms/{home_public_id}` and is never persisted as a DB column.
+  `/kinly/norms/{home_public_id}` and is never persisted as a DB column.
 
 Response shape (member baseline):
 
@@ -245,7 +245,7 @@ Behavior:
   - if artifact or manifest write fails, publish RPC MUST fail (no success
     response for partial publish state).
 - On successful publish + artifact write, backend MUST trigger Vercel
-  on-demand revalidation for `/norms/{home_public_id}` before returning
+  on-demand revalidation for `/kinly/norms/{home_public_id}` before returning
   success.
 - Returned `has_unpublished_changes=false` confirms publish complete.
 
@@ -263,7 +263,7 @@ Response shape:
   "published_version": "text",
   "has_unpublished_changes": false,
   "home_public_id": "text",
-  "public_url": "https://go.makinglifeeasie.com/norms/{homePublicId}"
+  "public_url": "https://go.makinglifeeasie.com/kinly/norms/{homePublicId}"
 }
 ```
 
@@ -318,7 +318,7 @@ Response shape:
 Caller: public (anon or authenticated).
 
 Behavior:
-- Resolves public route `/norms/:homePublicId`.
+- Resolves public route `/kinly/norms/:homePublicId`.
 - Returns only published norms snapshot (never draft).
 - When `available=true`, `house_norms_public.status` MUST be `published`.
 - This RPC is the public API compatibility/fallback path; primary web delivery
@@ -381,13 +381,17 @@ ID-only persistence rules:
 - Do not persist `public_url` column.
 - `public_url` is derived from:
   - host: `https://go.makinglifeeasie.com`
-  - path template: `/norms/{home_public_id}`
+  - path template: `/kinly/norms/{home_public_id}`
 
 Derived delivery artifacts:
 - Storage artifacts are derived from canonical DB publish state.
 - Public artifact paths MUST use `home_public_id` (never `home_id`):
   - `public_norms/home/{home_public_id}/published_{published_version}.json`
   - `public_norms/home/{home_public_id}/manifest.json`
+- Public web storage URL derivation (for web reads) is environment-based:
+  - base: `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/households`
+  - manifest: `${base}/public_norms/home/{home_public_id}/manifest.json`
+  - snapshot: `${base}/{latest_snapshot_path}` from manifest
 - Artifacts MUST contain only published-safe fields and no draft/private data.
 - v1 does not support disable/unpublish/rotation of public norms links; once
   published, `home_public_id` remains the stable public identity.
@@ -563,3 +567,4 @@ Public read RPC:
   "rls": []
 }
 ```
+

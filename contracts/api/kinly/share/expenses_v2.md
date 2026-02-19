@@ -17,6 +17,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 ## Domain Overview
 - Drafts: creator-only; `amountCents` optional; drafts cannot be recurring.
 - Activation: supplying amount + splits via `expenses.create` or `expenses.edit` promotes to `status=active`. If recurrence is set, a plan is created, the draft is marked `status=converted`, and the first cycle is generated immediately.
+- Activation invariant: at least one debtor must be different from `createdByUserId` (creator cannot be the sole debtor).
 - Splits live in `expense_splits`. Creator shares (if included) are auto-marked `paid`.
 - Payments are bulk: `expenses.payMyDue(p_recipient_user_id)` marks all unpaid splits the caller owes to a given payer.
 - Recurrence fields are paired: both null for one-off; both set for recurring.

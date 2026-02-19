@@ -12,6 +12,15 @@ Version: v1.0
 
 Tracks versioned contract changes and related ADRs.
 
+## v1.1 - Expenses Single-Debtor Activation (Non-Creator)
+- Date: 2026-02-19
+- Scope: `contracts/api/kinly/share/expenses_v2.md`, `contracts/api/kinly/share/share_recurring_api_v1.md`, `contracts/product/kinly/mobile/share_recurring_product_v1.md`, `contracts/api/kinly/backend/schema.sql`
+- Changes:
+  - Relax split cardinality from `>=2` debtors to `>=1` debtor.
+  - Keep the creator-not-sole guard: at least one debtor must differ from `created_by_user_id`.
+  - Standardize `SPLIT_MEMBERS_REQUIRED` messages and add `details.reason` (`NO_DEBTORS` or `CREATOR_ONLY`) in split validation helper errors.
+  - Align activation-path SQL guards in create/edit flows so single non-creator debtor splits are accepted.
+
 ## v1 - Gratitude Wall (Shared + Personal)
 - Date: 2026-01-17
 - Scope: `docs/contracts/gratitude_wall_v1.md`

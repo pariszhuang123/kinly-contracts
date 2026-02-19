@@ -15,7 +15,7 @@ Purpose: product-facing rules and UX expectations for recurring expenses. API/DB
 ## Core Principles (product lens)
 - Plans define intent; expenses are immutable snapshots once active.
 - Drafts are creator-only and quota-free; activation is a one-way door.
-- Activation requires ≥2 distinct debtors; creator cannot be sole debtor.
+- Activation requires >=1 debtor; creator cannot be sole debtor.
 - Cron always generates cycles; paywall blocks users, not cron.
 - Termination stops future cycles; history remains payable.
 - Payments are harmony-first (bulk “pay what I owe to payer X”).

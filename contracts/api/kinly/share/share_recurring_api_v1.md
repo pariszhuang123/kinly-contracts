@@ -19,7 +19,7 @@ Introduce recurring shared expenses while keeping one-off behavior stable, audit
 ## 2. Core Principles
 - Plans define intent; expenses record reality. Once active, expenses are immutable snapshots.
 - Draft is provisional (creator-only, quota-free); activation is a one-way door.
-- Assignment is the commitment trigger: activation requires ≥2 distinct debtors.
+- Assignment is the commitment trigger: activation requires >=1 debtor, and creator must not be sole debtor.
 - Each cycle is independent; there is no global “settled plan.”
 - System generation is never blocked: cron always generates cycles; paywall blocks users, not cron.
 - Termination stops future cycles only; historical expenses remain payable.
@@ -53,14 +53,14 @@ First-class recurring intent.
 - `status expense_plan_status default 'active'`
 - `terminated_at timestamptz?`
 - `created_at timestamptz default now()`, `updated_at timestamptz default now()`
-Invariants: ≥2 debtors; amount/split/debtors immutable once active.
+Invariants: >=1 debtor, and creator must not be sole debtor; amount/split/debtors immutable once active.
 
 ### 5.2 expense_plan_debtors
 Template for cycle generation.
 - `plan_id uuid` FK expense_plans
 - `debtor_user_id uuid` FK profiles
 - `share_amount_cents bigint`
-Invariants: ≥2 distinct debtors; for `custom`, sum = plan amount.
+Invariants: >=1 debtor, and creator must not be sole debtor; for `custom`, sum = plan amount.
 
 ### 5.3 expenses (extended)
 - `plan_id uuid?` FK expense_plans; NULL for one-off.
@@ -88,7 +88,7 @@ Generated per expense (one-off or cycle).
 
 ### 6.2 One-off Activation
 - Call `expenses.create` or `expenses.edit` with split params and `recurrence_interval='none'`.
-- Validates: ≥2 distinct debtors (at least one non-creator), split sums, start_date within membership window (not older than 90 days).
+- Validates: >=1 debtor, creator not sole debtor, split sums, start_date within membership window (not older than 90 days).
 - Writes `status=active`, inserts splits (creator share auto-paid), increments `active_expenses` usage.
 - Active expenses are immutable thereafter.
 
@@ -120,7 +120,7 @@ Generated per expense (one-off or cycle).
 ## 9. Validation Guards
 - Start date required; must be within membership stint and not more than 90 days backdated.
 - Recurrence interval must be one of the allowed values when non-`none`.
-- Splits require ≥2 unique debtors and positive amounts; creator must not be the sole debtor.
+- Splits require >=1 unique debtor and positive amounts; creator must not be the sole debtor.
 - Active expenses are immutable; only drafts can be edited/activated.
 
 ## 10. Cron

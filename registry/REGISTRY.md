@@ -56,7 +56,7 @@
 
 ### Domain: share\n
 * **expenses** (v1.0): [contracts/api/kinly/share/expenses_v1.md](contracts/api/kinly/share/expenses_v1.md)
-* **expenses** (v2.0): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
+* **expenses** (v2.4): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
 * **share_recurring_api** (v1.0): [contracts/api/kinly/share/share_recurring_api_v1.md](contracts/api/kinly/share/share_recurring_api_v1.md)
 
 ## Surface: design\n

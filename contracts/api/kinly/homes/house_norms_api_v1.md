@@ -23,7 +23,7 @@ Depends on:
 - House Norms v1
 - House Norms Scenarios v1
 - House Norms Taxonomy v1
-- Links share links v1.4
+- Links share links v1.3
 
 1. Purpose
 
@@ -63,6 +63,7 @@ Owner write requirements:
 - Generation resolves template locale by:
   - exact match on `(template_key, locale_base)` in `house_norm_templates`
   - fallback to `en` when requested locale template is missing
+- Current seeded v1 template locales: `en`, `es`, `ar`.
 - Private responses include locale metadata (`requested_locale_base`,
   `doc_locale_base`) for deterministic rendering.
 
@@ -105,6 +106,8 @@ Behavior:
 - Owner-facing URL/control metadata is included only for owner callers.
 - Owner-facing `public_url` is derived from canonical host +
   `/kinly/norms/{home_public_id}` and is never persisted as a DB column.
+- Member-review visibility is backend-computed and returned as
+  `show_member_review_card` for non-owner callers.
 
 Response shape (member baseline):
 
@@ -142,6 +145,17 @@ Owner metadata extension (owner callers only):
     "show_publish_button": true,
     "show_republish_button": false,
     "show_public_url": false
+  }
+}
+```
+
+Member metadata extension (non-owner callers only):
+
+```json
+{
+  "house_norms": {
+    "member_viewed_at": "timestamptz|null",
+    "show_member_review_card": false
   }
 }
 ```
@@ -320,7 +334,6 @@ Caller: public (anon or authenticated).
 Behavior:
 - Resolves public route `/kinly/norms/:homePublicId`.
 - Returns only published norms snapshot (never draft).
-- When `available=true`, `house_norms_public.status` MUST be `published`.
 - This RPC is the public API compatibility/fallback path; primary web delivery
   for scale is storage artifact + Vercel cache.
 - Must not return draft content.
@@ -339,7 +352,7 @@ Response shape (available):
   "requested_locale_base": "en",
   "doc_locale_base": "en",
   "house_norms_public": {
-    "status": "published",
+    "status": "published|out_of_date",
     "published_content": {},
     "published_at": "timestamptz",
     "published_version": "text"
@@ -388,7 +401,7 @@ Derived delivery artifacts:
 - Public artifact paths MUST use `home_public_id` (never `home_id`):
   - `public_norms/home/{home_public_id}/published_{published_version}.json`
   - `public_norms/home/{home_public_id}/manifest.json`
-- Public web storage URL derivation (for web reads) is environment-based:
+  - Public web storage URL derivation (for web reads) is environment-based:
   - base: `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/households`
   - manifest: `${base}/public_norms/home/{home_public_id}/manifest.json`
   - snapshot: `${base}/{latest_snapshot_path}` from manifest
@@ -567,4 +580,3 @@ Public read RPC:
   "rls": []
 }
 ```
-

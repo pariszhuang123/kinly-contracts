@@ -173,6 +173,10 @@ Optional:
   - Caller MUST be authenticated.
   - Caller MUST be a current home member.
   - Returns draft + published snapshot metadata when document exists, else null.
+  - For non-owner callers, response includes:
+    - `member_viewed_at` (timestamptz | null)
+    - `show_member_review_card` (boolean, backend-computed with 24-hour
+      debounce and `viewed_at` comparison against latest norms change).
 
 7.2 Generate (owner-only)
 - `house_norms_generate_for_home(p_home_id uuid, p_template_key text, p_locale text, p_inputs jsonb, p_force boolean) -> jsonb`
@@ -252,7 +256,9 @@ Optional:
 - `SECURITY DEFINER` RPCs must assert:
   - Authenticated caller.
   - Current home membership.
-  - Role=`owner` for write operations.
+  - Role-appropriate authorization:
+    - `owner` for generate/publish/edit writes.
+    - current member for `house_norms_record_view`.
 
 9. Safety and Non-Goals
 

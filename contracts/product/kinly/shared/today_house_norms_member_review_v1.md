@@ -65,16 +65,19 @@ edit.
   viewed the norms.
 
 2.5 Canonical frontend signal
-- The visibility check combines:
-  - `norms_change_at` from `house_norms` (via `house_norms_get_for_home`).
-  - `viewed_at` from `house_norms_member_views` (returned in the same RPC
-    response as `member_viewed_at`).
-- Frontend MUST NOT infer view status from other entities or local state.
+- Frontend MUST use backend-computed `show_member_review_card` from
+  `house_norms_get_for_home`.
+- Frontend MUST NOT re-implement debounce or comparison logic in client code.
+- Frontend MAY still read `last_edited_at`, `generated_at`, and
+  `member_viewed_at` for diagnostics, but visibility authority is
+  `show_member_review_card`.
 
 2.6 API binding
 - Visibility data binds to the existing `house_norms_get_for_home` RPC.
 - The RPC response MUST include `member_viewed_at` (timestamptz | null) for
   the calling member when the caller is a non-owner.
+- The RPC response MUST include `show_member_review_card` (boolean), computed
+  by backend rules in this contract.
 - No Today-specific RPC is required for visibility in v1.
 
 3. Card Presentation
@@ -132,6 +135,8 @@ One row per member per home. Upserted on each view.
   - `member_viewed_at` (timestamptz | null): the caller's most recent
     `viewed_at` from `house_norms_member_views`, or null if no view record
     exists.
+  - `show_member_review_card` (boolean): backend visibility decision for the
+    member review card.
 
 6. Edge Cases
 

@@ -111,6 +111,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 - `recurrenceEvery` is NULL iff `recurrenceUnit` is NULL.
 - `evidencePhotoPath` is optional and must start with `households/` when provided.
 - A bill/expense stores at most one evidence photo path at a time.
+- `expenses.edit` path semantics: omitted/`NULL` keeps existing draft `evidencePhotoPath`; sending empty string clears it before activation.
 - Drafts are quota-free while still draft: adding/replacing photo on a draft does not consume `active_expenses` or `expense_photos`.
 - `expense_photos` is charged on activation/plan-creation boundary:
   - One-off path (`status=draft -> active`): if `planId is null` and `evidencePhotoPath` is non-null, apply `+1 expense_photos`.
@@ -126,7 +127,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
   - One-off photo charge decrements once when a charged one-off exits counting state:
     - on `active -> cancelled` when `planId is null` and `evidencePhotoPath` is non-null, OR
     - on first `fullyPaidAt NULL -> non-NULL` when `planId is null` and `evidencePhotoPath` is non-null.
-  - Recurring plan photo charge decrements once on first plan termination (`terminatedAt NULL -> non-NULL`) when plan `evidencePhotoPath` is non-null.
+  - Recurring plan photo charge decrements once on first plan termination (`terminatedAt NULL -> non-NULL`) when plan `evidencePhotoPath` is non-null (including membership-change auto-termination flows).
 - Canonical errors include `PAYWALL_LIMIT_ACTIVE_EXPENSES`, `PAYWALL_LIMIT_EXPENSE_PHOTOS`, and `INVALID_EVIDENCE_PHOTO_PATH`.
 
 ## Contracts JSON
@@ -248,7 +249,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
     "expenses.create": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_create_v2",
+      "impl": "public.expenses_create_v3",
       "args": {
         "p_home_id": "uuid",
         "p_description": "text",
@@ -274,7 +275,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
     "expenses.edit": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_edit_v2",
+      "impl": "public.expenses_edit_v3",
       "args": {
         "p_expense_id": "uuid",
         "p_amount_cents": "bigint",
@@ -291,7 +292,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "returns": "Expense",
       "notes": [
         "Drafts: allowed and always activates",
-        "Drafts may add, replace, or clear evidencePhotoPath before activation",
+        "Drafts may add or replace evidencePhotoPath before activation; clearing is supported by sending empty string",
         "Draft photo updates do not consume expense_photos until activation/plan-creation boundary",
         "Active one-off expenses: creator may edit description/notes only",
         "For active one-off expenses, amount/splits/recurrence/startDate are immutable",

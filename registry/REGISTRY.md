@@ -7,6 +7,7 @@
 * **form_hydration** (v1.0): [contracts/api/kinly/forms/form_hydration_v1.md](contracts/api/kinly/forms/form_hydration_v1.md)
 
 ### Domain: growth\n
+* **outreach_short_links** (v1.0): [contracts/api/kinly/growth/outreach_short_links_v1.md](contracts/api/kinly/growth/outreach_short_links_v1.md)
 * **outreach_tracking** (v1.0): [contracts/api/kinly/growth/outreach_tracking_v1.md](contracts/api/kinly/growth/outreach_tracking_v1.md)
 
 ### Domain: homes\n
@@ -169,6 +170,7 @@
 * **marketing_landing** (v1.0): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
 * **marketing_landing** (v1.1): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md)
 * **outreach_tracking** (v1.0): [contracts/product/kinly/web/growth/outreach_tracking_v1.md](contracts/product/kinly/web/growth/outreach_tracking_v1.md)
+* **qr_short_link_resolution** (v1.0): [contracts/product/kinly/web/growth/qr_short_link_resolution_v1.md](contracts/product/kinly/web/growth/qr_short_link_resolution_v1.md)
 
 ### Domain: theme\n
 * **theme_resolution** (v1.0): [contracts/product/kinly/web/theme/theme_resolution_v1.md](contracts/product/kinly/web/theme/theme_resolution_v1.md)

@@ -139,6 +139,7 @@
 * **house_norms_scenarios** (v1.0): [contracts/product/kinly/shared/house_norms_scenarios_v1.md](contracts/product/kinly/shared/house_norms_scenarios_v1.md)
 * **house_norms_taxonomy** (v1.0): [contracts/product/kinly/shared/house_norms_taxonomy_v1.md](contracts/product/kinly/shared/house_norms_taxonomy_v1.md)
 * **house_rules** (v1.0): [contracts/product/kinly/shared/house_rules_v1.md](contracts/product/kinly/shared/house_rules_v1.md)
+* **today_house_norms_member_review** (v1.0): [contracts/product/kinly/shared/today_house_norms_member_review_v1.md](contracts/product/kinly/shared/today_house_norms_member_review_v1.md)
 
 ## Surface: web\n
 ### Domain: kinly\n

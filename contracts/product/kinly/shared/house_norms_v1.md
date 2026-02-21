@@ -197,6 +197,13 @@ Optional:
   - Does not mutate `published_content`.
   - Records a revision.
 
+7.5 Record member view
+- `house_norms_record_view(p_home_id uuid) -> jsonb`
+  - Caller MUST be authenticated.
+  - Caller MUST be a current home member.
+  - Upserts `house_norms_member_views` with `viewed_at = now()`.
+  - Returns `{ "ok": true, "viewed_at": "<timestamptz>" }`.
+
 8. Storage Model (Supabase, Proposed)
 
 8.1 Tables
@@ -233,6 +240,12 @@ Optional:
 - `created_at` (timestamptz)
 - `updated_at` (timestamptz)
 
+`house_norms_member_views`
+- `home_id` (uuid, FK homes)
+- `user_id` (uuid, FK auth.users)
+- `viewed_at` (timestamptz)
+- PK: (`home_id`, `user_id`)
+
 8.2 RLS
 - RPC-only model.
 - Direct table DML denied for `authenticated`.
@@ -252,7 +265,9 @@ Optional:
 - Voting and approvals.
 - Comment threads.
 - Suggest-an-edit workflows.
-- Auto-reminders based on norms.
+- Auto-reminders based on norm content (e.g., behavioral nudges). Member
+  awareness of norm updates is covered by the Today House Norms Member
+  Review contract.
 - Policy enforcement workflows (belongs to House Rules track).
 
 10. Invariants
@@ -306,6 +321,11 @@ Optional:
       "body": "jsonb",
       "createdAt": "timestamptz",
       "updatedAt": "timestamptz"
+    },
+    "HouseNormsMemberView": {
+      "homeId": "uuid",
+      "userId": "uuid",
+      "viewedAt": "timestamptz"
     }
   },
   "functions": {
@@ -352,6 +372,15 @@ Optional:
         "p_section_key": "text",
         "p_new_text": "text",
         "p_change_summary": "text|null"
+      },
+      "returns": "jsonb"
+    },
+    "houseNorms.recordView": {
+      "type": "rpc",
+      "caller": "member",
+      "impl": "public.house_norms_record_view",
+      "args": {
+        "p_home_id": "uuid"
       },
       "returns": "jsonb"
     }

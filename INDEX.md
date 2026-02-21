@@ -148,6 +148,7 @@
 - [contracts/product/kinly/shared/house_norms_scenarios_v1.md](contracts/product/kinly/shared/house_norms_scenarios_v1.md)
 - [contracts/product/kinly/shared/house_norms_taxonomy_v1.md](contracts/product/kinly/shared/house_norms_taxonomy_v1.md)
 - [contracts/product/kinly/shared/house_norms_v1.md](contracts/product/kinly/shared/house_norms_v1.md)
+- [contracts/product/kinly/shared/today_house_norms_member_review_v1.md](contracts/product/kinly/shared/today_house_norms_member_review_v1.md)
 - [contracts/product/kinly/shared/house_vibe_mapping_contract_v1.md](contracts/product/kinly/shared/house_vibe_mapping_contract_v1.md)
 - [contracts/product/kinly/shared/house_vibe_overview_v1.md](contracts/product/kinly/shared/house_vibe_overview_v1.md)
 - [contracts/product/kinly/shared/member_cap_paywall_v1.md](contracts/product/kinly/shared/member_cap_paywall_v1.md)

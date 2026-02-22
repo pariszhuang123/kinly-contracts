@@ -5,12 +5,12 @@ Scope: backend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v1.0
+Version: v1.0.1
 Audience: internal
-Last updated: 2026-02-21
+Last updated: 2026-02-22
 ---
 
-# Contract - Outreach Short Links v1.0
+# Contract - Outreach Short Links v1.0.1
 
 ## Purpose
 Provide scan-friendly short URLs on `go.makinglifeeasie.com/<code>` that redirect to canonical Kinly marketing URLs while preserving campaign tracking and producing aggregate attribution events.
@@ -20,10 +20,10 @@ This contract defines:
 - Redirect resolution behavior.
 - Storage model for link definitions.
 - Safety and privacy constraints.
+- Effective-active semantics for expiry.
 
 This contract complements:
-- `contracts/api/kinly/growth/outreach_tracking_v1.md`
-- `contracts/product/kinly/web/growth/outreach_tracking_v1.md`
+- `docs/contracts/outreach_event_log_v1.md`
 
 ## Design Critique (Normative)
 The proposed direction is sound. The following issues MUST be handled explicitly:
@@ -103,12 +103,19 @@ Constraints:
 - `source_id_resolved` follows canonical source resolution fallback (`unknown` allowed).
 - `destination_fingerprint` MUST be computed from canonicalized destination tuple:
   `target_path + normalized(target_query) + utm_campaign + utm_source + utm_medium + app_key + page_key`.
+- `target_query` MUST be a JSON object (not array/scalar/null).
 
 Indexes:
 - unique index on `(short_code)`
 - unique index on `(destination_fingerprint)`
 - index on `(active, created_at desc)`
 - index on `(utm_campaign, utm_source, utm_medium)`
+- partial index on `(expires_at)` where `expires_at is not null`
+
+Derived read model:
+- View `public.outreach_short_links_effective` with:
+  - all table columns
+  - computed `effective_active = active and (expires_at is null or expires_at > now())`
 
 ## Redirect Resolution Contract
 Resolver input:
@@ -131,14 +138,16 @@ Logging linkage (authoritative):
 - The resolver MUST reuse existing outreach ingestion contract.
 - Preferred path: call `public.outreach_log_event` with:
   - `event = "page_view"`
-  - `app_key`, `page_key`, `utm_campaign`, `utm_source`, `utm_medium`, `source_id_resolved` from `outreach_short_links`
+  - `app_key`, `page_key`, `utm_campaign`, `utm_source`, `utm_medium` from `outreach_short_links`
   - `store = "web"`
   - `session_id` from request context when available, otherwise synthesized opaque token.
+- `source_id_resolved` in `outreach_event_logs` remains resolved by `public.outreach_log_event` per `outreach_event_log_v1.md`.
 - Resolver MUST NOT write a separate `outreach_short_link_clicks` table.
 
 ## API/RPC Surface (Authoritative)
 
 ### `outreach.short_links_get_or_create`
+Canonical DB function: `public.outreach_short_links_get_or_create`
 Caller: service-role (or trusted admin backend only)
 
 Input:
@@ -173,6 +182,7 @@ Behavior:
 - If a row already exists with same fingerprint:
   - return existing `short_code` and `created=false`.
   - if caller passed a different `short_code`, ignore requested code and return canonical existing mapping.
+  - if caller passed a different `expires_at`, ignore requested expiry and return canonical existing mapping.
 - If no row exists:
   - insert new row with provided/generated `short_code`.
   - return `created=true`.
@@ -184,12 +194,18 @@ Default uniqueness policy:
 Errors:
 - `INVALID_SHORT_CODE`
 - `INVALID_TARGET_PATH`
-- `INVALID_TARGET_HOST`
+- `INVALID_TARGET_QUERY`
 - `INVALID_UTM`
+- `INVALID_INPUT`
 - `SHORT_CODE_ALREADY_EXISTS` (only when requested code is already bound to different fingerprint)
 - `SHORT_CODE_COLLISION_EXHAUSTED`
 
+Short code generation:
+- `public._outreach_short_links_generate_code` MUST use cryptographically strong randomness via `extensions.gen_random_bytes`.
+- Generated alphabet MUST exclude ambiguous characters (`0`, `1`, `i`, `l`, `o`).
+
 ### `outreach.short_links_disable`
+Canonical DB function: `public.outreach_short_links_disable`
 Caller: service-role (or trusted admin backend only)
 
 Input:
@@ -201,11 +217,19 @@ Behavior:
 - Sets `active=false`.
 - MUST NOT mutate historical rows in `outreach_event_logs`.
 
+Errors:
+- `INVALID_SHORT_CODE`
+- `SHORT_CODE_NOT_FOUND`
+
 ## Security and Access Control
 - RLS enabled on `outreach_short_links`.
 - No direct `insert/update/delete/select` for anon/auth clients.
 - Resolver route/function may write outreach events via existing secure path (`public.outreach_log_event`).
 - Only service-role may create/disable links.
+- Helper functions (`_outreach_short_links_fingerprint`, `_outreach_short_links_generate_code`, `_outreach_short_links_resolve_source`, `_outreach_short_links_before_write`) MUST NOT be executable by `PUBLIC`.
+
+## Cross-Table Dependency
+- Migration MUST ensure canonical source row `outreach_sources.source_id = 'unknown'` exists so FK writes remain safe.
 
 ## Privacy Guardrails
 - Redirect analytics are aggregate attribution only.

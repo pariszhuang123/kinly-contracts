@@ -4,7 +4,7 @@ Capability: qr_short_link_resolution
 Scope: frontend
 Artifact-Type: contract
 Stability: evolving
-Status: draft
+Status: active
 Version: v1.0.2
 Audience: internal
 Last updated: 2026-02-22
@@ -60,8 +60,8 @@ On `Submit & Generate`, client MUST execute:
 - `utm_campaign`
 - `utm_source`
 - `utm_medium = "qr"`
-- `app_key`
-- `page_key`
+- `app_key = "kinly-web"`
+- `page_key` (derived deterministically from selected `pageKey`: preserve `kinly_*`; otherwise `kinly_market_<pageKey_snake_case>`)
 
 2. Call trusted backend short-link endpoint (Next.js API route or equivalent).
 
@@ -72,7 +72,7 @@ On `Submit & Generate`, client MUST execute:
 - Use short URL for PNG/SVG export payload.
 
 4. If call fails:
-- Fallback to full canonical URL (`host + target_path + utm query`).
+- Fallback to full canonical URL (`host + target_path + target_query + utm query`, with UTM keys overriding duplicates).
 - Continue rendering/copy/export without blocking.
 - Show non-blocking inline warning: short link unavailable, using full URL.
 

@@ -147,7 +147,7 @@
 * **scenario_landing_copy** (v1.0): [contracts/design/copy/kinly/web/scenario_landing_copy_contract_v1.md](contracts/design/copy/kinly/web/scenario_landing_copy_contract_v1.md)
 
 ### Domain: kinly_web\n
-* **contracts_registry** (v1.1): [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
+* **contracts_registry** (v1.2): [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
 
 ### Domain: links\n
 * **deep_link_mapping** (v1.0): [contracts/product/kinly/web/links/links_deep_links_v1.md](contracts/product/kinly/web/links/links_deep_links_v1.md)

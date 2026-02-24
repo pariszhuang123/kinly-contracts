@@ -5,7 +5,7 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: active
-Version: v1.2
+Version: v1.3
 ---
 
 # Contracts Registry - Kinly Web
@@ -90,8 +90,10 @@ capability may be implied outside supported regions.
 | Growth | Interest Capture          | `growth/interest_capture_v1.md`                      | Active |
 | Growth | Interest Capture Backend  | `growth/interest_capture_v1_backend.md`              | Active |
 | Growth | Marketing Landing         | `growth/marketing_landing_recognition_first_v1_1.md` | Active |
-| Growth | Outreach Tracking         | `growth/outreach_tracking_v1.md`                     | Active |
-| Growth | Outreach Tracking Backend | `../../../api/kinly/growth/outreach_tracking_v1.md`  | Active |
+| Growth | Outreach Tracking         | `growth/outreach_tracking_v1_1.md`                   | Active |
+| Growth | Outreach Tracking Backend | `../../../api/kinly/growth/outreach_tracking_v1_1.md`| Active |
+| Growth | Outreach Polls            | `growth/outreach_polls_v1.md`                        | Active |
+| Growth | Outreach Polls Backend    | `../../../api/kinly/growth/outreach_polls_v1.md`     | Active |
 | Growth | QR Short Link Resolution  | `growth/qr_short_link_resolution_v1.md`              | Active |
 
 ---
@@ -170,6 +172,7 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-02-24 | Activated outreach polls and outreach tracking v1.1 | Planner     |
 | 2026-02-22 | Activated QR short-link resolution for `/tools/qr` | Planner     |
 | 2026-02-17 | Activated norms and links route updates for /kinly/norms | Planner     |
 | 2026-01-29 | Added outreach tracking contracts v1               | Planner     |

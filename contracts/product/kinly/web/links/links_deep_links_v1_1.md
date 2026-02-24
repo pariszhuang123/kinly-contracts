@@ -81,7 +81,7 @@ If capability is unavailable:
 - store CTAs MUST NOT be shown
 
 Region gating rules are defined in:
-`links_region_gate_v1_2.md`
+`links_region_gate_v1_3.md`
 
 ---
 
@@ -205,7 +205,7 @@ No failure may strand the user or assume membership.
 ## Region Gating Interaction
 
 Deep links MUST:
-- respect `links_region_gate_v1_2.md`
+- respect `links_region_gate_v1_3.md`
 - never be offered outside supported regions
 - never imply install or join capability where unavailable
 

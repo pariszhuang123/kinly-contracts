@@ -89,7 +89,7 @@ This page MUST NOT:
 
 This page MAY:
 
-* perform **region gating** to determine whether to show App Store / Google Play CTAs (e.g., show store CTAs only for supported regions such as NZ and Singapore)
+* perform **region gating** to determine whether to show App Store / Google Play CTAs (e.g., show store CTAs only for supported regions such as NZ, SG, and MY)
 
 If region gating is applied:
 

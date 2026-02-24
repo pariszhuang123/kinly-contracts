@@ -143,7 +143,7 @@ Join failure MUST NOT strand the user.
 ## Region Gating Interaction
 
 Fallback behavior MUST:
-- respect `links_region_gate_v1_2.md`
+- respect `links_region_gate_v1_3.md`
 - never bypass region gating
 - never imply install or join where unavailable
 

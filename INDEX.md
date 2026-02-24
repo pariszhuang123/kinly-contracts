@@ -100,6 +100,7 @@
 - [contracts/design/tokens/kinly/kinly_avatar_identity_v1.md](contracts/design/tokens/kinly/kinly_avatar_identity_v1.md)
 - [contracts/design/tokens/kinly/kinly_composable_system_v1.md](contracts/design/tokens/kinly/kinly_composable_system_v1.md)
 - [contracts/design/tokens/kinly/kinly_control_color_tokens_v1.md](contracts/design/tokens/kinly/kinly_control_color_tokens_v1.md)
+- [contracts/design/tokens/kinly/kinly_dark_mode_refinement_amendment_v1.md](contracts/design/tokens/kinly/kinly_dark_mode_refinement_amendment_v1.md)
 - [contracts/design/tokens/kinly/kinly_derived_color_engine_v1.md](contracts/design/tokens/kinly/kinly_derived_color_engine_v1.md)
 - [contracts/design/tokens/kinly/kinly_design_system_v1.md](contracts/design/tokens/kinly/kinly_design_system_v1.md)
 - [contracts/design/tokens/kinly/kinly_foundation_colors_v1.md](contracts/design/tokens/kinly/kinly_foundation_colors_v1.md)

@@ -68,6 +68,7 @@
 * **components** (v1.0): [contracts/design/reference/kinly/components.md](contracts/design/reference/kinly/components.md)
 * **copy_taste** (v1.1): [contracts/design/copy/kinly/copy_taste_v1_1.md](contracts/design/copy/kinly/copy_taste_v1_1.md)
 * **core_ui_primitives** (v1.0): [contracts/design/tokens/kinly/core_ui_primitives.md](contracts/design/tokens/kinly/core_ui_primitives.md)
+* **dark_mode_refinement** (v1.0): [contracts/design/tokens/kinly/kinly_dark_mode_refinement_amendment_v1.md](contracts/design/tokens/kinly/kinly_dark_mode_refinement_amendment_v1.md)
 * **house_vibe_label_registry_contract** (v1.0): [contracts/design/copy/kinly/house_vibe_label_registry_contract_v1.md](contracts/design/copy/kinly/house_vibe_label_registry_contract_v1.md)
 * **kinly_avatar_identity** (v1.0): [contracts/design/tokens/kinly/kinly_avatar_identity_v1.md](contracts/design/tokens/kinly/kinly_avatar_identity_v1.md)
 * **kinly_composable_system** (v1.0): [contracts/design/tokens/kinly/kinly_composable_system_v1.md](contracts/design/tokens/kinly/kinly_composable_system_v1.md)

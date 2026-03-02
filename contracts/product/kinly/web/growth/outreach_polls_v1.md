@@ -51,8 +51,12 @@ Frontend MUST call:
 
 Frontend MAY read:
 - `outreach_poll_results_uc_v1` for result visualization.
+- `public.outreach_poll_result_messages` (active rows) for per-option results message + CTA personalization.
 
 Frontend MUST NOT write poll tables directly.
+
+Result message behavior and fallback rules are defined in `outreach_poll_result_messages_contract_v1.md`.
+Backend schema and access controls for message rows are defined in `../../../../api/kinly/growth/outreach_poll_result_messages_v1.md`.
 
 ## UX Sequence (Normative)
 1. Load poll page and fetch poll definition.
@@ -73,6 +77,7 @@ Frontend MUST NOT write poll tables directly.
   - option-level counts/percentages
   - total UC vote count
 - Display text MUST include local count: `"X UC students voted"` (or locale equivalent).
+- Results personalization (message + CTA resolution) MUST follow `outreach_poll_result_messages_contract_v1.md`.
 
 ## Attribution Rules
 - `utm_source` should map to school alias (e.g., `uc`) for UC pooling.

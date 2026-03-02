@@ -15,6 +15,8 @@ Last updated: 2026-02-24
 ## Purpose
 Define backend schema and RPC contracts for public outreach polls with short-code-backed voting attribution.
 
+Result-message table schema and access rules are defined in `outreach_poll_result_messages_v1.md`.
+
 ## Design Constraints
 - Web clients MUST use RPCs; no direct table writes.
 - Vote attribution trust boundary is `short_code`.
@@ -134,6 +136,7 @@ Errors:
 - RLS enabled on poll tables.
 - `anon`/`authenticated` get EXECUTE on approved RPCs only.
 - No direct DML grants to `anon`/`authenticated` on poll tables.
+- `outreach_poll_result_messages` access control is governed by `outreach_poll_result_messages_v1.md`.
 
 ## Event Integration
 - Poll vote RPC MUST emit `poll_vote` through `outreach_log_event`.

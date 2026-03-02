@@ -5,7 +5,7 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: active
-Version: v1.3
+Version: v1.5
 ---
 
 # Contracts Registry - Kinly Web
@@ -93,6 +93,7 @@ capability may be implied outside supported regions.
 | Growth | Outreach Tracking         | `growth/outreach_tracking_v1_1.md`                   | Active |
 | Growth | Outreach Tracking Backend | `../../../api/kinly/growth/outreach_tracking_v1_1.md`| Active |
 | Growth | Outreach Polls            | `growth/outreach_polls_v1.md`                        | Active |
+| Growth | Poll Result Messages      | `growth/outreach_poll_result_messages_contract_v1.md` | Active |
 | Growth | Outreach Polls Backend    | `../../../api/kinly/growth/outreach_polls_v1.md`     | Active |
 | Growth | QR Short Link Resolution  | `growth/qr_short_link_resolution_v1.md`              | Active |
 
@@ -172,6 +173,8 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-03-03 | Merged poll result messages rules into v1 and kept constant CTA routing | Planner     |
+| 2026-03-03 | Activated outreach poll result messages contract v1.1 | Planner     |
 | 2026-02-24 | Activated outreach polls and outreach tracking v1.1 | Planner     |
 | 2026-02-22 | Activated QR short-link resolution for `/tools/qr` | Planner     |
 | 2026-02-17 | Activated norms and links route updates for /kinly/norms | Planner     |
@@ -192,4 +195,3 @@ If the registry is unclear, incomplete, or outdated:
 - update the registry first
 
 The registry exists so Kinly Web can grow without losing its intent.
-

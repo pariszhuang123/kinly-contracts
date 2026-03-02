@@ -7,6 +7,7 @@
 * **form_hydration** (v1.0): [contracts/api/kinly/forms/form_hydration_v1.md](contracts/api/kinly/forms/form_hydration_v1.md)
 
 ### Domain: growth\n
+* **outreach_poll_result_messages** (v1.0): [contracts/api/kinly/growth/outreach_poll_result_messages_v1.md](contracts/api/kinly/growth/outreach_poll_result_messages_v1.md)
 * **outreach_polls** (v1.0): [contracts/api/kinly/growth/outreach_polls_v1.md](contracts/api/kinly/growth/outreach_polls_v1.md)
 * **outreach_short_links** (v1.0.1): [contracts/api/kinly/growth/outreach_short_links_v1.md](contracts/api/kinly/growth/outreach_short_links_v1.md)
 * **outreach_tracking** (v1.0): [contracts/api/kinly/growth/outreach_tracking_v1.md](contracts/api/kinly/growth/outreach_tracking_v1.md)
@@ -150,7 +151,7 @@
 * **scenario_landing_copy** (v1.0): [contracts/design/copy/kinly/web/scenario_landing_copy_contract_v1.md](contracts/design/copy/kinly/web/scenario_landing_copy_contract_v1.md)
 
 ### Domain: kinly_web\n
-* **contracts_registry** (v1.3): [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
+* **contracts_registry** (v1.5): [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
 
 ### Domain: links\n
 * **deep_link_mapping** (v1.0): [contracts/product/kinly/web/links/links_deep_links_v1.md](contracts/product/kinly/web/links/links_deep_links_v1.md)
@@ -175,6 +176,7 @@
 * **marketing_landing** (v1.0): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
 * **marketing_landing** (v1.1): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md)
 * **marketing_landing** (v1.2): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_2.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_2.md)
+* **outreach_poll_result_messages** (v1.0): [contracts/product/kinly/web/growth/outreach_poll_result_messages_contract_v1.md](contracts/product/kinly/web/growth/outreach_poll_result_messages_contract_v1.md)
 * **outreach_polls** (v1.0): [contracts/product/kinly/web/growth/outreach_polls_v1.md](contracts/product/kinly/web/growth/outreach_polls_v1.md)
 * **outreach_tracking** (v1.0): [contracts/product/kinly/web/growth/outreach_tracking_v1.md](contracts/product/kinly/web/growth/outreach_tracking_v1.md)
 * **outreach_tracking** (v1.1): [contracts/product/kinly/web/growth/outreach_tracking_v1_1.md](contracts/product/kinly/web/growth/outreach_tracking_v1_1.md)

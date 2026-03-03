@@ -127,9 +127,9 @@ For join routes in **supported regions**, the web layer MAY redirect directly to
 
 ### What This Does NOT Do
 
-- **Does NOT auto-open the app** — only navigates to the store
-- **Does NOT bypass region gating** — redirect only happens after region check passes
-- **Does NOT apply to preview routes** — those always render a readable page
+- **Does NOT auto-open the app** â€” only navigates to the store
+- **Does NOT bypass region gating** â€” redirect only happens after region check passes
+- **Does NOT apply to preview routes** â€” those always render a readable page
 
 ---
 
@@ -285,7 +285,7 @@ This tradeoff is accepted in favor of reduced funnel friction for the majority o
 
 | Version | Change |
 |------|--------|
-| v1.4 | Expanded supported-region examples to include MY and aligned region-gating reference to v1.3 |
+| v1.4 | Added MY to supported-region join behavior (NZ, SG, MY). |
 | v1.3 | Allow store-first redirect for join routes in supported regions; document iOS referrer tradeoff; Move public norms canonical route to /kinly/norms/:homePublicId |
 | v1.2 | Defined invite code format (6-char typeable set, uppercase normalization) |
 | v1.1 | Deduplicated canonical host section; clarified references; cleaned encoding |
@@ -303,4 +303,6 @@ A Kinly share link must:
 - never auto-open the app
 
 If a link does anything else, it violates this contract.
+
+
 

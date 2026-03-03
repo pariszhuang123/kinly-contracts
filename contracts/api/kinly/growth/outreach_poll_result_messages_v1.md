@@ -4,10 +4,10 @@ Capability: outreach_poll_result_messages
 Scope: backend
 Artifact-Type: contract
 Stability: evolving
-Status: draft
+Status: active
 Version: v1.0
 Audience: internal
-Last updated: 2026-02-27
+Last updated: 2026-03-03
 ---
 
 # Contract - Outreach Poll Result Messages API v1.0
@@ -16,6 +16,10 @@ Last updated: 2026-02-27
 Define the backend schema and access contract for data-driven poll results messaging (`message + CTA label`) keyed by poll option, with optional targeting overrides.
 
 This contract is the authoritative backend definition for `public.outreach_poll_result_messages`.
+
+## Publication and Enforceability State
+- This contract is enforceable by DB objects in `20260322090023_outreach_poll_result_messages_v1.sql`.
+- Contract publication remains gated by passing local/CI guardrails.
 
 ## Design Constraints
 - Frontend resolves message fallback in client flow (`EXACT -> SOURCE_ONLY -> GLOBAL_DEFAULT -> FALLBACK`).
@@ -31,7 +35,7 @@ Required columns:
 - `option_id uuid not null references public.outreach_poll_options(id) on delete cascade`
 - `primary_message text not null`
 - `cta_label text not null`
-- `source_id_resolved text null`
+- `source_id_resolved text null references public.outreach_sources(source_id)`
 - `utm_campaign text null`
 - `active boolean not null default true`
 - `created_at timestamptz not null default now()`
@@ -41,11 +45,15 @@ Required columns:
 Required constraints:
 - trimmed `primary_message` length MUST be `1..280`
 - trimmed `cta_label` length MUST be `1..60`
+- if `utm_campaign` is set, trimmed length MUST be `1..128` (blank not allowed)
+- if `utm_campaign` is set, `source_id_resolved` MUST be set
 - uniqueness MUST enforce at most one row for:
   - `(poll_id, option_id, source_id_resolved, utm_campaign)`
+  - `NULL` targeting values MUST be treated as equal for this uniqueness rule
 
 Data invariants:
-- `poll_id` and `option_id` MUST reference an existing poll/option pair.
+- `option_id` MUST reference an existing poll option row.
+- `(poll_id, option_id)` MUST reference an existing poll/option pair.
 - `active = true` rows are eligible for frontend resolution.
 - inactive rows MUST never be returned to unauthenticated readers.
 
@@ -80,9 +88,11 @@ Permissions:
 - unauthenticated/public clients MUST NOT insert/update/delete.
 - writes SHOULD be restricted to `service_role` or authenticated admin workflow.
 
-Recommended policy shape:
+Required policy/grant shape:
 - `SELECT` policy for anon/authenticated constrained by `active = true`.
 - no `INSERT/UPDATE/DELETE` policy for anon/authenticated.
+- table `SELECT` grant to `anon` and `authenticated`.
+- full DML grants may be given to `service_role` only.
 
 ## Consistency and Failure Expectations
 - Missing matching rows are valid and MUST be handled by frontend fallback copy/CTA.
@@ -97,8 +107,9 @@ Recommended policy shape:
 ## Acceptance Criteria
 1. Table exists with required columns and foreign keys.
 2. Length checks and uniqueness tuple are enforced.
-3. `updated_at` trigger exists and updates timestamp on row mutation.
-4. Anon/authenticated can read only `active = true` rows.
-5. Anon/authenticated cannot insert/update/delete rows.
-6. Frontend can fetch enough rows to deterministically execute:
+3. DB enforces campaign/source pairing (`utm_campaign` requires `source_id_resolved`).
+4. `updated_at` trigger exists and updates timestamp on row mutation.
+5. Anon/authenticated can read only `active = true` rows.
+6. Anon/authenticated cannot insert/update/delete rows.
+7. Frontend can fetch enough rows to deterministically execute:
    - `EXACT -> SOURCE_ONLY -> GLOBAL_DEFAULT -> FALLBACK`.

@@ -278,8 +278,8 @@ This contract does NOT cover:
 
 | Version | Change |
 |------|--------|
-| v1.3 | Expanded supported regions to include MY (Malaysia) |
-| v1.2 | Updated unsupported join redirect and interest capture surface to `/get`; cleaned encoding |
+| v1.3 | Added MY to supported regions (NZ, SG, MY). |
+| v1.2 | Updated unsupported join redirect and interest capture surface to /get; cleaned encoding |
 | v1.1 | Introduced Preview / Capability / Join model; aligned with App Store reality |
 | v1.0 | Initial region gating |
 
@@ -294,3 +294,4 @@ Kinly Web must:
 - always offer a respectful fallback
 
 Any behavior violating these principles is a contract breach.
+

@@ -58,10 +58,10 @@ capability may be implied outside supported regions.
 | Domain | Capability                    | Contract                                          | Status |
 | ------ | ----------------------------- | ------------------------------------------------- | ------ |
 | Links  | URI Association               | `links/uri_association_v1.md`                     | Active |
-| Links  | Share Links                   | `links/links_share_links_v1_3.md`                 | Active |
+| Links  | Share Links                   | `links/links_share_links_v1_4.md`                 | Active |
 | Links  | Deep Links                    | `links/links_deep_links_v1_1.md`                  | Active |
 | Links  | Deferred Install Invite       | `links/links_invite_deferred_install_v1_0.md`     | Active |
-| Links  | Region Gating                 | `links/links_region_gate_v1_2.md`                 | Active |
+| Links  | Region Gating                 | `links/links_region_gate_v1_3.md`                 | Active |
 | Links  | Fallback Behavior             | `links/links_fallback_v1_1.md`                    | Active |
 | Links  | Marketing Surface Namespacing | `links/links_marketing_surface_namespacing_v1.md` | Active |
 
@@ -89,7 +89,7 @@ capability may be implied outside supported regions.
 | ------ | ------------------------- | ---------------------------------------------------- | ------ |
 | Growth | Interest Capture          | `growth/interest_capture_v1.md`                      | Active |
 | Growth | Interest Capture Backend  | `growth/interest_capture_v1_backend.md`              | Active |
-| Growth | Marketing Landing         | `growth/marketing_landing_recognition_first_v1_1.md` | Active |
+| Growth | Marketing Landing         | `growth/marketing_landing_recognition_first_v1_2.md` | Active |
 | Growth | Outreach Tracking         | `growth/outreach_tracking_v1_1.md`                   | Active |
 | Growth | Outreach Tracking Backend | `../../../api/kinly/growth/outreach_tracking_v1_1.md`| Active |
 | Growth | Outreach Polls            | `growth/outreach_polls_v1.md`                        | Active |
@@ -173,6 +173,7 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-03-03 | Activated market path + region expansion (NZ, SG, MY) | Planner     |
 | 2026-03-03 | Merged poll result messages rules into v1 and kept constant CTA routing | Planner     |
 | 2026-03-03 | Activated outreach poll result messages contract v1.1 | Planner     |
 | 2026-02-24 | Activated outreach polls and outreach tracking v1.1 | Planner     |
@@ -195,3 +196,4 @@ If the registry is unclear, incomplete, or outdated:
 - update the registry first
 
 The registry exists so Kinly Web can grow without losing its intent.
+

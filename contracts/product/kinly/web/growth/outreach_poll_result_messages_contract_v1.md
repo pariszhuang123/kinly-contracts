@@ -43,6 +43,7 @@ Given:
 - `poll_id`
 - `selected_option_id`
 - request context: `source_id_resolved`, `utm_campaign`
+- if `utm_campaign` is present, `source_id_resolved` MUST also be present
 
 The frontend MUST resolve one active row using ordered fallback:
 

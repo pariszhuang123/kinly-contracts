@@ -16,6 +16,7 @@
 ### Domain: homes\n
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
+* **house_directory_api** (v1.0): [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
 * **house_norms_api** (v1.0): [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
 * **house_rules_api** (v1.0): [contracts/api/kinly/homes/house_rules_api_v1.md](contracts/api/kinly/homes/house_rules_api_v1.md)
 * **house_vibe_aggregation_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md](contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md)
@@ -84,6 +85,9 @@
 * **shared_understanding_copy** (v1.0): [contracts/design/copy/kinly/shared_understanding_copy_v1.md](contracts/design/copy/kinly/shared_understanding_copy_v1.md)
 
 ## Surface: mobile\n
+### Domain: homes\n
+* **house_directory_mobile** (v1.0): [contracts/product/kinly/mobile/house_directory_v1.md](contracts/product/kinly/mobile/house_directory_v1.md)
+
 ### Domain: links\n
 * **deep_link_intake___invite_join_resolution** (v1.0): [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)
 
@@ -125,6 +129,7 @@
 
 ## Surface: shared\n
 ### Domain: homes\n
+* **house_directory** (v1.0): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
 * **shopping_list** (v1.0): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
 
 ### Domain: links\n

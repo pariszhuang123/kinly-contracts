@@ -117,7 +117,7 @@
 - [contracts/product/kinly/mobile/daily_notifications_phase1.md](contracts/product/kinly/mobile/daily_notifications_phase1.md)
 - [contracts/product/kinly/mobile/gratitude_mentions_v1.md](contracts/product/kinly/mobile/gratitude_mentions_v1.md)
 - [contracts/product/kinly/mobile/gratitude_wall_v1.md](contracts/product/kinly/mobile/gratitude_wall_v1.md)
-- [contracts/product/kinly/mobile/house_directory_v1.md](contracts/product/kinly/mobile/house_directory_v1.md)
+- [contracts/product/kinly/mobile/house_directory_mobile_v1.md](contracts/product/kinly/mobile/house_directory_mobile_v1.md)
 - [contracts/product/kinly/mobile/home_dynamics_v1.md](contracts/product/kinly/mobile/home_dynamics_v1.md)
 - [contracts/product/kinly/mobile/house_vibe_mapping_contract_v1.md](contracts/product/kinly/mobile/house_vibe_mapping_contract_v1.md)
 - [contracts/product/kinly/mobile/house_vibe_overview_v1.md](contracts/product/kinly/mobile/house_vibe_overview_v1.md)

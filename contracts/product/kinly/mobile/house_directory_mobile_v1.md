@@ -35,8 +35,10 @@ Today surface MAY include renewal reminder cards sourced from API reminders.
 - Wifi card defaults collapsed.
 - Card supports expand/collapse for QR visibility.
 - SSID copy action MUST be available.
-- Password copy action MUST be available only for authorized members.
-- Password MUST be masked by default and reveal requires explicit user action.
+- Mobile clients MUST treat wifi password as write-only owner input in v1.
+- Member read flows MUST NOT expect plaintext password in API responses.
+- If an owner enters or updates a password, the input MUST be masked by default
+  and reveal requires explicit user action.
 - Security type is not user-entered in v1.
 - If password is empty/null, UI treats wifi as open network in QR payload.
 
@@ -50,16 +52,21 @@ Must show:
 - term end date
 - relative end indicator (`ends in X days`) when term end exists
 - renewal reminder hint only when reminder is valid
-- inspection cadence when provided
+- account reference when present
+- link action when `link_url` is present
 
 ### 3.2 Utility/service cards
 
 Must show:
 - provider name
 - account type label
-- recurrence display when present
 - term dates when present
 - renewal reminder only when valid and active
+- custom label when `service_type='other'`
+- account reference when present
+- link action when `link_url` is present
+- notes preview only when notes are present and the surface is explicitly
+  intended to show free-form service notes
 
 ## 4. Links section rules
 
@@ -84,19 +91,26 @@ Must show:
 ## 6. Reminder visibility rules
 
 A renewal reminder is shown on Today only when all are true:
-- account term is current (not expired)
 - reminder date is valid for the term window
 - current UTC date is on or after reminder date
 - reminder state matches current term identity
-- reminder state status is not dismissed
+- reminder state status is `active`
+- current member has not already acknowledged the reminder
 
 If reminder is invalid because computed date is before term start:
 - no reminder text
 - no reminder card
 
+Acknowledgement behavior:
+- acknowledging reminder hides it only for the current member
+- acknowledgement does not dismiss the reminder globally
+
 Dismissal behavior:
-- dismissing reminder removes it for that specific term identity
-- if term changes and new reminder becomes valid, card may reappear
+- only owners may dismiss reminders
+- dismissing reminder removes it for that specific term identity for all
+  members
+- if term dates or reminder timing change materially and a new active reminder
+  is created, the card may reappear and prior acknowledgements are cleared
 
 ## 7. Loading, empty, and error states
 
@@ -118,9 +132,11 @@ Dismissal behavior:
 ## 9. Contract test scenarios
 
 - Wifi password is masked on initial render.
+- Wifi member read flow does not expose or depend on plaintext password.
 - Rent card does not submit without both term dates.
 - Reminder card not shown for invalid pre-start reminder.
-- Reminder card disappears after dismissal for current term identity.
+- Member acknowledgement hides reminder only for that member.
+- Reminder card disappears after owner dismissal for current term identity.
 - Reminder card can reappear after term update creates new identity.
 - Member can read; owner-only actions are disabled or blocked for non-owner.
 

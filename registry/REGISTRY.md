@@ -86,7 +86,7 @@
 
 ## Surface: mobile\n
 ### Domain: homes\n
-* **house_directory_mobile** (v1.0): [contracts/product/kinly/mobile/house_directory_v1.md](contracts/product/kinly/mobile/house_directory_v1.md)
+* **house_directory_mobile** (v1.0): [contracts/product/kinly/mobile/house_directory_mobile_v1.md](contracts/product/kinly/mobile/house_directory_mobile_v1.md)
 
 ### Domain: links\n
 * **deep_link_intake___invite_join_resolution** (v1.0): [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)

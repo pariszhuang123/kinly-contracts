@@ -24,9 +24,8 @@ Depends on:
 
 House Directory screen SHOULD present these sections in order:
 1. Wifi
-2. Rent
-3. Utilities and services
-4. Key links
+2. Services
+3. House notes
 
 Today surface MAY include renewal reminder cards sourced from API reminders.
 
@@ -42,20 +41,7 @@ Today surface MAY include renewal reminder cards sourced from API reminders.
 - Security type is not user-entered in v1.
 - If password is empty/null, UI treats wifi as open network in QR payload.
 
-## 3. Account card rules
-
-### 3.1 Rent card
-
-Must show:
-- provider name
-- term start date
-- term end date
-- relative end indicator (`ends in X days`) when term end exists
-- renewal reminder hint only when reminder is valid
-- account reference when present
-- link action when `link_url` is present
-
-### 3.2 Utility/service cards
+## 3. Service card rules
 
 Must show:
 - provider name
@@ -68,16 +54,18 @@ Must show:
 - notes preview only when notes are present and the surface is explicitly
   intended to show free-form service notes
 
-## 4. Links section rules
+## 4. House notes rules
 
-- Display title, tag, and URL action.
-- Tag rendering follows canonical tags:
-  - `rent`
-  - `bond`
-  - `utilities`
-  - `other`
-- `other` tag displays `custom_tag` label.
-- App opens external URLs; it does not host file content.
+- Display title and note details preview.
+- Optional URL action may be shown when `reference_url` is present.
+- Optional photo thumbnail may be shown when `photo_path` is present.
+- Notes are for flexible home context, not structured provider data.
+- Note photo capture should use the app photo flow and store only the storage
+  path in app data.
+- If adding a note photo would exceed plan quota, the app MUST present the
+  paywall gate before retrying the action.
+- Replacing an existing note photo MUST NOT count as an additional paid usage
+  event.
 
 ## 5. Validation and mutation UX
 
@@ -85,6 +73,8 @@ Must show:
 - `other` account type requires `custom_label`.
 - `rent` account requires both term dates.
 - End date before start date is rejected client-side when detectable.
+- House note requires non-empty `title` and `details`.
+- House note URL is optional but must be valid when present.
 - API error envelope `{ code, message, details }` MUST be surfaced with calm,
   non-technical copy.
 

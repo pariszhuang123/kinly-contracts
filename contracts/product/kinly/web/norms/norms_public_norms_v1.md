@@ -5,10 +5,10 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v1.0
+Version: v1.1
 ---
 
-# Norms - Public Norms v1.0
+# Norms - Public Norms v1.1
 
 Status: Proposed (MVP)
 
@@ -42,6 +42,8 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
 - Before publish, the public page MUST be unavailable.
 - Public URL identity uses stable `home_public_id`; republish keeps the same id
   and same URL.
+- Because publish delivery is asynchronous, first publish MAY briefly return
+  success before the public page becomes available.
 
 2.3 Inactive/unavailable states
 - If home is inactive, public norms page MUST be unavailable.
@@ -85,10 +87,6 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
   - versioned snapshot:
     `public_norms/home/{home_public_id}/published_{published_version}.json`
 - Storage artifact paths MUST use `home_public_id` (never `home_id`).
-- Storage URL derivation for Web MUST be deterministic and environment-based:
-  - base: `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/households`
-  - manifest: `${base}/public_norms/home/{home_public_id}/manifest.json`
-  - snapshot: `${base}/{latest_snapshot_path}` from manifest.
 
 5.2 API compatibility path
 - `house_norms_get_public_by_home_public_id(home_public_id, locale)` remains a
@@ -105,6 +103,8 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
 5.4 Freshness model
 - Correctness MUST be driven by explicit owner publish actions and backend
   on-demand revalidation for `/kinly/norms/{home_public_id}`.
+- Republish MAY briefly serve the previous published snapshot until the async
+  delivery job finishes successfully.
 - Freshness MUST NOT depend on fixed time-based TTL expiry.
 
 6. Non-goals
@@ -117,4 +117,3 @@ from cached web output and storage artifacts, not repeated per-view DB reads.
 
 Public Norms is a read-only projection of published House Norms. If content is
 not published and available, the public page must not display norms text.
-

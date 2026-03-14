@@ -71,7 +71,7 @@ Out of scope:
   optional `link_url`, optional term dates, optional reminder offset, and
   optional notes.
 - `rent` MUST include both `term_start_date` and `term_end_date`.
-- Services and links are soft-archived with `archived_at`.
+- Services and notes are soft-archived with `archived_at`.
 - Active service uniqueness is enforced for:
   - one active `rent` per home
   - one active `internet` per home
@@ -88,12 +88,13 @@ Out of scope:
 - Notes are intended for household context such as move-in instructions,
   parking details, appliance tips, alarm steps, or access guidance.
 - If `reference_url` is present it MUST be a valid `http` or `https` URL.
-- `photo_path` is a storage reference, not a public CDN URL.
+- `photo_path` is a storage reference under `households/%`, not a public CDN URL.
 - A note MAY exist without a URL or photo.
 - Notes are soft-archived with `archived_at`.
 - At most one photo is attached per active note row in v1.
-- Adding the first photo to a note MAY enforce a paywall-limited usage metric.
+- Adding the first photo to a note enforces a paywall-limited usage metric for non-premium homes.
 - Replacing an existing photo MUST NOT increment photo usage again.
+- Clearing or archiving a note photo does not decrement that usage metric.
 
 ### 3.4 Renewal reminder
 - Renewal reminders are derived, not user-authored.
@@ -159,8 +160,9 @@ Out of scope:
 - Rent service creation without term dates is rejected.
 - House note creation without `title` or `details` is rejected.
 - House note URL must be valid when present.
-- First note photo add may require paywall entitlement; replacement does not
+- First note photo add enforces the note-photo paywall limit on non-premium homes; replacement does not
   add a second usage charge.
+- Clearing or archiving a note photo does not free prior note-photo usage.
 - Invalid reminder offset pair or out-of-range offset is rejected.
 - A due reminder appears when current UTC date is on or after `due_at`.
 - Member acknowledgement hides the reminder only for that member.

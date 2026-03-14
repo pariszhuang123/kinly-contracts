@@ -180,7 +180,7 @@ Required constraints:
 - `title` must be non-empty after trim
 - `details` must be non-empty after trim
 - `reference_url` may be null; if present it must be `http/https`
-- `photo_path` may be null; if present it is a storage reference, not a public URL
+- `photo_path` may be null; if present it must be a storage reference under `households/%`
 - at most one photo path may be attached per active note row in v1
 
 ## 4. Reminder semantics
@@ -274,6 +274,9 @@ Behavior:
 - `title` and `details` are required and trimmed for validation
 - `reference_url` may be null, but if present it must be `http/https`
 - `photo_path` may be null; when present it stores a storage reference only
+- `photo_path` must match `households/%` when present
+- the first add for a note enforces the note-photo usage limit when the home is not premium
+- clearing or archiving a note photo does not refund prior usage
 - replacing an existing `photo_path` MUST NOT count as a second paid usage event
 
 ### 5.7 `archive_home_directory_note(p_home_id uuid, p_note_id uuid) -> jsonb`
@@ -336,7 +339,6 @@ Required codes:
 - `HOUSE_DIRECTORY_INVALID_ENUM`
 - `HOUSE_DIRECTORY_INVALID_INPUT`
 - `HOUSE_DIRECTORY_INVALID_TERM_RANGE`
-- `HOUSE_DIRECTORY_INVALID_DATE_RANGE`
 - `HOUSE_DIRECTORY_RENT_TERM_REQUIRED`
 - `HOUSE_DIRECTORY_INVALID_REMINDER_OFFSET`
 - `HOUSE_DIRECTORY_OTHER_LABEL_REQUIRED`

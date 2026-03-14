@@ -12,6 +12,23 @@ Version: v1.0
 
 Tracks versioned contract changes and related ADRs.
 
+## v1.1 - House Norms Async Public Publish + Directory Note Photo Guardrails
+- Date: 2026-03-14
+- Scope: `contracts/api/kinly/homes/house_norms_api_v1.md`, `contracts/product/kinly/shared/house_norms_v1.md`, `contracts/product/kinly/web/norms/norms_public_norms_v1.md`, `contracts/api/kinly/homes/house_directory_api_v1.md`, `contracts/product/kinly/shared/house_directory_v1.md`, `registry/REGISTRY.md`
+- Why:
+  - House Norms publish now separates canonical publish success from public-web artifact delivery so owners do not wait on storage upload and route revalidation before the publish RPC returns.
+  - Owners still need visibility into whether async public delivery succeeded or failed for the currently published version.
+  - House Directory note photos needed tighter storage-path and paywall semantics so usage enforcement is explicit and non-refunding.
+- Changes:
+  - Bump House Norms API, shared product contract, and public norms web contract from `v1.0` to `v1.1`.
+  - Replace synchronous publish delivery language with async publish-job delivery for public norms artifacts and Vercel revalidation.
+  - Add owner-facing publish delivery metadata: `publish_sync_status` and `publish_sync_error`, scoped to the current `published_version`.
+  - Add `house_norms_publish_jobs` as the tracking model for queued, processing, succeeded, and failed public delivery work.
+  - Clarify public norms freshness behavior: publish can return success before the public page updates, and republish may briefly serve the prior snapshot until async delivery completes.
+  - Tighten House Directory note photo rules so `photo_path` must live under `households/%`, the first photo add enforces the non-premium usage limit, replacement does not create a second usage event, and clearing or archiving does not refund prior usage.
+  - Remove the unused `HOUSE_DIRECTORY_INVALID_DATE_RANGE` required code from the directory API contract.
+  - Update `registry/REGISTRY.md` to reflect the `v1.1` contract versions.
+
 ## v1.1 - Expenses Single-Debtor Activation (Non-Creator)
 - Date: 2026-02-19
 - Scope: `contracts/api/kinly/share/expenses_v2.md`, `contracts/api/kinly/share/share_recurring_api_v1.md`, `contracts/product/kinly/mobile/share_recurring_product_v1.md`, `contracts/api/kinly/backend/schema.sql`

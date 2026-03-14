@@ -17,7 +17,7 @@
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
 * **house_directory_api** (v1.0): [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
-* **house_norms_api** (v1.0): [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
+* **house_norms_api** (v1.1): [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
 * **house_rules_api** (v1.0): [contracts/api/kinly/homes/house_rules_api_v1.md](contracts/api/kinly/homes/house_rules_api_v1.md)
 * **house_vibe_aggregation_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md](contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md)
 * **house_vibe_asset_resolution** (v1.0): [contracts/api/kinly/homes/house_vibe_asset_resolution_v1.md](contracts/api/kinly/homes/house_vibe_asset_resolution_v1.md)
@@ -145,7 +145,7 @@
 * **readme** (v1.0): [contracts/product/kinly/shared/README.md](contracts/product/kinly/shared/README.md)
 
 ### Domain: shared\n
-* **house_norms** (v1.0): [contracts/product/kinly/shared/house_norms_v1.md](contracts/product/kinly/shared/house_norms_v1.md)
+* **house_norms** (v1.1): [contracts/product/kinly/shared/house_norms_v1.md](contracts/product/kinly/shared/house_norms_v1.md)
 * **house_norms_scenarios** (v1.0): [contracts/product/kinly/shared/house_norms_scenarios_v1.md](contracts/product/kinly/shared/house_norms_scenarios_v1.md)
 * **house_norms_taxonomy** (v1.0): [contracts/product/kinly/shared/house_norms_taxonomy_v1.md](contracts/product/kinly/shared/house_norms_taxonomy_v1.md)
 * **house_rules** (v1.0): [contracts/product/kinly/shared/house_rules_v1.md](contracts/product/kinly/shared/house_rules_v1.md)
@@ -174,7 +174,7 @@
 * **uri_association** (v1.0): [contracts/product/kinly/web/links/uri_association_v1.md](contracts/product/kinly/web/links/uri_association_v1.md)
 
 ### Domain: norms\n
-* **public_norms** (v1.0): [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
+* **public_norms** (v1.1): [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
 
 ### Domain: product\n
 * **growth** (v1.0): [contracts/product/kinly/web/growth/interest_capture_v1.md](contracts/product/kinly/web/growth/interest_capture_v1.md)

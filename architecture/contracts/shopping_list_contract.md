@@ -147,6 +147,14 @@ No time-window gating in v1.
   - `completed_by_user_id = auth.uid()`
 - Sets `archived_at = now()` and `archived_by_user_id = auth.uid()`.
 
+### 4.7 `shopping_list_archive_item(p_item_id uuid)`
+
+- Archives a single item so it no longer appears in the active list.
+- Looks up the item by `p_item_id`, rejects missing/already archived items with
+  `item_not_found`, and enforces home membership using the item's `home_id`.
+- Does not require the item to be completed by the current user.
+- Sets `archived_at = now()` and `archived_by_user_id = auth.uid()`.
+
 ## 5. Canonical errors
 
 - `invalid_name`

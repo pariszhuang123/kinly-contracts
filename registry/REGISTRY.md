@@ -16,7 +16,7 @@
 ### Domain: homes\n
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
-* **house_directory_api** (v1.0): [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
+* **house_directory_api** (v1.1): [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
 * **house_norms_api** (v1.1): [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
 * **house_rules_api** (v1.0): [contracts/api/kinly/homes/house_rules_api_v1.md](contracts/api/kinly/homes/house_rules_api_v1.md)
 * **house_vibe_aggregation_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md](contracts/api/kinly/homes/house_vibe_aggregation_contract_v1.md)
@@ -65,6 +65,9 @@
 * **expenses** (v2.4): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
 * **share_recurring_api** (v1.0): [contracts/api/kinly/share/share_recurring_api_v1.md](contracts/api/kinly/share/share_recurring_api_v1.md)
 
+### Domain: shared\n
+* **chores** (v1.0): [contracts/api/kinly/chores/chore_wheel_api_v1.md](contracts/api/kinly/chores/chore_wheel_api_v1.md)
+
 ## Surface: design\n
 ### Domain: design\n
 * **readme** (v1.0): [contracts/design/reference/kinly/README.md](contracts/design/reference/kinly/README.md)
@@ -107,6 +110,7 @@
 
 ### Domain: shared\n
 * **app** (v1.0): [contracts/product/kinly/mobile/app_v1.md](contracts/product/kinly/mobile/app_v1.md)
+* **chores** (v1.0): [contracts/product/kinly/mobile/chore_wheel_v1.md](contracts/product/kinly/mobile/chore_wheel_v1.md)
 * **chores** (v1.0): [contracts/product/kinly/mobile/chores_v1.md](contracts/product/kinly/mobile/chores_v1.md)
 * **chores** (v2.0): [contracts/product/kinly/mobile/chores_v2.md](contracts/product/kinly/mobile/chores_v2.md)
 * **core_placement_rules** (v1.0): [contracts/product/kinly/mobile/core_placement_rules_v1.md](contracts/product/kinly/mobile/core_placement_rules_v1.md)
@@ -130,7 +134,7 @@
 
 ## Surface: shared\n
 ### Domain: homes\n
-* **house_directory** (v1.0): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
+* **house_directory** (v1.1): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
 * **shopping_list** (v1.0): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
 
 ### Domain: identity\n

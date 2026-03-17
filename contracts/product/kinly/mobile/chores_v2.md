@@ -41,6 +41,7 @@ Scope: Replace legacy RecurrenceInterval enum usage at the API boundary for crea
 - `state` (enum `ChoreState`)
 - `completedAt` (timestamptz|null)
 - `createdAt` (timestamptz)
+- `assignmentMethod` (text|null) — `NULL` for legacy/unset (treated as manual); CHECK constraint: `assignment_method IN ('manual', 'wheel')`
 - `updatedAt` (timestamptz)
 
 #### ChoreDetailDto (updated)
@@ -56,6 +57,7 @@ Subset used on edit screens:
 - `expectationPhotoPath: string | null`
 - `howToVideoUrl: string | null`
 - `notes: string | null`
+- `assignmentMethod: text | null`
 - `assignee: ChoreAssigneeInlineDto | null`
 
 > Note: does **not** include `state`, `completedAt`, `recurrenceCursor`, `nextOccurrence`, `createdAt`, `updatedAt`. Clients must not rely on those being present in this RPC.
@@ -113,8 +115,8 @@ Subset used on edit screens:
 
 - ### chores.update → `public.chores_update_v2`
   - Caller: any active member of the home (server asserts membership).
-  - Args: `{ choreId, name, assigneeUserId, startDate?, recurrenceEvery?, recurrenceUnit?, notes?, howToVideoUrl?, expectationPhotoPath? }`
-  - Behavior: upserts metadata, enforces assignee membership, flips state to `active`, emits `chore_events(event_type='activate' | 'update')` when fields change, adjusts `home_usage_counters.chore_photos` when expectation media is added or removed, and recomputes scheduling fields when recurrence/startDate change.
+  - Args: `{ choreId, name, assigneeUserId, startDate?, recurrenceEvery?, recurrenceUnit?, notes?, howToVideoUrl?, expectationPhotoPath?, assignmentMethod? }`
+  - Behavior: upserts metadata, enforces assignee membership, flips state to `active`, emits `chore_events(event_type='activate' | 'update')` when fields change, adjusts `home_usage_counters.chore_photos` when expectation media is added or removed, and recomputes scheduling fields when recurrence/startDate change. `assignment_method` handling: when `p_assignment_method = 'wheel'` is provided, the backend persists `assignment_method = 'wheel'` **only if** `recurrence_unit = 'week'`; for non-weekly chores the value is silently treated as `'manual'`. When no `p_assignment_method` is provided or `p_assignment_method = 'manual'`, sets `assignment_method = 'manual'`, removing the chore from future wheel sessions.
   - Errors: `PAYWALL_LIMIT_CHORE_PHOTOS` when a free home would exceed 15 expectation photos, validation errors on missing required args, `NOT_FOUND` for unknown chores.
 
 - ### chores.getForHome (payload update)
@@ -170,6 +172,7 @@ Subset used on edit screens:
       "notes": "text|null",
       "state": "ChoreState",
       "completedAt": "timestamptz|null",
+      "assignmentMethod": "text|null",
       "createdAt": "timestamptz",
       "updatedAt": "timestamptz"
     },
@@ -196,6 +199,7 @@ Subset used on edit screens:
       "expectationPhotoPath": "text|null",
       "howToVideoUrl": "text|null",
       "notes": "text|null",
+      "assignmentMethod": "text|null",
       "assignee": "ChoreAssigneeInlineDto|null"
     },
     "ChoreAssigneeInlineDto": {
@@ -334,12 +338,15 @@ Subset used on edit screens:
         "p_recurrence_unit": "text|null",
         "p_expectation_photo_path": "text|null",
         "p_how_to_video_url": "text|null",
-        "p_notes": "text|null"
+        "p_notes": "text|null",
+        "p_assignment_method": "text|null"
       },
       "returns": "Chore",
       "notes": [
         "Assignee is required; state remains active after updates.",
-        "When recurrence fields change, backend recomputes recurrenceCursor/nextOccurrence."
+        "When recurrence fields change, backend recomputes recurrenceCursor/nextOccurrence.",
+        "When p_assignment_method='wheel', backend persists 'wheel' only if recurrence_unit='week'; non-weekly chores are silently treated as 'manual'.",
+        "When no p_assignment_method is provided or p_assignment_method='manual', sets assignment_method='manual'."
       ]
     },
     "chores.cancel": {

@@ -35,8 +35,8 @@ Backend RPC shapes and invariants for the shared shopping list (one active list 
 All RPCs enforce membership with `public._assert_home_member(p_home_id)` (or equivalent membership join on item-scoped calls).
 
 ### 2.1 `shopping_list_get_for_home(p_home_id uuid)`
-Returns the active list and all unarchived items for the home.
-- Filters: `home_id = p_home_id` AND `archived_at IS NULL`.
+Returns the active list and caller-visible unarchived items for the home.
+- Filters: `home_id = p_home_id` AND `archived_at IS NULL` AND (`is_completed = false` OR `completed_by_user_id = auth.uid()`).
 - If no active list exists, returns an empty active-list object (with `id = null`) and `items = []`.
 - `list` includes counters: `items_unarchived_count`, `items_uncompleted_count`.
 - Completion visibility is caller-scoped:
@@ -98,6 +98,13 @@ Links caller-completed items to a newly created Share expense and archives them.
 ### 2.6 `shopping_list_archive_items_for_user(p_home_id uuid, p_item_ids uuid[])`
 Archives caller-completed items without expense linkage.
 - Update WHERE: `home_id = p_home_id` AND `id = ANY(p_item_ids)` AND `archived_at IS NULL` AND `completed_by_user_id = auth.uid()`.
+- Sets `archived_at = now()`, `archived_by_user_id = auth.uid()`.
+
+### 2.7 `shopping_list_archive_item(p_item_id uuid)`
+Archives a single item so it stops showing in the active shopping list.
+- Loads the item by `p_item_id`; missing or already archived rows raise `item_not_found`.
+- Enforces home membership using the item's `home_id`.
+- Does not require `completed_by_user_id = auth.uid()`.
 - Sets `archived_at = now()`, `archived_by_user_id = auth.uid()`.
 
 ## 3. RLS / access control

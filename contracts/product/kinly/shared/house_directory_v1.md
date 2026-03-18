@@ -208,8 +208,8 @@ Out of scope:
 
 ## 8. References
 
-- [House Directory API v1](house_directory_api_v1.md)
-- [Homes v2](../homes_v2.md)
+- [House Directory API v1](../../../api/kinly/homes/house_directory_api_v1.md)
+- [Homes v2](../../../api/kinly/homes/homes_v2.md)
 
 ```contracts-json
 {

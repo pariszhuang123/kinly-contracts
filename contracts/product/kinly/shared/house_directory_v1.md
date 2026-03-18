@@ -121,8 +121,10 @@ Out of scope:
 
 ### 3.6 Member card
 - Member cards are derived, not stored.
+- The caller's active home is resolved server-side.
+- The caller always sees their own member card.
 - A member card is shown only for a current member whose personal directory
-  has any content.
+  has any content, except that the caller is always included.
 - Personal-directory content means at least one of:
   - a bank account row exists
   - at least one active personal note exists
@@ -184,7 +186,7 @@ Out of scope:
 - Non-owner cannot mutate wifi, services, notes, or dismiss reminders.
 - Member can read wifi/content and acknowledge due reminders.
 - Member can read member cards for current home members who have personal
-  directory content.
+  directory content, with the caller always included.
 - Wifi read returns `ssid` and `qr_payload` but not raw password.
 - Rent service creation without term dates is rejected.
 - House note creation without `title` is rejected.
@@ -206,8 +208,8 @@ Out of scope:
 
 ## 8. References
 
-- [House Directory API v1](../../../api/kinly/homes/house_directory_api_v1.md)
-- [Homes v2](../../../api/kinly/homes/homes_v2.md)
+- [House Directory API v1](house_directory_api_v1.md)
+- [Homes v2](../homes_v2.md)
 
 ```contracts-json
 {

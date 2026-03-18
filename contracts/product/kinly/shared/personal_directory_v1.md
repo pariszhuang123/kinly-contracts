@@ -39,6 +39,8 @@ Personal Directory MUST support:
 - one bank account per user
 - repeatable personal notes per user
 - read visibility to active members of the user's current home
+- owner access from the Start-screen personal-profile sheet even with no active
+  home
 
 ## 2. Scope and boundaries
 
@@ -49,6 +51,7 @@ In scope:
 - owner-only mutation rights
 - soft archive lifecycle for notes
 - dismissible completeness nudge
+- payment-specific bank-detail presentation in owed-payment flows only
 
 Out of scope:
 - home-member roster discovery
@@ -56,6 +59,25 @@ Out of scope:
 - multiple bank accounts per user
 - cross-country payment validation rules
 - file-upload orchestration
+- exposing another member's bank details inside their Personal Directory screen
+
+## 2.1 Visibility rules
+
+- The owner MAY always open and edit their own Personal Directory.
+- Other current home members MAY open a read-only Personal Directory view for
+  that member.
+- Other-member Personal Directory views MUST show notes only.
+- Bank details MUST NOT be shown on another member's Personal Directory screen.
+- Bank details MAY be shown only in payment-specific owed-detail flows where the
+  current user owes that payee money.
+- In that owed-detail flow the app MAY show:
+  - `account_holder_name`
+  - `account_number`
+  - `reference`, derived from the payee username in v1
+- If the payee has no bank account on file, the payer-facing owed-detail screen
+  MUST show calm fallback copy instead of bank details.
+- A self-only Today nudge MAY route directly to bank-account setup when the
+  owner has not added bank details.
 
 ## 3. Core entities
 

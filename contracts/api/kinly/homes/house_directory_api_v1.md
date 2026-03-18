@@ -31,6 +31,8 @@ Depends on:
 - Member-card roster payloads for navigating to Personal Directory are
   exposed by a dedicated House Directory read RPC; underlying membership
   truth still comes from Homes v2.
+- `get_home_directory_member_cards` is identity-only and MUST NOT expand to
+  bank-detail payloads.
 
 ## 2. Canonical enums
 
@@ -118,6 +120,22 @@ Required constraints:
   - `renewal_reminder_offset_value >= 1`
   - unit in `day|week|month`
   - term dates must exist
+
+## 4. Member-card RPC
+
+### 4.1 `get_home_directory_member_cards()`
+- Returns only identity/navigation data:
+  - `user_id`
+  - `username`
+  - `avatar_storage_path`
+  - `is_owner`
+  - `has_personal_directory_content`
+- The caller's active home is resolved server-side.
+- The caller MUST always receive their own member card.
+- Other current members are returned only when
+  `has_personal_directory_content=true`.
+- `has_personal_directory_content` is a boolean inclusion hint only; it MUST
+  NOT cause bank-account payload expansion.
   - computed due date must fall within the inclusive term window
 - only one active `rent`, `internet`, and `electricity` service per home
 
@@ -254,13 +272,15 @@ Returns:
 - both `notes` and `tutorials` come from the `home_directory_notes` table, split by `note_type`
 - archived services and notes are excluded
 
-### 5.4 `get_home_directory_member_cards(p_home_id uuid) -> jsonb`
+### 5.4 `get_home_directory_member_cards() -> jsonb`
 
 Caller: member.
 
 Behavior:
-- returns current home member cards only for members who have published any
-  personal-directory content
+- resolves the caller's active home internally
+- always includes the caller's own member card
+- returns other current home member cards only for members who have
+  published any personal-directory content
 - personal-directory content means:
   - a bank account row exists, or
   - at least one active personal note exists
@@ -468,9 +488,7 @@ Required codes:
       "type": "rpc",
       "caller": "member",
       "impl": "public.get_home_directory_member_cards",
-      "args": {
-        "p_home_id": "uuid"
-      },
+      "args": {},
       "returns": "jsonb"
     },
     "houseDirectory.upsertService": {

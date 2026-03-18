@@ -24,10 +24,20 @@ Depends on:
 
 House Directory screen SHOULD present these sections in order:
 1. Wifi
-2. Services
-3. House notes
+2. Details
+3. Members
 
 Today surface MAY include renewal reminder cards sourced from API reminders.
+
+Members section rules:
+- The current user member row is always shown.
+- Other members are shown only when they have personal-directory content.
+- Each row shows:
+  - avatar
+  - owner home icon when applicable
+  - username
+- Tapping a row opens Personal Directory for that member.
+- Other-member Personal Directory screens are read-only and omit bank details.
 
 ## 2. Wifi section rules
 

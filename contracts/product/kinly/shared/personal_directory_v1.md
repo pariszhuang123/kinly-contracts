@@ -12,76 +12,76 @@ Version: v1.0
 
 Status: Proposed
 
-Scope: User-owned reference data — bank account and personal info notes —
-that the user manages independently of any home. Records are automatically
-visible to members of the user's active home.
+Scope: User-owned reference data that the user manages independently of any
+home and that becomes visible to active members of the user's current home.
+The current backend implementation uses `member_directory_*` table and
+function names.
 
 Audience: Product, design, engineering, AI agents.
 
 Depends on:
-- Homes v2 (membership and role model, for home-based visibility)
-- House Directory capability (separate home-scoped operational data)
+- Homes v2
+- House Directory capability
 
 ## 1. Purpose
 
-Personal Directory gives each user a place to manage their own reference
-data — primarily bank details for housemate payments and personal notes
-(emergency contacts, allergy info, etc.).
+Personal Directory gives each user a place to manage personal reference
+data used by housemates, especially bank details for payments and personal
+notes such as emergency contacts, allergies, and other household-relevant
+context.
 
-A user's personal directory exists at the user level, not the home level.
-The user can access and edit it even without belonging to any home. When the
-user is a member of an active home, their personal directory is
-automatically visible to all members of that home. A user can only be in
-one home at a time; if they leave and join another home, their existing
-directory carries forward to the new home.
+A user's directory is user-scoped, not home-scoped. The user can manage it
+without belonging to a home. When the user is in an active home, the data
+is visible to current members of that home. If the user leaves one home and
+joins another, the same directory carries forward.
 
 Personal Directory MUST support:
 - one bank account per user
-- personal info notes per user
-- visibility to all members of the user's active home
+- repeatable personal notes per user
+- read visibility to active members of the user's current home
 
 ## 2. Scope and boundaries
 
 In scope:
-- user-owned records independent of any specific home
-- accessible and editable by the user even with no active home membership
-- automatically visible to all current members of the user's active home
-- only the owning user can create, update, or archive their own records
-- soft-archive lifecycle for notes
+- user-owned records independent of a specific home
+- owner read/write access even without an active home
+- automatic visibility to active members of the user's current home
+- owner-only mutation rights
+- soft archive lifecycle for notes
+- dismissible completeness nudge
 
 Out of scope:
-- shared home operations (covered by House Directory)
-- household behavioural agreements (covered by House Norms)
-- cross-country / international payment details
-- multiple bank accounts per user (v1 allows one)
-- file uploads or multi-attachment workflows
+- home-member roster discovery
+- shared home operational data
+- multiple bank accounts per user
+- cross-country payment validation rules
+- file-upload orchestration
 
 ## 3. Core entities
 
 ### 3.1 Bank account
 
-Each user MAY have at most one active bank account record (user-scoped,
-not home-scoped).
+Each user MAY have at most one active bank account record.
 
-Purpose: provide housemates the details needed to make domestic payments
-(rent splits, bill splits, reimbursements).
+Purpose: give housemates the information needed to pay that user.
 
 Fields:
-- `account_holder_name` (required) — name on the account
-- `account_number` (required) — the full local account identifier
-  (e.g. `02-1234-0123456-00` in NZ, sort code + account in UK)
+- `account_holder_name` required
+- `account_number` required
 
 Validation rules:
-- Both `account_holder_name` and `account_number` MUST be present.
-- `account_holder_name` MUST be auto-suggested from the member's profile
-  display name but MUST be editable (legal name may differ).
-- `account_number` is a free-form string — format varies by country and
-  is not validated beyond non-empty.
+- both fields MUST be non-empty after trim
+- `account_holder_name` max length is `120`
+- `account_number` max length is `50`
+- `account_number` remains free-form beyond non-empty and length checks
 
-Immutability:
-- Once a bank account is created it MUST NOT be removed.
-- The user MAY replace (update) the values at any time.
-- There is no archive or delete action for bank accounts.
+Lifecycle:
+- bank accounts are updated in place
+- bank accounts cannot be deleted
+- the owner can manage their own bank account without a home
+- other members do not read bank account details via the directory notes
+  API; payment-specific access is via `get_member_bank_account`
+
 
 Copy-paste UX:
 - When a housemate owes money to the user, the Today expenses-to-pay
@@ -101,170 +101,128 @@ No bank account empty state:
   and suggest they add their bank details via their personal directory.
 
 Privacy:
-- `account_number` SHOULD be partially masked in default views and fully
-  revealed on explicit user action or on the expenses-to-pay surface.
-- Values MUST NOT be emitted to telemetry payloads.
+- `account_number` is sensitive operational data
+- values MUST NOT appear in telemetry or logs
 
 ### 3.2 Personal note
 
-Represents a piece of personal reference information the member publishes
-for their housemates to see.
+A personal note is a user-owned record visible to housemates in the same
+active home.
 
-Each note has a `note_type`:
-- `emergency_contact` — emergency phone number, next-of-kin
-- `allergies` — food or medical allergies, location of medication
-- `other` — freeform; requires non-empty `custom_title`
+Supported `note_type` values:
+- `emergency_contact`
+- `allergy`
+- `other`
 
-Type uniqueness:
-- At most one active note per default type (`emergency_contact`,
-  `allergies`) per user.
-- At most **20** active `other` notes per user.
+Type rules:
+- at most one active `emergency_contact` note per user
+- `allergy` is repeatable
+- at most `20` active `other` notes per user
 
 Emergency contact fields:
-- `emergency_contact` notes include additional fields:
-  - `contact_name` (required) — who to call (e.g. "Mum", "Dr. Smith")
-  - `phone_number` (required) — tap-to-call number
-- `details` is optional for `emergency_contact` (e.g. "call first if
-  unresponsive, then text Dad").
-- `phone_number` MUST support a tap-to-call action in the UI so
-  housemates can call directly without copying/pasting.
+- `contact_name` required
+- `phone_number` required
+- `details` optional
 
-Each note includes:
-- `note_type` (required)
-- `title` — auto-derived from `note_type` label for default types;
-  required as `custom_title` when `note_type='other'`
-- `details` (required)
-- optional `photo_path`
+Allergy fields:
+- `label` required
+- `details` forbidden in v1
+- intended for chip-style display and filtering
 
-Examples:
-- emergency_contact → contact_name: "Mum", phone: 021 123 4567,
-  details (optional): "call first, then text Dad on 021 987 6543"
-- allergies → "Severe peanut allergy — EpiPen in top kitchen drawer"
-- other ("Parking spot") → "Bay 14, level B2" + photo of parking map
-- other ("Work schedule") → "WFH Mondays and Fridays"
-- other ("Spare key") → "Under the blue pot by the back door"
+Other fields:
+- `custom_title` required
+- `details` optional
 
-Display order:
-- Default-type notes (`emergency_contact`, `allergies`) MUST appear first,
-  in the order listed above.
-- `other` notes appear below default types, sorted by creation date
-  (newest first).
+Common fields:
+- `photo_path` optional
+- `archived_at` supports soft delete
+
+Display and ordering:
+- `emergency_contact` appears first
+- `allergy` appears next, ordered by label
+- `other` appears after default note types, newest first
 
 Photo rules:
-- `photo_path` is a storage reference under `users/%/personal_directory/`,
-  not a public CDN URL.
-- A note MAY exist without a photo.
-- At most one photo is attached per active note row in v1.
-- Photos on personal directory notes are **free** — no paywall or usage
-  metric. The 20-note cap on `other` notes naturally bounds storage.
+- `photo_path` is a storage object key, not a CDN URL
+- if present it must match
+  `house_directory/{home_id}/member_directory/{user_id}/...`
+- photo-backed notes implicitly require the owner to have an active home
+- photos are free in v1
 
 Validation rules:
-- `note_type` MUST be one of the allowed values.
-- `details` MUST be non-empty for `allergies` and `other` types.
-- `details` is optional for `emergency_contact`.
-- `emergency_contact` requires non-empty `contact_name` and `phone_number`.
-- `note_type='other'` requires non-empty `custom_title`.
-- Notes are soft-archived with `archived_at`.
+- `note_type` MUST be one of the allowed values
+- non-emergency notes MUST NOT contain contact fields
+- non-allergy notes MUST NOT contain `label`
+- non-other notes MUST NOT contain `custom_title`
+- phone numbers allow digits, spaces, `+`, parentheses, and hyphen, and
+  must contain at least one digit
 
 ## 4. Navigation and entry point
 
-- With an active home: Hub → House Directory → member avatar and name card.
-  Tapping a member card opens that member's personal directory (read-only
-  for other members; editable for the owner).
-- Without an active home: accessible via the user's own avatar icon.
-- The owner can always reach their own personal directory from their own
-  card.
+- With an active home: users access personal directory from the house
+  directory member surface.
+- Without an active home: the owner can still access their own directory.
+- Member identity and roster ordering come from Homes v2 or adjacent
+  membership surfaces, not from personal directory storage.
 
-## 5. Completeness nudge (Today surface)
+## 5. Completeness nudge
 
-Today MAY show a single completeness nudge card when the user's personal
-directory is missing any of: bank account, emergency contact, or allergies.
-The nudge lists which records are still missing so the user knows what to
-add.
+The v1 completeness nudge is intentionally narrow.
 
-Nudge rules:
-- The nudge is a single card (not one per missing record).
-- The nudge is dismissible.
-- A dismissed nudge MUST NOT reappear in the same home membership.
-- The nudge MAY re-surface after the user joins a new home.
+Rules:
+- the nudge is only about a missing bank account
+- it is evaluated against the user's current active home
+- it is dismissible per `(user_id, home_id)`
+- once dismissed, it does not reappear in the same home
+- it may reappear after the user joins a different home
 
 ## 6. Access and privacy rules
 
 - Owner access: the authenticated user can always read and mutate their own
-  personal directory, regardless of home membership status.
-- Home-member read access: all current members of an active home can view
-  the personal directory of every other member in that home.
-- Write access (create, update, archive): only the owning user can mutate
-  their own records. No other user — including a home owner — has write
-  access.
-- RPCs MUST enforce `auth.uid() = owner_user_id` for all mutation
-  operations.
-- Bank account number is operationally shared but sensitive:
-  - UI SHOULD partially mask by default in list views
-  - full reveal requires explicit user tap/action
-  - values MUST NOT appear in telemetry or logging payloads
+  directory records.
+- Shared-home read access: active members of the same home can read the
+  owner's notes and payment bank account via the dedicated read RPC.
+- Write access: only the owning user can create, update, or archive their
+  own records.
+- RPCs MUST enforce ownership and active-home checks; tables remain
+  RPC-only.
 
 ## 7. Data lifecycle
 
-- Records are scoped to `user_id` only — one personal directory per user,
-  visible to the user's active home.
-- Leaving or being removed from a home does NOT affect personal directory
-  records (they persist at the user level).
-- Joining a new home automatically makes the user's existing personal
-  directory visible to that home's members.
-- When a user's account is deactivated, all personal directory records
-  MUST be included in the account-deletion data removal scope.
-- Archived notes are excluded from list reads.
+- Records are scoped to `user_id`, not `home_id`.
+- Leaving a home does not remove personal directory data.
+- Joining a new home makes existing data visible to that home's members.
+- Archived notes are excluded from active reads.
+- Account deletion scope must include personal directory data.
 
 ## 8. Cross-capability relationships
 
-- House Directory stores shared operational facts (wifi, services, house
-  notes).
-- Personal Directory stores person-specific records visible to the house.
-- House Norms stores shared behavioural expectations.
-- Contracts MUST remain separated; cross-links are allowed, duplication is
-  not.
+- House Directory stores shared operational home facts.
+- Personal Directory stores person-specific records shared with housemates.
+- Homes v2 provides active membership context and home visibility rules.
 
 ## 9. Contract test scenarios
 
 - User can create, read, and update their own bank account.
-- User can create, read, update, and archive their own personal notes.
-- User with no active home can still manage their personal directory.
-- Owner sees their own bank account in their personal directory view.
-- All home members can read any member's personal notes.
-- Other members do NOT see bank account in the directory view; it appears
-  only on the expenses-to-pay surface.
-- No member can mutate another member's personal directory records.
-- Home owner cannot edit another member's personal directory.
-- Bank account creation without `account_holder_name` is rejected.
-- Bank account creation without `account_number` is rejected.
-- Only one bank account per user is allowed.
-- Bank account cannot be removed once created; only replaced.
-- Expenses-to-pay surface shows payee bank name and account with copy
-  actions.
-- If payee has no bank account, expenses-to-pay surface shows a verbal
-  contact prompt.
+- User with no active home can still manage their own bank account.
+- User with no active home can read their own notes and create a note that
+  does not require a photo path.
+- Shared-home members can read another member's notes.
+- Shared-home members can read another member's bank account through the
+  payment-oriented bank-account RPC.
+- Non-home-members cannot read another member's notes or bank account.
 - Only one active `emergency_contact` note per user is allowed.
-- Only one active `allergies` note per user is allowed.
-- At most 20 active `other` notes per user; creation beyond 20 is rejected.
-- Default-type notes appear above `other` notes in display order.
-- `other` notes are sorted newest first.
-- Emergency contact `phone_number` supports tap-to-call.
-- Emergency contact without `contact_name` or `phone_number` is rejected.
-- Emergency contact without `details` is accepted.
-- Personal note creation without `details` is rejected.
-- Personal note with `note_type='other'` and no `custom_title` is rejected.
-- Photos on personal directory notes are free (no paywall).
+- `allergy` requires `label`.
+- `allergy` forbids `details`.
+- `other` requires `custom_title`.
+- Non-emergency notes forbid contact fields.
+- Invalid photo paths are rejected.
+- Only the owner can update or archive a note.
 - Archived notes are excluded from list reads.
-- Leaving a home does not affect the user's personal directory records.
-- Joining a new home makes existing records visible to that home's members.
-- Account deletion removes all personal directory records.
-- Bank account values are excluded from telemetry payloads.
-- Today nudge appears when any of bank account, emergency contact, or
-  allergies is missing.
-- Nudge lists which specific records are missing.
-- Dismissed nudge does not reappear in the same home membership.
-- Nudge reappears after joining a different home.
+- Nudge appears only when bank account is missing.
+- Nudge dismissal is per home and idempotent.
+- Dismissed nudge does not reappear in the same home.
+- Nudge may reappear after the user joins a different home.
 
 ## 10. References
 
@@ -277,8 +235,8 @@ Nudge rules:
   "domain": "personal_directory",
   "version": "v1",
   "entities": {
-    "PersonalBankAccount": {},
-    "PersonalNote": {}
+    "MemberDirectoryBankAccount": {},
+    "MemberDirectoryNote": {}
   },
   "functions": {},
   "rls": []

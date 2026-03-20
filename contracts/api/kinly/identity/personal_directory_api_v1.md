@@ -33,6 +33,14 @@ Depends on:
 - Direct client table DML MUST be denied; tables are RPC-only.
 - Member roster discovery remains outside this API.
 
+## 1.1 Client entry visibility
+
+- Client surfaces MAY hide the owner-facing Personal Directory entry point when
+  the owner has no bank account and no active notes.
+- Owner-facing entry visibility is a product concern; it does not change the
+  authenticated caller's RPC authorization to read or mutate their own
+  Personal Directory data.
+
 ## 2. Canonical enums
 
 ### 2.1 `member_directory_note_type`

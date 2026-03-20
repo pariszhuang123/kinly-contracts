@@ -39,8 +39,8 @@ Personal Directory MUST support:
 - one bank account per user
 - repeatable personal notes per user
 - read visibility to active members of the user's current home
-- owner access from the Start-screen personal-profile sheet even with no active
-  home
+- owner access from the Start-screen personal-profile sheet when the owner has
+  existing Personal Directory content, even with no active home
 
 ## 2. Scope and boundaries
 
@@ -63,7 +63,8 @@ Out of scope:
 
 ## 2.1 Visibility rules
 
-- The owner MAY always open and edit their own Personal Directory.
+- The owner MAY read and edit their own Personal Directory records whenever
+  content exists.
 - Other current home members MAY open a read-only Personal Directory view for
   that member.
 - Other-member Personal Directory views MUST show notes only.
@@ -183,7 +184,9 @@ Validation rules:
 
 - With an active home: users access personal directory from the house
   directory member surface.
-- Without an active home: the owner can still access their own directory.
+- Without an active home: the owner can access their own directory from the
+  Start-screen personal-profile sheet only when they already have Personal
+  Directory content.
 - Member identity and roster ordering come from Homes v2 or adjacent
   membership surfaces, not from personal directory storage.
 

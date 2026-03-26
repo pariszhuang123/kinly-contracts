@@ -209,6 +209,7 @@
 - [contracts/product/kinly/web/links/links_share_links_v1_4.md](contracts/product/kinly/web/links/links_share_links_v1_4.md)
 - [contracts/product/kinly/web/links/uri_association_v1.md](contracts/product/kinly/web/links/uri_association_v1.md)
 - [contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1.md](contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1.md)
+- [contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1_1.md](contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1_1.md)
 - [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
 - [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
 - [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)

@@ -178,6 +178,7 @@
 * **fallback_behavior** (v1.0): [contracts/product/kinly/web/links/links_fallback_v1.md](contracts/product/kinly/web/links/links_fallback_v1.md)
 * **fallback_behavior** (v1.1): [contracts/product/kinly/web/links/links_fallback_v1_1.md](contracts/product/kinly/web/links/links_fallback_v1_1.md)
 * **marketing_surface_namespacing** (v1.0): [contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1.md](contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1.md)
+* **marketing_surface_namespacing** (v1.1): [contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1_1.md](contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1_1.md)
 * **region_gating** (v1.1): [contracts/product/kinly/web/links/links_region_gate_v1_1.md](contracts/product/kinly/web/links/links_region_gate_v1_1.md)
 * **region_gating** (v1.2): [contracts/product/kinly/web/links/links_region_gate_v1_2.md](contracts/product/kinly/web/links/links_region_gate_v1_2.md)
 * **region_gating** (v1.3): [contracts/product/kinly/web/links/links_region_gate_v1_3.md](contracts/product/kinly/web/links/links_region_gate_v1_3.md)

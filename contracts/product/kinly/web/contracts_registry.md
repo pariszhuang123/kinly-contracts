@@ -63,7 +63,7 @@ capability may be implied outside supported regions.
 | Links  | Deferred Install Invite       | `links/links_invite_deferred_install_v1_0.md`     | Active |
 | Links  | Region Gating                 | `links/links_region_gate_v1_3.md`                 | Active |
 | Links  | Fallback Behavior             | `links/links_fallback_v1_1.md`                    | Active |
-| Links  | Marketing Surface Namespacing | `links/links_marketing_surface_namespacing_v1.md` | Active |
+| Links  | Marketing Surface Namespacing | `links/links_marketing_surface_namespacing_v1_1.md` | Active |
 
 ---
 
@@ -174,6 +174,7 @@ deployment.
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
 | 2026-03-03 | Activated market path + region expansion (NZ, SG, MY) | Planner     |
+| 2026-03-26 | Activated marketing surface namespacing v1.1 for crawlable `/kinly/market` discovery hub | Planner |
 | 2026-03-03 | Merged poll result messages rules into v1 and kept constant CTA routing | Planner     |
 | 2026-03-03 | Activated outreach poll result messages contract v1.1 | Planner     |
 | 2026-02-24 | Activated outreach polls and outreach tracking v1.1 | Planner     |

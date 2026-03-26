@@ -5,21 +5,36 @@ Scope: backend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v2.4
+Version: v2.5
 ---
 
-# Expenses Contracts v2
+# Expenses Contracts v2.5
 
-Status: Draft (recurrence every/unit refactor + bill evidence photos + transition-based photo quota)
+Status: Draft (unit-based allocation extension + recurrence every/unit refactor + bill evidence photos + transition-based photo quota)
 
-Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery` + `recurrenceUnit`, and adds optional bill evidence photos via `evidencePhotoPath`. Recurring intent remains modeled via `expense_plans`; each cycle is an immutable `expenses` row.
+Scope: Extends expenses to support unit-based allocation aligned with Home Units
+v1 while preserving debtor-based compatibility. Also keeps the recurrence
+every/unit refactor and optional bill evidence photos via `evidencePhotoPath`.
+Recurring intent remains modeled via `expense_plans`; each cycle is an
+immutable `expenses` row.
 
 ## Domain Overview
 - Drafts: creator-only; `amountCents` optional; drafts cannot be recurring.
 - Activation: supplying amount + splits via `expenses.create` or `expenses.edit` promotes to `status=active`. If recurrence is set, a plan is created, the draft is marked `status=converted`, and the first cycle is generated immediately.
 - Activation invariant: at least one debtor must be different from `createdByUserId` (creator cannot be the sole debtor).
-- Splits live in `expense_splits`. Creator shares (if included) are auto-marked `paid`.
+- Expenses support two allocation target modes:
+  - `debtor_based` - direct person-by-person liability via `expense_splits`
+  - `unit_based` - liability via `expense_unit_splits`
+- Debtor-based splits live in `expense_splits`. Creator shares (if included) are
+  auto-marked `paid`.
+- Unit-based splits live in `expense_unit_splits`. A personal unit represents
+  one individually liable member; a shared unit represents a grouped debtor.
+- For recurring plans:
+  - debtor-based allocation source lives in `expense_plan_debtors`
+  - unit-based allocation source lives in `expense_plan_units`
 - Payments are bulk: `expenses.payMyDue(p_recipient_user_id)` marks all unpaid splits the caller owes to a given payer.
+- Unit-based Today visibility is unit-scoped and aligned with Home Units. Fully
+  settled unit liabilities disappear from Today.
 - Recurrence fields are paired: both null for one-off; both set for recurring.
 - Bills can carry one optional evidence photo (`evidencePhotoPath`) to document the amount owed.
 - For recurring bills, `evidencePhotoPath` is stored on the plan and copied to generated cycle expenses.
@@ -35,6 +50,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 - `recurrenceUnit` (`text|null`) - one of `day|week|month|year`; `NULL` for one-off.
 - `startDate` (`date`)
 - `status` (`ExpenseStatus`)
+- `allocationTargetType` (`ExpenseAllocationTargetType|null`)
 - `splitType` (`ExpenseSplitType|null`)
 - `amountCents` (`bigint|null`)
 - `fullyPaidAt` (`timestamptz|null`)
@@ -47,6 +63,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 - `id` (`uuid`)
 - `homeId` (`uuid`)
 - `createdByUserId` (`uuid`)
+- `allocationTargetType` (`ExpenseAllocationTargetType`)
 - `splitType` (`ExpenseSplitType`)
 - `amountCents` (`bigint`)
 - `description` (`text`)
@@ -65,6 +82,11 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 - `debtorUserId` (`uuid`)
 - `shareAmountCents` (`bigint`)
 
+### ExpensePlanUnit
+- `planId` (`uuid`)
+- `unitId` (`uuid`)
+- `shareAmountCents` (`bigint`)
+
 ### ExpenseSplit
 - `expenseId` (`uuid`)
 - `debtorUserId` (`uuid`)
@@ -73,11 +95,17 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 - `markedPaidAt` (`timestamptz|null`)
 - `recipientViewedAt` (`timestamptz|null`)
 
+### ExpenseUnitSplit
+- `expenseId` (`uuid`)
+- `unitId` (`uuid`)
+- `amountCents` (`bigint`)
+
 ### ExpenseSummaryDto
 - `id: uuid`
 - `homeId: uuid`
 - `createdByUserId: uuid`
 - `status: ExpenseStatus`
+- `allocationTargetType: ExpenseAllocationTargetType|null`
 - `planId: uuid|null`
 - `recurrenceEvery: int|null`
 - `recurrenceUnit: text|null`
@@ -101,6 +129,9 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 ### ExpensePlanStatus
 `active | terminated`
 
+### ExpenseAllocationTargetType
+`debtor_based | unit_based`
+
 ### ExpenseSplitType
 `equal | custom`
 
@@ -108,6 +139,18 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
 `unpaid | paid`
 
 ## Validation and Paywall Rules
+- `allocationTargetType` determines which split table(s) are populated:
+  - `debtor_based` -> `expense_splits` / `expense_plan_debtors`
+  - `unit_based` -> `expense_unit_splits` / `expense_plan_units`
+- `unit_based` and `debtor_based` MUST NOT be mixed within the same expense or
+  recurring plan.
+- For unit-based activation:
+  - all `unitId` values MUST belong to the same home as the expense/plan
+  - `SUM(shareAmountCents)` or computed unit split totals MUST equal
+    `amountCents`
+  - if the creator belongs to a shared unit, the UI/product MAY preselect that
+    shared unit, but the caller may still choose the creator's personal unit
+  - internal cost sharing inside a shared unit remains out of scope
 - `recurrenceEvery` is NULL iff `recurrenceUnit` is NULL.
 - `evidencePhotoPath` is optional and must start with `households/` when provided.
 - A bill/expense stores at most one evidence photo path at a time.
@@ -142,6 +185,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "recurrenceUnit": "text|null",
       "startDate": "date",
       "status": "ExpenseStatus",
+      "allocationTargetType": "ExpenseAllocationTargetType|null",
       "splitType": "ExpenseSplitType|null",
       "amountCents": "bigint|null",
       "fullyPaidAt": "timestamptz|null",
@@ -155,6 +199,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "id": "uuid",
       "homeId": "uuid",
       "createdByUserId": "uuid",
+      "allocationTargetType": "ExpenseAllocationTargetType",
       "splitType": "ExpenseSplitType",
       "amountCents": "bigint",
       "description": "text",
@@ -174,6 +219,11 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "debtorUserId": "uuid",
       "shareAmountCents": "bigint"
     },
+    "ExpensePlanUnit": {
+      "planId": "uuid",
+      "unitId": "uuid",
+      "shareAmountCents": "bigint"
+    },
     "ExpenseSplit": {
       "expenseId": "uuid",
       "debtorUserId": "uuid",
@@ -182,10 +232,16 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "markedPaidAt": "timestamptz|null",
       "recipientViewedAt": "timestamptz|null"
     },
+    "ExpenseUnitSplit": {
+      "expenseId": "uuid",
+      "unitId": "uuid",
+      "amountCents": "bigint"
+    },
     "ExpenseSummaryDto": {
       "id": "uuid",
       "homeId": "uuid",
       "createdByUserId": "uuid",
+      "allocationTargetType": "ExpenseAllocationTargetType|null",
       "planId": "uuid|null",
       "recurrenceEvery": "int|null",
       "recurrenceUnit": "text|null",
@@ -214,6 +270,10 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "active",
       "terminated"
     ],
+    "ExpenseAllocationTargetType": [
+      "debtor_based",
+      "unit_based"
+    ],
     "ExpenseSplitType": [
       "equal",
       "custom"
@@ -237,23 +297,34 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "rule": "RLS disabled; anon/auth/service roles have no grants. Only RPCs can mutate."
     },
     {
+      "table": "public.expense_plan_units",
+      "rule": "RLS disabled; anon/auth/service roles have no grants. Only RPCs can mutate."
+    },
+    {
       "table": "public.expense_splits",
       "rule": "RLS disabled; anon/auth have no grants. Splits are only visible/mutated inside SECURITY DEFINER RPCs."
+    },
+    {
+      "table": "public.expense_unit_splits",
+      "rule": "RLS disabled; anon/auth have no grants. Unit splits are only visible/mutated inside SECURITY DEFINER RPCs."
     }
   ],
   "functions": {
     "expenses.create": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_create_v3",
+      "impl": "public.expenses_create_v4",
       "args": {
         "p_home_id": "uuid",
         "p_description": "text",
         "p_amount_cents": "bigint|null",
         "p_notes": "text|null",
+        "p_allocation_target_type": "ExpenseAllocationTargetType|null",
         "p_split_mode": "ExpenseSplitType|null",
         "p_member_ids": "uuid[]|null",
         "p_splits": "jsonb|null",
+        "p_unit_ids": "uuid[]|null",
+        "p_unit_splits": "jsonb|null",
         "p_recurrence_every": "int|null",
         "p_recurrence_unit": "text|null",
         "p_start_date": "date",
@@ -263,6 +334,9 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "notes": [
         "p_split_mode NULL => draft (recurrence must be null; amount optional)",
         "p_split_mode set => activation; recurrence null creates one-off active; recurrence set creates plan + first cycle and marks draft converted",
+        "p_allocation_target_type determines whether activation writes debtor rows or unit rows",
+        "unit_based activation MUST use p_unit_ids/p_unit_splits and MUST NOT also send debtor-based member split payloads",
+        "debtor_based activation preserves existing direct debtor semantics",
         "When provided, p_evidence_photo_path must match households/%; recurring activation copies it to both plan and first cycle",
         "Draft photo capture is quota-free until activation; charge occurs once at activation/plan-creation boundary on transition rules",
         "Activation path enforces paywall for active_expenses and expense_photos (no extra +1 for replacements; recurring cycle generation does not increment expense_photos)"
@@ -271,15 +345,18 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
     "expenses.edit": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_edit_v3",
+      "impl": "public.expenses_edit_v4",
       "args": {
         "p_expense_id": "uuid",
         "p_amount_cents": "bigint",
         "p_description": "text",
         "p_notes": "text|null",
+        "p_allocation_target_type": "ExpenseAllocationTargetType|null",
         "p_split_mode": "ExpenseSplitType|null",
         "p_member_ids": "uuid[]|null",
         "p_splits": "jsonb|null",
+        "p_unit_ids": "uuid[]|null",
+        "p_unit_splits": "jsonb|null",
         "p_recurrence_every": "int|null",
         "p_recurrence_unit": "text|null",
         "p_start_date": "date",
@@ -288,6 +365,7 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
       "returns": "Expense",
       "notes": [
         "Drafts: allowed and always activates",
+        "Drafts may activate as debtor_based or unit_based; this choice determines the persisted split records and recurring plan allocation source",
         "Drafts may add or replace evidencePhotoPath before activation; clearing is supported by sending empty string",
         "Draft photo updates do not consume expense_photos until activation/plan-creation boundary",
         "Active one-off expenses: creator may edit description/notes only",
@@ -335,11 +413,16 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
     "expenses.getCurrentOwed": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_get_current_owed",
+      "impl": "public.expenses_get_current_owed_v2",
       "args": {
         "p_home_id": "uuid"
       },
-      "returns": "jsonb"
+      "returns": "jsonb",
+      "notes": [
+        "Returns a Today-oriented list of open liabilities",
+        "Rows include enough metadata to distinguish debtor-based personal liabilities from unit-based shared liabilities",
+        "For unit_based rows, payload SHOULD include liability kind, unit_id, unit_name, amount_cents, paid_cents when applicable, and remaining_cents"
+      ]
     },
     "expenses.getCreatedByMe": {
       "type": "rpc",
@@ -353,13 +436,13 @@ Scope: Updates expense recurrence from legacy enum to flexible `recurrenceEvery`
     "expenses.getForEdit": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_get_for_edit",
+      "impl": "public.expenses_get_for_edit_v2",
       "args": {
         "p_expense_id": "uuid"
       },
       "returns": "jsonb",
       "notes": [
-        "Creator-only; returns splits, planId, recurrenceEvery/Unit, startDate, evidencePhotoPath, canEdit flag, and editDisabledReason (ACTIVE_IMMUTABLE, RECURRING_CYCLE_IMMUTABLE, CONVERTED_TO_PLAN)"
+        "Creator-only; returns allocationTargetType, split payloads, planId, recurrenceEvery/Unit, startDate, evidencePhotoPath, canEdit flag, and editDisabledReason (ACTIVE_IMMUTABLE, RECURRING_CYCLE_IMMUTABLE, CONVERTED_TO_PLAN)"
       ]
     }
   }

@@ -21,8 +21,16 @@ Household members can:
 - Tick/untick items (single completion owner per item)
 - Run Done Shopping actions on their own completed items only
 - Optionally link their completed items to a Share expense
+- Receive soft overbuying reminders when adding an item the home has previously purchased
 
 ## 1. Data model and invariants
+
+### 1.0 Scope of tables
+
+The shopping list module owns three tables:
+- `shopping_lists` — one active list per home.
+- `shopping_list_items` — individual list items with completion and archive lifecycle.
+- `shopping_list_purchase_memory` — per-home purchase history summary for overbuying reminders.
 
 ### 1.1 `shopping_lists`
 
@@ -49,6 +57,27 @@ Invariants:
 - `reference_photo_path` must match `households/%` when present.
 - `updated_at` is trigger-maintained.
 
+### 1.3 `shopping_list_purchase_memory`
+
+One row per unique item name per home. Provides lightweight purchase history for overbuying reminders.
+
+Core columns:
+- identity: `id`, `home_id`, `canonical_name`
+- display: `display_name` (most recent casing/spelling)
+- purchase stats: `purchase_count`, `first_purchased_at`, `last_purchased_at`, `last_purchased_by_user_id`
+- warning config: `warning_window_days`
+- timestamps: `created_at`, `updated_at`
+
+Invariants:
+- `UNIQUE(home_id, canonical_name)` — also serves as the lookup index.
+- `canonical_name = lower(btrim(shopping_list_items.name))` at archive time — exact match only in v1.
+- `purchase_count` represents distinct purchase events (archive calls), not individual item rows.
+- `last_purchased_by_user_id` is the item's `completed_by_user_id` (buyer), not the archiver.
+- `warning_window_days` is seeded at row creation and immutable in v1.
+- `home_id` FK with `ON DELETE CASCADE`.
+- `last_purchased_by_user_id` has no FK; may be a dangling UUID if user is deleted.
+- `updated_at` is trigger-maintained.
+
 ## 2. Quotas and usage counters
 
 Shopping list photo usage is integrated with home plan limits:
@@ -64,8 +93,8 @@ Behavior:
 
 ## 3. Access model
 
-- Tables have RLS enabled.
-- Direct access for `authenticated` is revoked for shopping list tables.
+- Tables have RLS enabled (`shopping_lists`, `shopping_list_items`, `shopping_list_purchase_memory`).
+- Direct access for `authenticated` is revoked for all shopping list tables.
 - Reads/writes are RPC-only.
 - Membership is enforced inside RPCs using `public._assert_home_member(p_home_id)` or equivalent scoped membership checks for item-scoped calls.
 - Internal helpers `_home_assert_quota(uuid, jsonb)` and `_home_usage_apply_delta(uuid, jsonb)` are not executable by `authenticated`.
@@ -89,6 +118,7 @@ Behavior:
 - Rejects blank/whitespace names (`invalid_name`).
 - If photo path is provided, it must start with `households/` and sets `reference_added_by_user_id = auth.uid()`.
 - Adding an item with a first photo enforces/increments `shopping_item_photos` quota.
+- After insert, performs a non-blocking lookup on `shopping_list_purchase_memory` by `(home_id, lower(btrim(name)))`. If a match exists and `days_since_last_purchase < warning_window_days`, response includes a `purchase_memory` object with `purchase_count`, `last_purchased_at`, `last_purchased_by_display_name` (nullable), `days_since_last_purchase`, and `warning_window_days`. Otherwise `purchase_memory` is `null`. See API contract §2.2 for full wire format.
 
 ### 4.3 `shopping_list_update_item(...)`
 
@@ -136,6 +166,7 @@ No time-window gating in v1.
 - Locks expense row (`FOR UPDATE`) before first-link check.
 - Side effect: increments `home_usage_counters.active_expenses` by `+1` only when first shopping-list link is created for that expense.
 - No active-expenses quota check in this RPC.
+- Purchase memory side-effect: UPSERTs into `shopping_list_purchase_memory` for completed archived items (see §4.8).
 
 ### 4.6 `shopping_list_archive_items_for_user(...)`
 
@@ -146,6 +177,7 @@ No time-window gating in v1.
   - `archived_at IS NULL`
   - `completed_by_user_id = auth.uid()`
 - Sets `archived_at = now()` and `archived_by_user_id = auth.uid()`.
+- Purchase memory side-effect: UPSERTs into `shopping_list_purchase_memory` for completed archived items (see §4.8).
 
 ### 4.7 `shopping_list_archive_item(p_item_id uuid)`
 
@@ -154,6 +186,21 @@ No time-window gating in v1.
   `item_not_found`, and enforces home membership using the item's `home_id`.
 - Does not require the item to be completed by the current user.
 - Sets `archived_at = now()` and `archived_by_user_id = auth.uid()`.
+- Purchase memory side-effect: if item has `is_completed = true`, UPSERTs into `shopping_list_purchase_memory` (see §4.8). No memory write if uncompleted.
+
+### 4.8 Purchase memory write behaviour
+
+Shared side-effect for §4.5, §4.6, and §4.7. Runs in the same transaction as the archive `UPDATE`.
+
+- Driven from rows actually modified by the archive (`UPDATE ... RETURNING`).
+- Only rows where `is_completed = true` are eligible.
+- Group eligible rows by `canonical_name = lower(btrim(name))`.
+- For each distinct `canonical_name`, UPSERT into `shopping_list_purchase_memory`:
+  - Insert: `purchase_count = 1`, timestamps set to `now()`, `display_name` and `last_purchased_by_user_id` from item's `completed_by_user_id`, `warning_window_days` seeded from defaults.
+  - Update: `purchase_count += 1`, `last_purchased_at = now()`, `display_name` and `last_purchased_by_user_id` updated. `warning_window_days` is NOT overwritten.
+- When multiple items share a `canonical_name` in one batch, the item with the latest `created_at` wins (ties broken by `id` ascending).
+- Attribution uses `completed_by_user_id` (buyer), not `auth.uid()` (archiver).
+- UPSERT failure rolls back the entire transaction (archive included).
 
 ## 5. Canonical errors
 
@@ -169,3 +216,4 @@ No time-window gating in v1.
 
 - Share expense creation remains defined in `contracts/api/kinly/share/expenses_v2.md`.
 - Shopping list integration covers prepare/link/archive boundaries only.
+- Purchase memory product rules defined in `contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md`.

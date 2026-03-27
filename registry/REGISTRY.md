@@ -14,7 +14,7 @@
 * **outreach_tracking** (v1.1): [contracts/api/kinly/growth/outreach_tracking_v1_1.md](contracts/api/kinly/growth/outreach_tracking_v1_1.md)
 
 ### Domain: homes\n
-* **flatmate_fit_check_api** (v1.0): [contracts/api/kinly/homes/flatmate_fit_check_api_v1.md](contracts/api/kinly/homes/flatmate_fit_check_api_v1.md)
+* **flatmate_fit_check_api** (v1.1): [contracts/api/kinly/homes/flatmate_fit_check_api_v1.md](contracts/api/kinly/homes/flatmate_fit_check_api_v1.md)
 * **home_units** (v2.0): [contracts/api/kinly/homes/home_units_api_v1.md](contracts/api/kinly/homes/home_units_api_v1.md)
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
@@ -138,7 +138,7 @@
 
 ## Surface: shared\n
 ### Domain: homes\n
-* **flatmate_fit_check** (v3.5): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
+* **flatmate_fit_check** (v3.6): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
 * **house_directory** (v1.1): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
 * **shopping_list** (v1.1): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
 * **shopping_list** (v1.0): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)

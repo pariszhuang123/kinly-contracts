@@ -5,10 +5,10 @@ Scope: shared
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v3.5
+Version: v3.6
 ---
 
-# Kinly Flatmate Fit Check Contract v3.5
+# Kinly Flatmate Fit Check Contract v3.6
 
 Status: Draft
 
@@ -258,7 +258,40 @@ version, but contact details are out of scope for v1.
 Candidate answers the same 4 questions (same wording). Stored in
 `candidate_fit_submissions`.
 
-**Step 4 — Confirmation**
+**Step 4 — Location capture (required)**
+
+Immediately after the candidate answers the final scenario question, and
+before any confirmation or personalized result is shown, the candidate
+MUST complete a location step.
+
+Required fields:
+- `country_code` (required)
+- `city_name` (required)
+
+Rules:
+- This step MUST happen after the last scenario question and before the
+  candidate-specific result is rendered
+- `country_code` and `city_name` MUST appear on the same page
+- `country_code` MUST be pre-selected using IP-based geolocation from
+  the web edge/runtime layer (for example, Vercel request geolocation)
+- The candidate MUST be able to change the pre-selected country if the
+  inferred country is wrong
+- `city_name` MUST start empty even when `country_code` is pre-selected
+- The client MUST fetch or query country-scoped city options using the
+  currently selected `country_code`
+- `city_name` MUST be selected from a country-scoped city list
+- If the user changes `country_code`, the client MUST clear the current
+  `city_name` value and reload city options for the new country
+- The city picker SHOULD use search/typeahead behaviour rather than
+  rendering a full long dropdown for all cities
+- The UI MAY visually show a curated "important cities" section first,
+  followed by other matching cities for the selected country
+- Location is collected to improve the usefulness and relevance of the
+  candidate-specific informational result content
+
+This step MUST NOT reveal owner answers or comparison output.
+
+**Step 5 — Confirmation**
 
 Candidate sees a simple confirmation:
 > Template key: `fit_check.candidate.submitted`
@@ -269,7 +302,7 @@ The candidate does NOT receive a compatibility result, watchouts about
 the owner, or suggested interview questions. This is an owner-first
 tool.
 
-**Step 5 — Personalized result page + CTA (non-blocking)**
+**Step 6 — Personalized result page + CTA (non-blocking)**
 
 After submission, the candidate MUST land on a candidate-specific
 post-submit page for that submission.
@@ -281,6 +314,8 @@ The page MAY show:
 - a lightweight self-reflection
 - a short description of the kind of living environment their answers
   suggest they usually prefer
+- localized informational content shaped by `country_code` and
+  `city_name`
 - a prompt to continue into Kinly
 
 The page MUST NOT show:
@@ -423,6 +458,8 @@ claimed draft from a single app inbox or review list.
 
 Each submission card MUST include:
 - `display_name`
+- `country_code` and `city_name`, or a localized location label derived
+  from them
 - `submission_id` or another stable system-generated review identifier
 - `submitted_at`
 - A lightweight qualitative summary or top watchout preview
@@ -438,6 +475,8 @@ and/or a stable system-generated review identifier.
 
 The full briefing view MUST include:
 - Candidate `display_name`
+- Candidate `country_code`
+- Candidate `city_name`
 - Submission timestamp
 - Candidate raw structured answers (`scenario_id` + `option_index`)
 - Context
@@ -742,14 +781,15 @@ This is an owner-first tool. Visibility is intentionally asymmetric.
 |---|---|---|
 | Owner's scenario answers | ✅ (own answers) | ❌ |
 | Candidate's scenario answers | ✅ (structured answers + briefing context) | ✅ (own personalized result page only; no owner comparison) |
+| Candidate `country_code` / `city_name` | ✅ (submission context) | ✅ (own provided values) |
 | Home vibe summary | ✅ | ❌ |
 | Pre-interview briefing | ✅ | ❌ |
 | Suggested questions | ✅ | ❌ |
 | Other candidates' data | N/A (one briefing at a time) | ❌ |
 | Candidate `display_name` | ✅ | ✅ (own provided value) |
 
-The candidate sees: question flow → submission confirmation →
-personalized result page → optional app CTA.
+The candidate sees: question flow → location capture → submission
+confirmation → personalized result page → optional app CTA.
 
 ### 9.1 Answer Leakage
 
@@ -799,7 +839,7 @@ Required template namespaces for v1:
 |---|---|
 | `fit_check_drafts` | Owner scenario answers (created server-side pre-claim; post-claim: persisted, linked to owner and optionally a home) |
 | `fit_check_share_tokens` | Public tokens for candidate access; FK to `fit_check_drafts` |
-| `candidate_fit_submissions` | Candidate `display_name` + scenario answers; FK to `fit_check_drafts` |
+| `candidate_fit_submissions` | Candidate `display_name`, `country_code`, `city_name`, and scenario answers; FK to `fit_check_drafts` |
 | `candidate_fit_briefings` | Generated briefing per submission; FK to `candidate_fit_submissions`; includes frozen owner answers snapshot |
 
 ### Relationships
@@ -865,6 +905,8 @@ anti-abuse control.
 
 ### 12.5 Candidate Privacy
 - No open-text answers (structured option_index only)
+- Candidate location is limited to bounded fields: `country_code` and
+  `city_name`
 - Candidate submissions MUST NOT store device fingerprints or IP addresses
   beyond rate-limit window
 - Rate-limiting metadata MUST NOT be persisted

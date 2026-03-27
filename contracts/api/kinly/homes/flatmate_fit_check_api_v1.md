@@ -5,10 +5,10 @@ Scope: backend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v1.0
+Version: v1.1
 ---
 
-# Flatmate Fit Check API v1
+# Flatmate Fit Check API v1.1
 
 Status: Proposed
 
@@ -19,7 +19,7 @@ share-token lifecycle, and downstream prefill retrieval.
 Audience: Product, design, engineering, AI agents.
 
 Depends on:
-- Flatmate Fit Check Contract v3.5
+- Flatmate Fit Check Contract v3.6
 - Homes v2
 - House Norms v1
 
@@ -102,7 +102,29 @@ Validation:
 - Owner review surfaces MUST use `submission_id` and `submitted_at` as
   canonical disambiguators when duplicate names exist.
 
-### 3.4 Watchout direction
+### 3.4 Candidate location
+
+- `p_country_code` is required for candidate submission.
+- `p_country_code` MUST be an ISO 3166-1 alpha-2 uppercase country code.
+- Public read payloads SHOULD include a server-supplied
+  `suggested_country_code` inferred from edge geolocation when available.
+- `suggested_country_code` is a convenience default only; the candidate
+  MAY change it before submission.
+- `p_city_name` is required for candidate submission.
+- `p_city_name` must be trimmed, non-empty, and at most 120 chars.
+- `p_city_name` MUST match an allowed city option for the submitted
+  `p_country_code`.
+- Public read payloads SHOULD return only the preselected
+  `suggested_country_code` and field metadata for the same-page location
+  step.
+- Country-scoped city options SHOULD be fetched separately using the
+  current `country_code`, rather than embedded as a full city dataset in
+  the initial public token payload.
+- City choice is collected after the final scenario answer and before the
+  post-submit result is generated so the backend can support localized
+  informational result content.
+
+### 3.5 Watchout direction
 
 Canonical direction values:
 - `owner_higher`
@@ -118,7 +140,7 @@ Allowed watchout distances:
 
 Distance `0` is alignment, not a watchout.
 
-### 3.5 Anonymous session identity
+### 3.6 Anonymous session identity
 
 - Public candidate submission dedupe uses an opaque anonymous session
   identifier validated by the backend.
@@ -127,7 +149,7 @@ Distance `0` is alignment, not a watchout.
   format before hashing/dedupe.
 - Duplicate detection is canonical on `(share_token, anonymous_session_id)`.
 
-### 3.6 Draft session token
+### 3.7 Draft session token
 
 - `draft_session_token` is the browser-held opaque authority for
   anonymous owner draft updates.
@@ -136,7 +158,7 @@ Distance `0` is alignment, not a watchout.
 - `draft_session_token` becomes invalid after successful claim or draft
   expiry/purge.
 
-### 3.7 Share token and claim token
+### 3.8 Share token and claim token
 
 - `share_token` is the public token used for candidate access.
 - `claim_token` is a short-lived owner-only token used for app claim.
@@ -217,6 +239,10 @@ Behavior:
 - Resolves the candidate flow for a public share token.
 - Returns scenario metadata, template keys, and owner-safe UI chrome
   only.
+- Returns location-capture metadata required to complete candidate
+  submission after the final scenario question.
+- Returns the same-page location-step default for `country_code`, but
+  does not embed a large city dataset.
 - MUST NOT return owner answers, owner summary, or owner briefing.
 - Returns unavailable/null payload for invalid, expired, revoked, or
   exhausted tokens.
@@ -232,6 +258,19 @@ Response shape (available):
   "token_status": "active",
   "fit_check_public": {
     "entry_prompt_key": "fit_check.candidate.entry_prompt",
+    "location": {
+      "required": true,
+      "step_position": "after_last_scenario_before_result",
+      "same_page_fields": [
+        "country_code",
+        "city_name"
+      ],
+      "suggested_country_code": "NZ",
+      "country_field_key": "fit_check.candidate.location.country",
+      "city_field_key": "fit_check.candidate.location.city",
+      "city_value_required": true,
+      "city_lookup_mode": "country_scoped_search"
+    },
     "scenarios": [
       {
         "scenario_id": "fit_cleanliness",
@@ -289,13 +328,15 @@ Response shape (unavailable):
 }
 ```
 
-### 4.3 `fit_check_submit_candidate_by_token(p_share_token text, p_locale text, p_display_name text, p_answers jsonb) -> jsonb`
+### 4.3 `fit_check_submit_candidate_by_token(p_share_token text, p_locale text, p_display_name text, p_country_code text, p_city_name text, p_answers jsonb) -> jsonb`
 
 Caller: public.
 
 Behavior:
 - Validates active token, submission cap, anonymous session dedupe, and
   payload shape.
+- Validates that `p_country_code` and `p_city_name` are present and that
+  the city is allowed for the submitted country.
 - Creates `candidate_fit_submission`.
 - Generates one `candidate_fit_briefing` using a frozen owner-answer
   snapshot from comparison time.
@@ -313,7 +354,9 @@ Response shape:
   "requested_locale_base": "en",
   "resolved_locale_base": "en",
   "candidate": {
-    "display_name": "Alex"
+    "display_name": "Alex",
+    "country_code": "NZ",
+    "city_name": "Auckland"
   },
   "confirmation": {
     "message_key": "fit_check.candidate.submitted",
@@ -429,6 +472,8 @@ Response shape:
     {
       "submission_id": "uuid",
       "display_name": "Alex",
+      "country_code": "NZ",
+      "city_name": "Auckland",
       "review_label": "Alex · 2026-03-25 14:14",
       "submitted_at": "timestamptz",
       "preview": {
@@ -468,6 +513,8 @@ Response shape:
   "resolved_locale_base": "en",
   "candidate": {
     "display_name": "Alex",
+    "country_code": "NZ",
+    "city_name": "Auckland",
     "submitted_at": "timestamptz",
     "answers": {
       "fit_cleanliness": 2,
@@ -626,6 +673,8 @@ Required token status values:
 - `draft_id uuid fk fit_check_drafts(id)`
 - `share_token_id uuid fk fit_check_share_tokens(id)`
 - `display_name text`
+- `country_code text`
+- `city_name text`
 - `answers jsonb`
 - `anonymous_session_hash text`
 - `submitted_at timestamptz`
@@ -633,6 +682,8 @@ Required token status values:
 Required constraints:
 - max one submission per `(share_token_id, anonymous_session_hash)`
 - structured answer payload only; no open-text answers beyond `display_name`
+- `country_code` must be a valid ISO 3166-1 alpha-2 code
+- `city_name` must match an allowed city option for `country_code`
 
 `candidate_fit_briefings` required fields:
 - `id uuid pk`
@@ -689,6 +740,8 @@ Public token read behavior:
 Public submission behavior:
 - `fit_check_submit_candidate_by_token` MAY throw structured errors for
   duplicate, limit, rate-limit, or invalid payload failures.
+- Invalid country or city selections MUST fail with
+  `FIT_CHECK_INVALID_INPUTS`.
 
 ## 7. Invariants
 
@@ -721,6 +774,10 @@ Public submission behavior:
 - Public token read returns candidate-safe scenario template keys only.
 - Public token read returns `available=false` for expired token.
 - Candidate submission with missing `display_name` fails.
+- Candidate submission with missing `country_code` fails.
+- Candidate submission with missing `city_name` fails.
+- Candidate submission with a city outside the allowed set for the
+  submitted country fails with `FIT_CHECK_INVALID_INPUTS`.
 - Candidate submission from the same anonymous session for the same token
   fails with `FIT_CHECK_DUPLICATE_SUBMISSION`.
 - Candidate submission after submission cap fails with
@@ -747,7 +804,7 @@ Public submission behavior:
 
 ## 9. References
 
-- [Flatmate Fit Check Contract v3.5](../../../product/kinly/shared/flatmate_fit_check_v1.md)
+- [Flatmate Fit Check Contract v3.6](../../../product/kinly/shared/flatmate_fit_check_v1.md)
 - [House Norms v1](../../../product/kinly/shared/house_norms_v1.md)
 - [House Norms API v1.1](./house_norms_api_v1.md)
 - [Homes v2](./homes_v2.md)
@@ -780,6 +837,8 @@ Public submission behavior:
       "id": "uuid",
       "draftId": "uuid",
       "displayName": "text",
+      "countryCode": "text",
+      "cityName": "text",
       "answers": "jsonb",
       "anonymousSessionHash": "text",
       "submittedAt": "timestamptz"
@@ -824,6 +883,8 @@ Public submission behavior:
         "p_share_token": "text",
         "p_locale": "text",
         "p_display_name": "text",
+        "p_country_code": "text",
+        "p_city_name": "text",
         "p_answers": "jsonb"
       },
       "returns": "jsonb"

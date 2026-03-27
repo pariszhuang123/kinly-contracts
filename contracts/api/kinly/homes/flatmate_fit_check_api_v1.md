@@ -33,6 +33,8 @@ support:
 - owner review of candidate briefings
 - downstream prefill retrieval for House Norms and bounded preference
   flows
+- immediate post-claim, post-home-attachment setup handoff so seeded
+  onboarding can reduce repeated questions
 
 These APIs MUST remain briefing-oriented. They MUST NOT produce ranking,
 sorting, or auto-rejection behavior.
@@ -315,13 +317,9 @@ Response shape:
   },
   "confirmation": {
     "message_key": "fit_check.candidate.submitted",
-    "result_page": {
-      "submission_id": "uuid",
-      "page_type": "personalized_non_comparative",
-      "reflection": {
-        "show": true,
-        "text_key": "fit_check.candidate.reflection.flexible"
-      }
+    "reflection": {
+      "show": true,
+      "text_key": "fit_check.candidate.reflection.flexible"
     },
     "cta": {
       "text_key": "fit_check.candidate.create_own_cta",
@@ -343,6 +341,8 @@ Behavior:
   attachment is still required.
 - Invalidates the claim token after successful claim.
 - Does not create or attach a home automatically.
+- MAY indicate whether downstream setup should be offered immediately
+  after the next explicit home create or attach step.
 
 Response shape:
 
@@ -354,6 +354,8 @@ Response shape:
   "home_attachment_required": true,
   "owner_home_count": 1,
   "seed_house_norms_prefill_available": true,
+  "seed_preferences_prefill_available": false,
+  "setup_handoff_recommended": true,
   "submission_count": 3
 }
 ```
@@ -370,6 +372,8 @@ Behavior:
 - If the home already has another attached fit-check draft, the backend
   MAY reject with a structured conflict error rather than guessing which
   draft should win.
+- On success, the backend SHOULD make the downstream prefill payload
+  available immediately for seeded setup flows.
 
 Response shape:
 
@@ -378,7 +382,8 @@ Response shape:
   "ok": true,
   "draft_id": "uuid",
   "home_id": "uuid",
-  "attached_at": "timestamptz"
+  "attached_at": "timestamptz",
+  "setup_prefill_ready": true
 }
 ```
 
@@ -546,6 +551,9 @@ Behavior:
 - MAY return bounded preference-flow hint values where a supported
   crosswalk exists.
 - MUST NOT create or mutate downstream records.
+- SHOULD return onboarding seed payloads in index form so mobile flows
+  can start at the first unanswered question rather than from a blank
+  form.
 
 Response shape:
 
@@ -558,6 +566,19 @@ Response shape:
     "norms_rhythm_quiet": "variable",
     "norms_responsibility_flow": "clear_agreements",
     "norms_repair_style": "talk_soon"
+  },
+  "onboarding_seed": {
+    "house_norms": {
+      "initial_responses": {
+        "norms_shared_spaces": 0,
+        "norms_rhythm_quiet": 1,
+        "norms_responsibility_flow": 0,
+        "norms_repair_style": 0
+      }
+    },
+    "preferences": {
+      "initial_responses": {}
+    }
   },
   "preference_flow_hints": {
     "supported": false,
@@ -709,6 +730,8 @@ Public submission behavior:
   the `claim_token`.
 - Successful claim does not attach the draft to a home.
 - Explicit attach RPC links a claimed draft to a chosen home.
+- Successful attach makes setup prefill immediately available for the
+  next onboarding step.
 - Successful claim of multiple different drafts by the same owner
   account is allowed.
 - Owner review returns an unranked submissions list with preview
@@ -724,7 +747,7 @@ Public submission behavior:
 
 ## 9. References
 
-- [Flatmate Fit Check Contract v3.3](../../../product/kinly/shared/flatmate_fit_check_v1.md)
+- [Flatmate Fit Check Contract v3.5](../../../product/kinly/shared/flatmate_fit_check_v1.md)
 - [House Norms v1](../../../product/kinly/shared/house_norms_v1.md)
 - [House Norms API v1.1](./house_norms_api_v1.md)
 - [Homes v2](./homes_v2.md)

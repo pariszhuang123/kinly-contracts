@@ -5,10 +5,10 @@ Scope: shared
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v3.4
+Version: v3.5
 ---
 
-# Kinly Flatmate Fit Check Contract v3.4
+# Kinly Flatmate Fit Check Contract v3.5
 
 Status: Draft
 
@@ -40,7 +40,9 @@ The system:
    of + what questions to ask to confirm
 4. May show a candidate-specific **Alignment Preview** to help the owner
    understand where living-style expectations already line up
-5. After login, stores the owner's answers so they can later prefill
+5. After login, gives the owner an app inbox for all candidate
+   submissions tied to that fit-check draft
+6. After login, stores the owner's answers so they can later prefill
    House Norms and personal preference flows (but does not auto-write
    to those systems)
 
@@ -267,10 +269,31 @@ The candidate does NOT receive a compatibility result, watchouts about
 the owner, or suggested interview questions. This is an owner-first
 tool.
 
-**Step 5 — Optional reflection + CTA (non-blocking)**
+**Step 5 — Personalized result page + CTA (non-blocking)**
 
-After submission, the candidate MAY see a lightweight, non-comparative
-self-reflection.
+After submission, the candidate MUST land on a candidate-specific
+post-submit page for that submission.
+
+This page is personalized to the candidate's own answers, but remains
+strictly non-comparative.
+
+The page MAY show:
+- a lightweight self-reflection
+- a short description of the kind of living environment their answers
+  suggest they usually prefer
+- a prompt to continue into Kinly
+
+The page MUST NOT show:
+- owner answers
+- owner watchouts
+- owner suggested interview questions
+- candidate ranking
+- compatibility or comparison against the owner
+- compatibility or comparison against other candidates
+
+The personalized page is intended to make the flow feel complete for the
+candidate and provide a natural handoff into Kinly, without exposing any
+owner-only screening output.
 
 Example (en):
 > "People who answered like you usually prefer flexible living
@@ -285,6 +308,19 @@ This step MUST:
 - Not show compatibility or comparison results
 - Not imply acceptance, rejection, or ranking
 - Route to a renter/prospective-tenant landing page or app download path
+
+### 6.2A Candidate Conversion Framing
+
+Candidate conversion SHOULD come from immediate personal value, not from
+withholding basic completion state.
+
+Recommended framing:
+- "Save your answers in Kinly"
+- "Keep your living-style profile for future homes"
+- "Continue in the app if you want to reuse this later"
+
+Candidate conversion MUST NOT depend on promising access to owner-only
+briefings or cross-candidate comparisons.
 
 ### 6.3 Owner Briefing (Core Output)
 
@@ -372,10 +408,18 @@ conversation, not a binding compatibility result.
 
 Owners MUST have a way to review candidate submissions after claim.
 
+The owner review surface is a required product outcome, not an optional
+admin utility. It is the canonical place where the head tenant or
+lived-in landlord sees all candidate submissions tied to the claimed
+fit-check draft.
+
 #### 6.4.1 Submission list
 
 The owner review surface MUST show one row/card per candidate
 submission.
+
+The owner MUST be able to see every candidate submission linked to that
+claimed draft from a single app inbox or review list.
 
 Each submission card MUST include:
 - `display_name`
@@ -418,6 +462,10 @@ In v1:
   appear via polling or refresh
 - After the draft is claimed in app, the system MAY show an in-app
   notification or inbox/event badge for new submissions
+
+Email notification is optional and secondary. Product MUST NOT rely on
+email as the primary owner review mechanism because the core retained
+value is the in-app inbox of applicant briefings.
 
 Push notification delivery is optional and out of scope for v1.
 
@@ -603,6 +651,7 @@ None of these exist today. This is explicitly out of scope for v1.
 ### 8.2 Login Required For
 - Owner: re-accessing briefings after closing the browser
 - Owner: viewing multiple candidate briefings across sessions
+- Owner: accessing the full candidate review inbox in app
 - Owner: revoking/regenerating the share token
 - Owner: persisting the draft and associating it with a home
 - Owner: creating a new home from the fit-check draft when they do not
@@ -620,6 +669,8 @@ Required model:
 4. Owner selects "Continue in app"
 5. App handles authentication and submits the claim
 6. Backend atomically links the draft to the authenticated owner
+7. App opens the owner review inbox for that draft, including all
+   candidate submissions and briefings collected so far
 
 Claim requires possession of a short-lived `claim_token` bound to the
 draft. The claim token is an implementation detail and MUST NOT be shown
@@ -690,15 +741,15 @@ This is an owner-first tool. Visibility is intentionally asymmetric.
 | Data | Owner | Candidate |
 |---|---|---|
 | Owner's scenario answers | ✅ (own answers) | ❌ |
-| Candidate's scenario answers | ✅ (structured answers + briefing context) | ✅ (may see own self-reflection only, not owner comparison) |
+| Candidate's scenario answers | ✅ (structured answers + briefing context) | ✅ (own personalized result page only; no owner comparison) |
 | Home vibe summary | ✅ | ❌ |
 | Pre-interview briefing | ✅ | ❌ |
 | Suggested questions | ✅ | ❌ |
 | Other candidates' data | N/A (one briefing at a time) | ❌ |
 | Candidate `display_name` | ✅ | ✅ (own provided value) |
 
-The candidate sees: question flow → confirmation → optional
-self-reflection + CTA.
+The candidate sees: question flow → submission confirmation →
+personalized result page → optional app CTA.
 
 ### 9.1 Answer Leakage
 
@@ -851,6 +902,8 @@ The system MUST NOT:
 - ≥ 80% completion rate (4 scenarios)
 - ≥ 50% owners share link to at least one candidate
 - ≥ 30% conversion to login after viewing briefing
+- measurable owner claim-to-inbox conversion after first applicant
+- measurable candidate click-through from personalized result page to app
 
 ### Behavioural Indicators
 - Owners use suggested questions in real interviews

@@ -19,7 +19,7 @@ share-token lifecycle, and downstream prefill retrieval.
 Audience: Product, design, engineering, AI agents.
 
 Depends on:
-- Flatmate Fit Check Contract v3.3
+- Flatmate Fit Check Contract v3.5
 - Homes v2
 - House Norms v1
 
@@ -298,6 +298,7 @@ Behavior:
 - Generates one `candidate_fit_briefing` using a frozen owner-answer
   snapshot from comparison time.
 - Returns candidate-safe confirmation payload only.
+- Returns a candidate-specific post-submit payload for that submission.
 - MUST NOT return owner answers, compatibility results, or the owner
   briefing.
 
@@ -314,9 +315,13 @@ Response shape:
   },
   "confirmation": {
     "message_key": "fit_check.candidate.submitted",
-    "reflection": {
-      "show": true,
-      "text_key": "fit_check.candidate.reflection.flexible"
+    "result_page": {
+      "submission_id": "uuid",
+      "page_type": "personalized_non_comparative",
+      "reflection": {
+        "show": true,
+        "text_key": "fit_check.candidate.reflection.flexible"
+      }
     },
     "cta": {
       "text_key": "fit_check.candidate.create_own_cta",
@@ -388,6 +393,8 @@ Behavior:
 - Default ordering SHOULD be newest first.
 - Each list item includes only the preview metadata needed for the owner
   review surface.
+- This response is the canonical app inbox payload for the owner review
+  surface.
 
 Response shape:
 

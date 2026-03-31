@@ -10,7 +10,15 @@ Version: v3.6
 
 # Kinly Flatmate Fit Check Contract v3.6
 
-Status: Draft
+Status: Deprecated (superseded by v2)
+
+> **Note:** This contract describes the legacy anonymous-web / app-claim
+> model. New users entering the fit check web flow SHOULD use the v2
+> web-authenticated freemium model. See
+> [flatmate_fit_check_v2.md](flatmate_fit_check_v2.md) for the current
+> contract and
+> [ADR-0006](../../../../decisions/ADR-0006-flatmate-fit-check-web-auth-freemium-gate.md)
+> for the rationale behind this change.
 
 Scope: Owner-first pre-interview screening tool. Captures a home's living
 style via behavioural scenario questions, collects anonymous candidate

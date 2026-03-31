@@ -50,6 +50,7 @@
 - [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 - [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
 - [contracts/api/kinly/homes/flatmate_fit_check_api_v1.md](contracts/api/kinly/homes/flatmate_fit_check_api_v1.md)
+- [contracts/api/kinly/homes/flatmate_fit_check_api_v2.md](contracts/api/kinly/homes/flatmate_fit_check_api_v2.md)
 - [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
 - [contracts/api/kinly/homes/house_norms_api_v1.md](contracts/api/kinly/homes/house_norms_api_v1.md)
 - [contracts/api/kinly/homes/house_rules_api_v1.md](contracts/api/kinly/homes/house_rules_api_v1.md)
@@ -151,6 +152,7 @@
 - [contracts/product/kinly/shared/chores_v1.md](contracts/product/kinly/shared/chores_v1.md)
 - [contracts/product/kinly/shared/chores_v2.md](contracts/product/kinly/shared/chores_v2.md)
 - [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
+- [contracts/product/kinly/shared/flatmate_fit_check_v2.md](contracts/product/kinly/shared/flatmate_fit_check_v2.md)
 - [contracts/product/kinly/shared/complaint_rewrite_index_v1.md](contracts/product/kinly/shared/complaint_rewrite_index_v1.md)
 - [contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md](contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md)
 - [contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md](contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md)
@@ -222,6 +224,7 @@
 - [decisions/ADR-0003-expenses-rpc-only-access.md](decisions/ADR-0003-expenses-rpc-only-access.md)
 - [decisions/ADR-0004-links-service-on-vercel.md](decisions/ADR-0004-links-service-on-vercel.md)
 - [decisions/ADR-0005-house-rules-owner-authority-v1.md](decisions/ADR-0005-house-rules-owner-authority-v1.md)
+- [decisions/ADR-0006-flatmate-fit-check-web-auth-freemium-gate.md](decisions/ADR-0006-flatmate-fit-check-web-auth-freemium-gate.md)
 
 ## platform
 

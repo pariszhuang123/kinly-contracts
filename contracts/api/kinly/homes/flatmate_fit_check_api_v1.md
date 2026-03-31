@@ -10,7 +10,13 @@ Version: v1.1
 
 # Flatmate Fit Check API v1.1
 
-Status: Proposed
+Status: Deprecated (superseded by v2)
+
+> **Note:** This API contract describes the legacy anonymous-draft /
+> claim-token model. The v2 API replaces this with authenticated owner
+> creation and a server-side freemium gate. See
+> [flatmate_fit_check_api_v2.md](flatmate_fit_check_api_v2.md) for the
+> current API contract.
 
 Scope: Backend RPCs and public route contracts for anonymous owner draft
 capture, public candidate submission, app-only draft claim, owner review,

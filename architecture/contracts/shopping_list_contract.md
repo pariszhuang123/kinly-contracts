@@ -5,215 +5,104 @@ Scope: platform
 Artifact-Type: architecture
 Stability: evolving
 Status: draft
-Version: v1.0
+Version: v1.3
+Last updated: 2026-03-28
 ---
 
-# Shopping List Architecture Contract v1
+# Shopping List Architecture Contract v1.3
 
-This architecture contract is aligned to `contracts/api/kinly/homes/shopping_list_api_v1.md` and captures system-level invariants and RPC behavior for shared shopping lists.
+This architecture contract is aligned to
+`docs/contracts/shopping_list/shopping_list_api_v1.md`,
+`docs/contracts/shopping_list/shopping_list_contract_v1.md`, and
+`docs/contracts/shopping_list/shopping_list_purchase_memory_v1.md`.
+It exists to capture cross-layer invariants only.
 
-## 0. Scope
+## 1. Scope
 
-One active shared shopping list per home.
-Household members can:
+- One active shopping list header per home remains canonical.
+- Shopping-list scope is item-level, not list-level:
+  - the home has one active list
+  - each item may target either `house` or one allowed `unit`
+- Purchase memory follows the same sharing boundary as the source item:
+  - house-scoped items read and write house-scoped memory
+  - unit-scoped items read and write memory for that unit only
 
-- Add items with optional quantity/details/photo reference
-- Tick/untick items (single completion owner per item)
-- Run Done Shopping actions on their own completed items only
-- Optionally link their completed items to a Share expense
-- Receive soft overbuying reminders when adding an item the home has previously purchased
+## 2. Cross-Layer Invariants
 
-## 1. Data model and invariants
+### 2.1 List and item model
 
-### 1.0 Scope of tables
+- `shopping_lists` keeps `UNIQUE(home_id) WHERE is_active = true`.
+- `shopping_list_items` is the only place where shopping scope is stored.
+- `shopping_list_items.scope_type IN ('house', 'unit')`.
+- `scope_type = 'house'` implies `unit_id IS NULL`.
+- `scope_type = 'unit'` implies `unit_id IS NOT NULL`.
+- `unit_id` must reference a valid `home_units.id` in the same home.
+- Scope selection is constrained by the caller's home-unit state:
+  - no active shared unit: allowed scopes are `house` and the caller's personal
+    unit
+  - active shared unit: allowed scopes are `house` and that shared unit
 
-The shopping list module owns three tables:
-- `shopping_lists` — one active list per home.
-- `shopping_list_items` — individual list items with completion and archive lifecycle.
-- `shopping_list_purchase_memory` — per-home purchase history summary for overbuying reminders.
+### 2.2 Completion and archive model
 
-### 1.1 `shopping_lists`
+- Completion is single-writer and first-completer-wins.
+- A member may complete an uncompleted item or re-submit completion for an item
+  they already completed.
+- A different member must not take over or clear another member's completion;
+  item update must reject that transition with a canonical error.
+- "Done shopping" actions remain per-user:
+  - bulk archive and expense-link archive operate only on the caller's
+    completed items
+  - single-item archive may archive another member's completed item, but memory
+    attribution still uses the item's `completed_by_user_id`
 
-- One active list per home enforced by unique partial index:
-  - `UNIQUE(home_id) WHERE is_active = true`
-- `updated_at` is trigger-maintained.
+### 2.3 Purchase memory model
 
-### 1.2 `shopping_list_items`
+- Purchase memory is scope-aware, not purely home-wide.
+- Memory rows belong to one bucket:
+  - `house` bucket: `(home_id, scope_type = 'house', canonical_name)`
+  - `unit` bucket: `(home_id, scope_type = 'unit', unit_id, canonical_name)`
+- The implementation must enforce uniqueness per bucket; a plain unique
+  constraint including nullable `unit_id` is not sufficient for house rows.
+- `canonical_name` is derived as `lower(btrim(name))` at archive time.
+- Memory is written only from completed rows actually archived by the archive
+  RPC transaction.
+- The current implementation stores latest-purchase recency per bucket rather
+  than a cumulative purchase counter.
+- Reminder reads use the same scope bucket as the item being added.
+- If a shared unit is archived, open unarchived incomplete items still scoped to
+  that unit are reassigned to `house`; completed or archived items retain their
+  original unit reference historically.
 
-Core columns include:
+### 2.4 Read and filter model
 
-- identity and ownership: `id`, `shopping_list_id`, `home_id`, `created_by_user_id`
-- content: `name`, `quantity`, `details`, `reference_photo_path`, `reference_added_by_user_id`
-- completion: `is_completed`, `completed_by_user_id`, `completed_at`
-- settlement/archive: `linked_expense_id`, `archived_at`, `archived_by_user_id`
-- timestamps: `created_at`, `updated_at`
+- Default shopping-list reads return the active list plus caller-visible items
+  across allowed scopes, with scope metadata on each item.
+- Backend filtering by `house` or by a specific allowed `unit` must be
+  supported by the read RPC surface.
+- Scope-aware filtering changes which items are returned, not which list header
+  is active.
 
-Invariants:
+## 3. Shared Infrastructure Rules
 
-- `is_completed = true` implies `completed_by_user_id` and `completed_at` are non-null.
-- `is_completed = false` implies `completed_by_user_id` and `completed_at` are null.
-- Active list views must exclude `archived_at IS NOT NULL`.
-- `reference_photo_path` is replace-only once set; delete-to-null is forbidden.
-- `reference_photo_path` must match `households/%` when present.
-- `updated_at` is trigger-maintained.
+- Shopping-item photo quota remains home-level:
+  - `public.home_usage_metric` includes `shopping_item_photos`
+  - `public.home_usage_counters.shopping_item_photos` tracks active shopping
+    item photos
+- Shopping list tables and purchase-memory tables are RPC-only with RLS
+  enabled.
+- Membership and scope validation must be enforced inside security-definer RPCs;
+  clients must not be trusted to self-scope.
 
-### 1.3 `shopping_list_purchase_memory`
+## 4. Coupling
 
-One row per unique item name per home. Provides lightweight purchase history for overbuying reminders.
-
-Core columns:
-- identity: `id`, `home_id`, `canonical_name`
-- display: `display_name` (most recent casing/spelling)
-- purchase stats: `purchase_count`, `first_purchased_at`, `last_purchased_at`, `last_purchased_by_user_id`
-- warning config: `warning_window_days`
-- timestamps: `created_at`, `updated_at`
-
-Invariants:
-- `UNIQUE(home_id, canonical_name)` — also serves as the lookup index.
-- `canonical_name = lower(btrim(shopping_list_items.name))` at archive time — exact match only in v1.
-- `purchase_count` represents distinct purchase events (archive calls), not individual item rows.
-- `last_purchased_by_user_id` is the item's `completed_by_user_id` (buyer), not the archiver.
-- `warning_window_days` is seeded at row creation and immutable in v1.
-- `home_id` FK with `ON DELETE CASCADE`.
-- `last_purchased_by_user_id` has no FK; may be a dangling UUID if user is deleted.
-- `updated_at` is trigger-maintained.
-
-## 2. Quotas and usage counters
-
-Shopping list photo usage is integrated with home plan limits:
-
-- `public.home_usage_metric` includes `shopping_item_photos`.
-- `public.home_usage_counters.shopping_item_photos` tracks active shopping-item photos.
-- `public.home_plan_limits` includes free-plan limit for `shopping_item_photos` (default `10`).
-
-Behavior:
-
-- Adding first-ever photo to an item consumes quota and increments counter.
-- Replacing an existing photo does not increment usage.
-
-## 3. Access model
-
-- Tables have RLS enabled (`shopping_lists`, `shopping_list_items`, `shopping_list_purchase_memory`).
-- Direct access for `authenticated` is revoked for all shopping list tables.
-- Reads/writes are RPC-only.
-- Membership is enforced inside RPCs using `public._assert_home_member(p_home_id)` or equivalent scoped membership checks for item-scoped calls.
-- Internal helpers `_home_assert_quota(uuid, jsonb)` and `_home_usage_apply_delta(uuid, jsonb)` are not executable by `authenticated`.
-
-## 4. RPC architecture behavior
-
-### 4.1 `shopping_list_get_for_home(p_home_id uuid)`
-
-- Returns active list and unarchived items for `p_home_id`.
-- If no active list exists, returns empty active-list object (`id = null`) and `items = []`.
-- `list` includes counters:
-  - `items_unarchived_count`
-  - `items_uncompleted_count`
-- Includes `completed_by_avatar_id` via `public.profiles.avatar_id` join.
-- Ordering target: uncompleted first, then completed by `completed_at DESC`.
-
-### 4.2 `shopping_list_add_item(...)`
-
-- Lazily creates active list when missing.
-- Creates item with `is_completed = false` and `archived_at = NULL`.
-- Rejects blank/whitespace names (`invalid_name`).
-- If photo path is provided, it must start with `households/` and sets `reference_added_by_user_id = auth.uid()`.
-- Adding an item with a first photo enforces/increments `shopping_item_photos` quota.
-- After insert, performs a non-blocking lookup on `shopping_list_purchase_memory` by `(home_id, lower(btrim(name)))`. If a match exists and `days_since_last_purchase < warning_window_days`, response includes a `purchase_memory` object with `purchase_count`, `last_purchased_at`, `last_purchased_by_display_name` (nullable), `days_since_last_purchase`, and `warning_window_days`. Otherwise `purchase_memory` is `null`. See API contract §2.2 for full wire format.
-
-### 4.3 `shopping_list_update_item(...)`
-
-- Supports edits to `name`, `quantity`, `details`, `is_completed`, and photo replacement.
-- `NULL` for `p_name`, `p_quantity`, `p_details` means no change.
-- Tick sets completion ownership to `auth.uid()` and stamps `completed_at = now()`.
-- Untick clears completion fields.
-- Photo path must start with `households/` when provided.
-- Delete-to-null photo attempts are rejected (`photo_delete_not_allowed`).
-- First photo add enforces/increments photo quota; replacement does not increment.
-
-### 4.4 `shopping_list_prepare_expense_for_user(p_home_id uuid)`
-
-Selection criteria:
-
-- `home_id = p_home_id`
-- `archived_at IS NULL`
-- `is_completed = true`
-- `completed_by_user_id = auth.uid()`
-- `linked_expense_id IS NULL`
-
-Returns one row or zero rows containing:
-
-- `default_description`
-- `default_notes`
-- `item_ids`
-- `item_count`
-
-No time-window gating in v1.
-
-### 4.5 `shopping_list_link_items_to_expense_for_user(...)`
-
-- Requires `p_expense_id` belongs to `p_home_id` and was created by `auth.uid()`.
-- Update predicate includes:
-  - `home_id = p_home_id`
-  - `id = ANY(p_item_ids)`
-  - `archived_at IS NULL`
-  - `is_completed = true`
-  - `completed_by_user_id = auth.uid()`
-  - `linked_expense_id IS NULL`
-- Sets:
-  - `linked_expense_id = p_expense_id`
-  - `archived_at = now()`
-  - `archived_by_user_id = auth.uid()`
-- Locks expense row (`FOR UPDATE`) before first-link check.
-- Side effect: increments `home_usage_counters.active_expenses` by `+1` only when first shopping-list link is created for that expense.
-- No active-expenses quota check in this RPC.
-- Purchase memory side-effect: UPSERTs into `shopping_list_purchase_memory` for completed archived items (see §4.8).
-
-### 4.6 `shopping_list_archive_items_for_user(...)`
-
-- Archives without expense link.
-- Predicate includes:
-  - `home_id = p_home_id`
-  - `id = ANY(p_item_ids)`
-  - `archived_at IS NULL`
-  - `completed_by_user_id = auth.uid()`
-- Sets `archived_at = now()` and `archived_by_user_id = auth.uid()`.
-- Purchase memory side-effect: UPSERTs into `shopping_list_purchase_memory` for completed archived items (see §4.8).
-
-### 4.7 `shopping_list_archive_item(p_item_id uuid)`
-
-- Archives a single item so it no longer appears in the active list.
-- Looks up the item by `p_item_id`, rejects missing/already archived items with
-  `item_not_found`, and enforces home membership using the item's `home_id`.
-- Does not require the item to be completed by the current user.
-- Sets `archived_at = now()` and `archived_by_user_id = auth.uid()`.
-- Purchase memory side-effect: if item has `is_completed = true`, UPSERTs into `shopping_list_purchase_memory` (see §4.8). No memory write if uncompleted.
-
-### 4.8 Purchase memory write behaviour
-
-Shared side-effect for §4.5, §4.6, and §4.7. Runs in the same transaction as the archive `UPDATE`.
-
-- Driven from rows actually modified by the archive (`UPDATE ... RETURNING`).
-- Only rows where `is_completed = true` are eligible.
-- Group eligible rows by `canonical_name = lower(btrim(name))`.
-- For each distinct `canonical_name`, UPSERT into `shopping_list_purchase_memory`:
-  - Insert: `purchase_count = 1`, timestamps set to `now()`, `display_name` and `last_purchased_by_user_id` from item's `completed_by_user_id`, `warning_window_days` seeded from defaults.
-  - Update: `purchase_count += 1`, `last_purchased_at = now()`, `display_name` and `last_purchased_by_user_id` updated. `warning_window_days` is NOT overwritten.
-- When multiple items share a `canonical_name` in one batch, the item with the latest `created_at` wins (ties broken by `id` ascending).
-- Attribution uses `completed_by_user_id` (buyer), not `auth.uid()` (archiver).
-- UPSERT failure rolls back the entire transaction (archive included).
-
-## 5. Canonical errors
-
-- `invalid_name`
-- `invalid_reference_photo_path`
-- `photo_delete_not_allowed`
-- `NOT_HOME_MEMBER`
-- `item_not_found`
-- `invalid_expense`
-- `PAYWALL_LIMIT_SHOPPING_ITEM_PHOTOS`
-
-## 6. Coupling
-
-- Share expense creation remains defined in `contracts/api/kinly/share/expenses_v2.md`.
-- Shopping list integration covers prepare/link/archive boundaries only.
-- Purchase memory product rules defined in `contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md`.
+- Product behavior lives in
+  `docs/contracts/shopping_list/shopping_list_contract_v1.md`.
+- Backend wire/storage behavior lives in
+  `docs/contracts/shopping_list/shopping_list_api_v1.md`.
+- Purchase-memory behavior lives in
+  `docs/contracts/shopping_list/shopping_list_purchase_memory_v1.md`.
+- Home-unit permissions and unit lifecycle live in
+  `docs/contracts/home_units/home_units_api_v1.md` and
+  `docs/contracts/home_units/home_units_v1.md`.
+- Share expense allocation remains defined in
+  `docs/contracts/expenses/expenses_v2.md`.

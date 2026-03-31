@@ -5,17 +5,18 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v1.0
+Version: v1.2
 ---
 
-# Home Units Mobile Contract v1
+# Home Units Mobile Contract v1.2
 
 Status: Draft
 
 Scope: Mobile-only product behavior for home units. Defines where unit
 management appears in the app, how personal and shared units are presented, how
 shared-unit creation/join works, and how Today surfaces unit-based liabilities.
-Backend and schema details live in `contracts/api/kinly/homes/home_units_api_v1.md`.
+Backend and schema details live in
+`docs/contracts/home_units/home_units_api_v1.md`.
 
 ## 1. Purpose
 
@@ -26,6 +27,7 @@ The mobile experience MUST support:
 - optional shared units for members who want to be treated as one liability
   bucket
 - Today visibility for both personal and shared liabilities
+- exact-unit privacy for unit-scoped shopping items
 - unit management from profile/settings surfaces
 
 This contract does NOT define internal cost sharing inside a shared unit.
@@ -44,6 +46,7 @@ This contract does NOT define internal cost sharing inside a shared unit.
    behavior, not global profile identity.
 8. Today MUST show open liabilities according to their explicit debtor target:
    personal unit or shared unit.
+9. Unit-scoped shopping items are private to the exact unit that owns them.
 
 ## 3. Entry Points
 
@@ -92,6 +95,12 @@ the add/edit item UI.
 Allowed scope combinations:
 - no shared unit: `House` or `Personal`
 - has shared unit: `House` or `Shared`
+
+Visibility rules:
+- `House` items are visible to all current home members
+- unit-scoped items are visible only to current members of that exact unit
+- multiple couples in one home stay isolated because unit-scoped items are
+  keyed by concrete `unit_id`, not by the generic label `Shared`
 
 ### 3.4 Today
 
@@ -198,6 +207,8 @@ When the member leaves:
 - remove them from the shared unit
 - if the remaining member count drops below two, the shared unit is archived
 - the member falls back to personal-unit-only behavior
+- if the archived shared unit still had open uncompleted shopping items, those
+  items move to `House` rather than disappearing with the archived unit
 
 The UI SHOULD confirm this clearly before submission.
 
@@ -266,6 +277,10 @@ If the current member belongs to a shared unit, expense create/edit SHOULD
 default to the shared unit first while still allowing the member to switch to
 their personal unit before submitting.
 
+Shopping-list scope MUST NOT automatically force expense liability mode. The
+member still makes an explicit expense choice between unit-based and
+person-based allocation where both are supported.
+
 ### 8.2 Shared-unit meaning
 
 If the creator selects a shared unit, the app MUST communicate that:
@@ -298,6 +313,6 @@ The UI SHOULD explain that joining a shared unit means:
 
 ## 11. Dependencies
 
-- Backend/API contract: `contracts/api/kinly/homes/home_units_api_v1.md`
+- Backend/API contract: `docs/contracts/home_units/home_units_api_v1.md`
 - Existing mobile expense experience
 - Existing profile/settings surface

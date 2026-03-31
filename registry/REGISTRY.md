@@ -15,7 +15,8 @@
 
 ### Domain: homes\n
 * **flatmate_fit_check_api** (v1.1): [contracts/api/kinly/homes/flatmate_fit_check_api_v1.md](contracts/api/kinly/homes/flatmate_fit_check_api_v1.md)
-* **home_units** (v2.0): [contracts/api/kinly/homes/home_units_api_v1.md](contracts/api/kinly/homes/home_units_api_v1.md)
+* **flatmate_fit_check_api** (v2.0): [contracts/api/kinly/homes/flatmate_fit_check_api_v2.md](contracts/api/kinly/homes/flatmate_fit_check_api_v2.md)
+* **home_units** (v1.3): [contracts/api/kinly/homes/home_units_api_v1.md](contracts/api/kinly/homes/home_units_api_v1.md)
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
 * **house_directory_api** (v1.1): [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
@@ -26,7 +27,7 @@
 * **house_vibe_canonical_preference_schema** (v1.0): [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
 * **house_vibe_compute_rpc_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md](contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md)
 * **house_vibe_mapping_effects** (v1.0): [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
-* **shopping_list** (v1.1): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
+* **shopping_list** (v1.6): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
 
 ### Domain: identity\n
 * **personal_directory_api** (v1.0): [contracts/api/kinly/identity/personal_directory_api_v1.md](contracts/api/kinly/identity/personal_directory_api_v1.md)
@@ -65,7 +66,7 @@
 
 ### Domain: share\n
 * **expenses** (v1.0): [contracts/api/kinly/share/expenses_v1.md](contracts/api/kinly/share/expenses_v1.md)
-* **expenses** (v2.5): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
+* **expenses** (v2.6): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
 * **share_recurring_api** (v1.0): [contracts/api/kinly/share/share_recurring_api_v1.md](contracts/api/kinly/share/share_recurring_api_v1.md)
 
 ### Domain: shared\n
@@ -93,7 +94,7 @@
 
 ## Surface: mobile\n
 ### Domain: homes\n
-* **home_units** (v1.0): [contracts/product/kinly/mobile/home_units_v1.md](contracts/product/kinly/mobile/home_units_v1.md)
+* **home_units** (v1.2): [contracts/product/kinly/mobile/home_units_v1.md](contracts/product/kinly/mobile/home_units_v1.md)
 * **house_directory_mobile** (v1.0): [contracts/product/kinly/mobile/house_directory_mobile_v1.md](contracts/product/kinly/mobile/house_directory_mobile_v1.md)
 
 ### Domain: links\n
@@ -139,9 +140,10 @@
 ## Surface: shared\n
 ### Domain: homes\n
 * **flatmate_fit_check** (v3.6): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
+* **flatmate_fit_check** (v2.0): [contracts/product/kinly/shared/flatmate_fit_check_v2.md](contracts/product/kinly/shared/flatmate_fit_check_v2.md)
 * **house_directory** (v1.1): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
-* **shopping_list** (v1.1): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
-* **shopping_list** (v1.0): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
+* **shopping_list** (v1.3): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
+* **shopping_list** (v1.4): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
 
 ### Domain: identity\n
 * **personal_directory** (v1.0): [contracts/product/kinly/shared/personal_directory_v1.md](contracts/product/kinly/shared/personal_directory_v1.md)

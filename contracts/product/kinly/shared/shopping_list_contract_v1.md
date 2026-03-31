@@ -5,12 +5,12 @@ Scope: shared
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v1.1
+Version: v1.3
 Audience: internal
-Last updated: 2026-03-26
+Last updated: 2026-03-28
 ---
 
-# Shopping List Product Contract v1.1
+# Shopping List Product Contract v1.3
 
 ## 1. Purpose & scope
 
@@ -65,6 +65,8 @@ Last updated: 2026-03-26
       only replacement with a new photo is allowed.
     - Active views exclude `archived_at IS NOT NULL`.
     - Scope is item-level, not list-level.
+    - Completing a `Personal` or `Shared` item affects that exact item only; it
+      does not also complete any `House` item.
 
 ## 5. Scope model
 
@@ -107,6 +109,11 @@ enabled.
     or `reference_photo_path` exist.
   - If scope is not `House`, the row SHOULD show a small visible scope label
     such as `Shared` or `Personal`.
+  - The UI SHOULD be able to show all visible scopes together in one list.
+  - The UI SHOULD support scope filtering, for example:
+    - `All`
+    - `House`
+    - the caller's allowed unit scope
   - Tapping row opens a detail sheet.
 
 - **Adding items**
@@ -115,6 +122,13 @@ enabled.
   - If the active list is missing, creation MUST lazily create it before
     inserting the item.
   - New items default to `House`.
+  - Add-item success MAY include a soft purchase-memory reminder for the same
+    sharing boundary as the new item:
+    - `House` item -> check `House` memory
+    - `Personal` item -> check that personal unit's memory only
+    - `Shared` item -> check that shared unit's memory only
+  - Current purchase memory is recency-oriented: reminders are based on the
+    latest known purchase in the matching bucket
 
 - **Reference photo**
   - Adding or replacing a photo sets `reference_photo_path` and
@@ -123,12 +137,26 @@ enabled.
     replacement with a new photo.
 
 - **Tick / untick**
-  - Any member MAY tick or untick any item.
-  - Tick sets `is_completed = true`, `completed_by_user_id = actor`,
-    `completed_at = now()`.
-  - Untick clears completion fields and sets `is_completed = false`.
-  - A new tick by another member overrides previous `completed_by_user_id`
-    (single owner at a time); UI should update avatar accordingly.
+  - Completion is first-completer-wins.
+  - Tick on an uncompleted item sets `is_completed = true`,
+    `completed_by_user_id = actor`, and `completed_at = now()`.
+  - Re-submitting completion by the same completer is idempotent.
+  - Untick by the same completer clears completion fields and sets
+    `is_completed = false`.
+  - A different member MUST NOT take over or clear another member's completion;
+    the backend should reject that transition and the UI should keep the
+    original completion avatar.
+  - Completion is scope-local: a completed `Shared` or `Personal` item remains
+    separate from `House` items.
+
+- **Shared-unit collapse**
+  - Open uncompleted unit-scoped items stay attached to their unit while that
+    shared unit remains active.
+  - If a shared unit is archived because membership drops below two, open
+    unarchived incomplete items for that unit MUST be automatically reassigned
+    to `House`.
+  - Completed or already archived items keep their original `unit_id` as
+    historical records.
 
 ## 7. "Done shopping" actions (per-user)
 
@@ -155,12 +183,18 @@ enabled.
   retry affordance.
 - List creation failure should show a generic retryable error and MUST NOT
   create duplicate lists client-side.
+- If a shared unit collapses while it still has open uncompleted scoped items,
+  those items should remain visible by being automatically moved to `House`
+  rather than becoming stranded on an archived unit.
 
 ## 9. Permissions & privacy
 
 - Home membership required for all reads/writes on list and items.
 - Avatars for `completed_by_user_id` MAY be shown.
 - No other unnecessary PII is stored on items.
+- Purchase memory must respect the same sharing boundary as the source item:
+  - house-scoped memory is visible to home members
+  - unit-scoped memory should only inform members acting within that unit scope
 
 ## 10. Telemetry (privacy-safe)
 
@@ -178,6 +212,8 @@ enabled.
 - Couples to Share expenses module for optional settlement; this contract stops
   at prefill + linkage.
 - Unit-scope behavior aligns with:
-  - `contracts/api/kinly/homes/home_units_api_v1.md`
-  - `contracts/product/kinly/mobile/home_units_v1.md`
+  - `docs/contracts/home_units/home_units_api_v1.md`
+  - `docs/contracts/home_units/home_units_v1.md`
+- Purchase-memory reminder behavior aligns with
+  `docs/contracts/shopping_list/shopping_list_purchase_memory_v1.md`.
 - No required coupling to chores/house tasks modules.

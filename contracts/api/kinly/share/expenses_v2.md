@@ -5,12 +5,12 @@ Scope: backend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v2.5
+Version: v2.6
 ---
 
-# Expenses Contracts v2.5
+# Expenses Contracts v2.6
 
-Status: Draft (unit-based allocation extension + recurrence every/unit refactor + bill evidence photos + transition-based photo quota)
+Status: Draft (unit-based allocation extension + home-scoped split integrity + recurring-unit termination metadata + bill evidence photos + transition-based photo quota)
 
 Scope: Extends expenses to support unit-based allocation aligned with Home Units
 v1 while preserving debtor-based compatibility. Also keeps the recurrence
@@ -29,6 +29,8 @@ immutable `expenses` row.
   auto-marked `paid`.
 - Unit-based splits live in `expense_unit_splits`. A personal unit represents
   one individually liable member; a shared unit represents a grouped debtor.
+- Allocation mode is explicit at create/edit time; shopping-list item scope
+  does not automatically force `unit_based` or `debtor_based`.
 - For recurring plans:
   - debtor-based allocation source lives in `expense_plan_debtors`
   - unit-based allocation source lives in `expense_plan_units`
@@ -75,6 +77,7 @@ immutable `expenses` row.
 - `nextCycleDate` (`date`)
 - `status` (`ExpensePlanStatus`)
 - `terminatedAt` (`timestamptz|null`)
+- `terminationReason` (`text|null`) - one of `UNIT_TARGET_INVALID | UNIT_TARGET_ARCHIVED | UNIT_TARGET_HOME_MISMATCH | MANUAL | OTHER`
 - `createdAt` / `updatedAt`
 
 ### ExpensePlanDebtor
@@ -84,6 +87,7 @@ immutable `expenses` row.
 
 ### ExpensePlanUnit
 - `planId` (`uuid`)
+- `homeId` (`uuid`)
 - `unitId` (`uuid`)
 - `shareAmountCents` (`bigint`)
 
@@ -97,8 +101,11 @@ immutable `expenses` row.
 
 ### ExpenseUnitSplit
 - `expenseId` (`uuid`)
+- `homeId` (`uuid`)
 - `unitId` (`uuid`)
 - `amountCents` (`bigint`)
+- `paidCents` (`bigint`)
+- `fullyPaidAt` (`timestamptz|null`)
 
 ### ExpenseSummaryDto
 - `id: uuid`
@@ -144,12 +151,16 @@ immutable `expenses` row.
   - `unit_based` -> `expense_unit_splits` / `expense_plan_units`
 - `unit_based` and `debtor_based` MUST NOT be mixed within the same expense or
   recurring plan.
+- callers MUST choose allocation mode explicitly; backend MUST NOT infer it
+  from shopping-list scope, current shared-unit membership, or UI defaults
 - For unit-based activation:
   - all `unitId` values MUST belong to the same home as the expense/plan
   - `SUM(shareAmountCents)` or computed unit split totals MUST equal
     `amountCents`
-  - if the creator belongs to a shared unit, the UI/product MAY preselect that
-    shared unit, but the caller may still choose the creator's personal unit
+  - archived units MUST be rejected as targets
+  - duplicate unit targets in the same expense or plan MUST be rejected
+  - creator-personal-unit-only targeting is invalid; the split must include a
+    debtor beyond the creator's personal unit
   - internal cost sharing inside a shared unit remains out of scope
 - `recurrenceEvery` is NULL iff `recurrenceUnit` is NULL.
 - `evidencePhotoPath` is optional and must start with `households/` when provided.
@@ -167,6 +178,11 @@ immutable `expenses` row.
 - Recurring bill conversion stores `evidencePhotoPath` on `expense_plans`; generated cycles snapshot the plan value into each cycle `expenses` row.
 - Recurring cycles do not increment `expense_photos` when using plan photo (first cycle and cron cycles are no-op for this metric).
 - `expense_photos` is monotonic (add-only): once charged at activation/plan-creation boundary, it is not decremented by cancel, fully-paid transitions, or plan termination.
+- recurring unit-based plans auto-terminate if stored unit targets become
+  invalid, archived, or mismatched to the plan home
+- shared-unit collapse in Home Units can therefore terminate future recurring
+  cycles for plans targeting that archived shared unit with
+  `UNIT_TARGET_ARCHIVED`
 - Canonical errors include `PAYWALL_LIMIT_ACTIVE_EXPENSES`, `PAYWALL_LIMIT_EXPENSE_PHOTOS`, and `INVALID_EVIDENCE_PHOTO_PATH`.
 
 ## Contracts JSON
@@ -211,6 +227,7 @@ immutable `expenses` row.
       "nextCycleDate": "date",
       "status": "ExpensePlanStatus",
       "terminatedAt": "timestamptz|null",
+      "terminationReason": "text|null",
       "createdAt": "timestamptz",
       "updatedAt": "timestamptz"
     },
@@ -221,6 +238,7 @@ immutable `expenses` row.
     },
     "ExpensePlanUnit": {
       "planId": "uuid",
+      "homeId": "uuid",
       "unitId": "uuid",
       "shareAmountCents": "bigint"
     },
@@ -234,8 +252,11 @@ immutable `expenses` row.
     },
     "ExpenseUnitSplit": {
       "expenseId": "uuid",
+      "homeId": "uuid",
       "unitId": "uuid",
-      "amountCents": "bigint"
+      "amountCents": "bigint",
+      "paidCents": "bigint",
+      "fullyPaidAt": "timestamptz|null"
     },
     "ExpenseSummaryDto": {
       "id": "uuid",
@@ -313,7 +334,7 @@ immutable `expenses` row.
     "expenses.create": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_create_v4",
+      "impl": "public.expenses_create_v5",
       "args": {
         "p_home_id": "uuid",
         "p_description": "text",
@@ -335,6 +356,7 @@ immutable `expenses` row.
         "p_split_mode NULL => draft (recurrence must be null; amount optional)",
         "p_split_mode set => activation; recurrence null creates one-off active; recurrence set creates plan + first cycle and marks draft converted",
         "p_allocation_target_type determines whether activation writes debtor rows or unit rows",
+        "shopping-list scope may inform UX defaults but does not determine p_allocation_target_type",
         "unit_based activation MUST use p_unit_ids/p_unit_splits and MUST NOT also send debtor-based member split payloads",
         "debtor_based activation preserves existing direct debtor semantics",
         "When provided, p_evidence_photo_path must match households/%; recurring activation copies it to both plan and first cycle",
@@ -345,7 +367,7 @@ immutable `expenses` row.
     "expenses.edit": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_edit_v4",
+      "impl": "public.expenses_edit_v5",
       "args": {
         "p_expense_id": "uuid",
         "p_amount_cents": "bigint",
@@ -366,6 +388,7 @@ immutable `expenses` row.
       "notes": [
         "Drafts: allowed and always activates",
         "Drafts may activate as debtor_based or unit_based; this choice determines the persisted split records and recurring plan allocation source",
+        "shopping-origin expenses may still choose either mode explicitly",
         "Drafts may add or replace evidencePhotoPath before activation; clearing is supported by sending empty string",
         "Draft photo updates do not consume expense_photos until activation/plan-creation boundary",
         "Active one-off expenses: creator may edit description/notes only",
@@ -413,7 +436,7 @@ immutable `expenses` row.
     "expenses.getCurrentOwed": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_get_current_owed_v2",
+      "impl": "public.expenses_get_current_owed_v3",
       "args": {
         "p_home_id": "uuid"
       },
@@ -421,7 +444,8 @@ immutable `expenses` row.
       "notes": [
         "Returns a Today-oriented list of open liabilities",
         "Rows include enough metadata to distinguish debtor-based personal liabilities from unit-based shared liabilities",
-        "For unit_based rows, payload SHOULD include liability kind, unit_id, unit_name, amount_cents, paid_cents when applicable, and remaining_cents"
+        "For unit_based rows, payload includes liabilityKind, liabilityScope, displayMode, unitId, unitName, amountCents, paidCents, and remainingCents",
+        "Rows are grouped by payer and include payerDisplay, payerAvatarUrl, totalOwedCents, and containsSharedUnitBalance"
       ]
     },
     "expenses.getCreatedByMe": {
@@ -436,15 +460,41 @@ immutable `expenses` row.
     "expenses.getForEdit": {
       "type": "rpc",
       "caller": "member",
-      "impl": "public.expenses_get_for_edit_v2",
+      "impl": "public.expenses_get_for_edit_v3",
       "args": {
         "p_expense_id": "uuid"
       },
       "returns": "jsonb",
       "notes": [
-        "Creator-only; returns allocationTargetType, split payloads, planId, recurrenceEvery/Unit, startDate, evidencePhotoPath, canEdit flag, and editDisabledReason (ACTIVE_IMMUTABLE, RECURRING_CYCLE_IMMUTABLE, CONVERTED_TO_PLAN)"
+        "Creator-only; returns allocationTargetType, split payloads, unitSplits, planId, planStatus, recurrenceEvery/Unit, startDate, evidencePhotoPath, canEdit flag, and editDisabledReason (ACTIVE_IMMUTABLE, RECURRING_CYCLE_IMMUTABLE, CONVERTED_TO_PLAN)"
+      ]
+    },
+    "expenses.payUnitDue": {
+      "type": "rpc",
+      "caller": "current member of debtor unit",
+      "impl": "public.expenses_pay_unit_due_v2",
+      "args": {
+        "p_expense_id": "uuid",
+        "p_unit_id": "uuid",
+        "p_amount_cents": "bigint"
+      },
+      "returns": "jsonb",
+      "notes": [
+        "Applies a partial or full payment to one unit-based split",
+        "Caller must be a current member of the debtor unit",
+        "Rejects payments greater than the remaining unit balance",
+        "Emits a payment event and finalizes the parent expense when all unit balances are fully paid"
       ]
     }
   }
 }
 ```
+
+## Boundary with shopping list
+
+- Shopping-list scope and expense liability are related but independent.
+- A unit-scoped shopping item does not auto-select `allocationTargetType`.
+- A shopping-origin expense may still be created as either:
+  - `unit_based` targeting an allowed unit
+  - `debtor_based` targeting individual people
+- The caller makes that choice explicitly at expense create/edit time.

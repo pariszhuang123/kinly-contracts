@@ -16,7 +16,7 @@ Scope: Backend contract for reusable home-scoped units that support subgroup
 identity for shopping-list scope, explicit unit-based expense allocation, and
 Today visibility. This contract defines the home-units data model and unit RPC
 surface. Expense RPC semantics remain owned by
-`docs/contracts/expenses/expenses_v2.md`.
+`contracts/contracts/api/kinly/share/expenses_v2.md`.
 
 ## Purpose
 
@@ -243,7 +243,7 @@ Behavioral alignment:
 
 Expenses MAY use home units as explicit liability targets, but the unit-expense
 wire shapes and RPC versioning remain owned by
-`docs/contracts/expenses/expenses_v2.md`.
+`contracts/contracts/api/kinly/share/expenses_v2.md`.
 
 Boundary rules:
 - unit-based expenses target exact `unit_id` values
@@ -280,6 +280,117 @@ Related internal lifecycle helpers also maintain projected membership state:
 - `_home_units__reconcile_member_projection`
 - `_home_units__ensure_personal_membership_trigger`
 - `_home_units__membership_departure_trigger`
+
+### `home_units_get_my_context`
+
+Returns the caller's resolved unit context for a given home.
+
+| Param | Type | Required | Notes |
+|---|---|---|---|
+| `p_home_id` | `uuid` | yes | Must be a home where the caller has a current membership |
+
+Returns:
+- object:
+  - `personal_unit`
+  - `active_shared_unit|null`
+  - `allowed_shopping_scopes text[]`
+
+Required response shape:
+
+```json
+{
+  "personal_unit": {
+    "unit_id": "uuid",
+    "home_id": "uuid",
+    "name": "Personal",
+    "unit_type": "personal",
+    "member_user_ids": ["uuid"]
+  },
+  "active_shared_unit": {
+    "unit_id": "uuid",
+    "home_id": "uuid",
+    "name": "Alex + Sam",
+    "unit_type": "shared",
+    "member_user_ids": ["uuid", "uuid"]
+  },
+  "allowed_shopping_scopes": ["house", "unit"]
+}
+```
+
+Behavior:
+- `active_shared_unit` is `null` when the caller is not in a shared unit
+- `allowed_shopping_scopes` is:
+  - `['house', 'unit']` where `unit` means the caller's personal unit when no
+    shared unit exists
+  - `['house', 'unit']` where `unit` means the caller's active shared unit when
+    one exists
+
+### `home_units_list_selectable_expense_units`
+
+Returns the exact units the caller may target in unit-based expense flows.
+
+| Param | Type | Required | Notes |
+|---|---|---|---|
+| `p_home_id` | `uuid` | yes | Must be a home where the caller has a current membership |
+
+Returns:
+- `setof object`
+  - `unit_id`
+  - `home_id`
+  - `name`
+  - `unit_type`
+  - `member_user_ids text[]`
+
+Behavior:
+- if the caller has no active shared unit, return only their personal unit
+- if the caller has an active shared unit, return:
+  - their active shared unit
+  - their personal unit only if debtor selection rules in the expense contract
+    still allow switching back to personal targeting
+
+### `home_units_list_create_shared_candidates`
+
+Returns eligible current memberships the caller may include during creation of a
+new shared unit.
+
+| Param | Type | Required | Notes |
+|---|---|---|---|
+| `p_home_id` | `uuid` | yes | Must be a home where the caller has a current membership |
+
+Returns:
+- `setof object`
+  - `membership_id`
+  - `user_id`
+  - `display_name`
+  - `avatar_url|null`
+  - `is_owner`
+
+Behavior:
+- excludes the caller's current membership
+- excludes current memberships already belonging to another active shared unit
+- excludes non-current memberships
+
+### `home_units_list_joinable_shared_units`
+
+Returns active shared units in the home that the caller may explicitly join.
+
+| Param | Type | Required | Notes |
+|---|---|---|---|
+| `p_home_id` | `uuid` | yes | Must be a home where the caller has a current membership |
+
+Returns:
+- `setof object`
+  - `unit_id`
+  - `home_id`
+  - `name`
+  - `unit_type`
+  - `member_user_ids text[]`
+
+Behavior:
+- excludes archived shared units
+- excludes any shared unit the caller already belongs to
+- returns an empty set if the caller already belongs to another active shared
+  unit
 
 ### `home_units_create_shared`
 
@@ -345,6 +456,11 @@ Returns:
 Behavior:
 - remove the caller's shared-unit membership row
 - archive the shared unit if remaining current member count drops below two
+- this RPC is only for leaving a shared unit while remaining a current home
+  member
+- when the caller leaves the home entirely, shared-unit departure remains a
+  backend lifecycle side effect of membership closure and MUST NOT require the
+  mobile app to call this RPC separately
 
 ## Schema impact summary
 
@@ -357,7 +473,7 @@ Expected dependent extensions in this stream:
   - add `scope_type`
   - add `unit_id`
 - expense unit allocation tables and RPCs are defined in
-  `docs/contracts/expenses/expenses_v2.md`
+  `contracts/contracts/api/kinly/share/expenses_v2.md`
 
 No new shopping-list header table is required.
 No new chore table is required.
@@ -367,7 +483,8 @@ No new chore table is required.
 - Shopping-list scope is additive to the existing list model, but wrapped
   purchase-memory responses should use `shopping_list_add_item_v2` rather than
   silently changing the legacy add-item shape.
-- Expense RPC versioning is owned by `docs/contracts/expenses/expenses_v2.md`.
+- Expense RPC versioning is owned by
+  `contracts/contracts/api/kinly/share/expenses_v2.md`.
 - Chore RPCs remain unchanged because chores are still person-scoped.
 
 ## Product rules

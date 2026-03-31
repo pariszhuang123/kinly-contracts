@@ -34,6 +34,7 @@ contracts without re-stating their contents.
 - `kinly_control_color_tokens_v1.md`
 - `kinly_composable_system_v1.md` (composition boundary)
 - `core_placement_rules_v1.md` (placement and dependency rules)
+- `kinly_atmospheric_backgrounds_v1.md` (atmospheric background layer)
 
 ### 4) Design system boundaries (hard)
 1) Token-first rendering  

@@ -16,7 +16,7 @@ Scope: Mobile-only product behavior for home units. Defines where unit
 management appears in the app, how personal and shared units are presented, how
 shared-unit creation/join works, and how Today surfaces unit-based liabilities.
 Backend and schema details live in
-`docs/contracts/home_units/home_units_api_v1.md`.
+`contracts/contracts/api/kinly/homes/home_units_api_v1.md`.
 
 ## 1. Purpose
 
@@ -189,6 +189,10 @@ Show:
 - `Create shared unit`
 - `Join existing shared unit`
 
+Guardrails:
+- hide `Create shared unit` when there are no eligible create candidates
+- hide `Join existing shared unit` when there are no joinable shared units
+
 ### 6.2 When member already has a shared unit
 
 Show:
@@ -211,6 +215,12 @@ When the member leaves:
   items move to `House` rather than disappearing with the archived unit
 
 The UI SHOULD confirm this clearly before submission.
+
+If the member leaves the home entirely:
+- the app SHOULD only perform the normal home-leave action
+- backend lifecycle logic handles any shared-unit departure or archival side
+  effects
+- the app MUST NOT require an extra explicit `Leave shared unit` action first
 
 ## 7. Today Behavior
 
@@ -313,6 +323,7 @@ The UI SHOULD explain that joining a shared unit means:
 
 ## 11. Dependencies
 
-- Backend/API contract: `docs/contracts/home_units/home_units_api_v1.md`
+- Backend/API contract:
+  `contracts/contracts/api/kinly/homes/home_units_api_v1.md`
 - Existing mobile expense experience
 - Existing profile/settings surface

@@ -77,6 +77,7 @@
 * **readme** (v1.0): [contracts/design/reference/kinly/README.md](contracts/design/reference/kinly/README.md)
 
 ### Domain: kinly\n
+* **atmospheric_backgrounds** (v1.0): [contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md](contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md)
 * **components** (v1.0): [contracts/design/reference/kinly/components.md](contracts/design/reference/kinly/components.md)
 * **copy_taste** (v1.1): [contracts/design/copy/kinly/copy_taste_v1_1.md](contracts/design/copy/kinly/copy_taste_v1_1.md)
 * **core_ui_primitives** (v1.0): [contracts/design/tokens/kinly/core_ui_primitives.md](contracts/design/tokens/kinly/core_ui_primitives.md)

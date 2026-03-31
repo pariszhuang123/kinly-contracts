@@ -114,6 +114,7 @@
 - [contracts/design/tokens/kinly/kinly_derived_color_engine_v1.md](contracts/design/tokens/kinly/kinly_derived_color_engine_v1.md)
 - [contracts/design/tokens/kinly/kinly_design_system_v1.md](contracts/design/tokens/kinly/kinly_design_system_v1.md)
 - [contracts/design/tokens/kinly/kinly_foundation_colors_v1.md](contracts/design/tokens/kinly/kinly_foundation_colors_v1.md)
+- [contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md](contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md)
 - [contracts/design/tokens/kinly/kinly_foundation_surfaces_amendment_v1.md](contracts/design/tokens/kinly/kinly_foundation_surfaces_amendment_v1.md)
 
 - [contracts/product/kinly/mobile/app_v1.md](contracts/product/kinly/mobile/app_v1.md)

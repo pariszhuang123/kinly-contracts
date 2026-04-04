@@ -42,6 +42,7 @@
 - [architecture/modules.md](architecture/modules.md)
 - [architecture/repo_migration_contract_v1.md](architecture/repo_migration_contract_v1.md)
 - [architecture/report.md](architecture/report.md)
+- [architecture/withyou_system_overview_v1.md](architecture/withyou_system_overview_v1.md)
 
 ## contracts
 
@@ -97,6 +98,8 @@
 - [contracts/api/kinly/complaint/examples/context_pack_privacy_peer.json](contracts/api/kinly/complaint/examples/context_pack_privacy_peer.json)
 - [contracts/api/kinly/complaint/examples/context_pack_no_preferences_fallback.json](contracts/api/kinly/complaint/examples/context_pack_no_preferences_fallback.json)
 - [contracts/api/kinly/complaint/examples/README.md](contracts/api/kinly/complaint/examples/README.md)
+- [contracts/api/kinly/withyou/pack_download_tracking_v1.md](contracts/api/kinly/withyou/pack_download_tracking_v1.md)
+- [contracts/api/kinly/withyou/leads_amendment_v1.md](contracts/api/kinly/withyou/leads_amendment_v1.md)
 
 - [contracts/design/copy/kinly/copy_taste_v1_1.md](contracts/design/copy/kinly/copy_taste_v1_1.md)
 - [contracts/design/copy/kinly/house_vibe_label_registry_contract_v1.md](contracts/design/copy/kinly/house_vibe_label_registry_contract_v1.md)
@@ -185,10 +188,13 @@
 - [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
 - [contracts/product/kinly/shared/weekly_house_pulse_v1.md](contracts/product/kinly/shared/weekly_house_pulse_v1.md)
  - [contracts/product/kinly/shared/qr_generator_hub_v1.md](contracts/product/kinly/shared/qr_generator_hub_v1.md)
+- [contracts/product/kinly/shared/withyou_audio_pack_v1.md](contracts/product/kinly/shared/withyou_audio_pack_v1.md)
+- [contracts/product/kinly/shared/withyou_audio_asset_delivery_v1.md](contracts/product/kinly/shared/withyou_audio_asset_delivery_v1.md)
 
 - [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
 - [contracts/product/kinly/web/theme/theme_resolution_v1.md](contracts/product/kinly/web/theme/theme_resolution_v1.md)
 - [contracts/product/kinly/web/growth/interest_capture_v1.md](contracts/product/kinly/web/growth/interest_capture_v1.md)
+- [contracts/product/kinly/web/growth/interest_capture_v1_1.md](contracts/product/kinly/web/growth/interest_capture_v1_1.md)
 - [contracts/product/kinly/web/growth/interest_capture_v1_backend.md](contracts/product/kinly/web/growth/interest_capture_v1_backend.md)
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
 - [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1_1.md)
@@ -214,6 +220,8 @@
 - [contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1.md](contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1.md)
 - [contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1_1.md](contracts/product/kinly/web/links/links_marketing_surface_namespacing_v1_1.md)
 - [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
+- [contracts/product/kinly/web/withyou/scenario_landing_v1.md](contracts/product/kinly/web/withyou/scenario_landing_v1.md)
+- [contracts/product/kinly/web/withyou/lead_capture_v1.md](contracts/product/kinly/web/withyou/lead_capture_v1.md)
 - [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
 - [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
 

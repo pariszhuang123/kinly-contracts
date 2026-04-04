@@ -87,7 +87,7 @@ capability may be implied outside supported regions.
 
 | Domain | Capability                | Contract                                             | Status |
 | ------ | ------------------------- | ---------------------------------------------------- | ------ |
-| Growth | Interest Capture          | `growth/interest_capture_v1.md`                      | Active |
+| Growth | Interest Capture          | `growth/interest_capture_v1_1.md`                    | Active |
 | Growth | Interest Capture Backend  | `growth/interest_capture_v1_backend.md`              | Active |
 | Growth | Marketing Landing         | `growth/marketing_landing_recognition_first_v1_2.md` | Active |
 | Growth | Outreach Tracking         | `growth/outreach_tracking_v1_1.md`                   | Active |
@@ -96,6 +96,20 @@ capability may be implied outside supported regions.
 | Growth | Poll Result Messages      | `growth/outreach_poll_result_messages_contract_v1.md` | Active |
 | Growth | Outreach Polls Backend    | `../../../api/kinly/growth/outreach_polls_v1.md`     | Active |
 | Growth | QR Short Link Resolution  | `growth/qr_short_link_resolution_v1.md`              | Active |
+
+---
+
+### withYou
+
+| Domain  | Capability              | Contract                                                      | Status |
+| ------- | ----------------------- | ------------------------------------------------------------- | ------ |
+| withYou | Scenario Landing        | `withyou/scenario_landing_v1.md`                              | Draft  |
+| withYou | Lead Capture            | `withyou/lead_capture_v1.md`                                  | Draft  |
+| withYou | Audio Asset Delivery    | `../../shared/withyou_audio_asset_delivery_v1.md`             | Draft  |
+| withYou | Audio Pack and Config   | `../../shared/withyou_audio_pack_v1.md`                       | Draft  |
+| withYou | Leads Amendment Backend | `../../../api/kinly/withyou/leads_amendment_v1.md`            | Draft  |
+| withYou | Pack Download Tracking  | `../../../api/kinly/withyou/pack_download_tracking_v1.md`     | Draft  |
+| withYou | System Overview         | `../../../../architecture/withyou_system_overview_v1.md`      | Draft  |
 
 ---
 
@@ -197,4 +211,3 @@ If the registry is unclear, incomplete, or outdated:
 - update the registry first
 
 The registry exists so Kinly Web can grow without losing its intent.
-

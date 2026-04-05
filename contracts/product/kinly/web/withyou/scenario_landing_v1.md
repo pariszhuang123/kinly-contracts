@@ -12,162 +12,99 @@ Version: v1.0
 
 ## Purpose
 
-All scenario pages under `/withyou/{scenario}` MUST use one shared landing-page template. The template receives scenario-specific config and renders the same structural sections.
-
-This contract defines the routing rules, language model, config shape, and required page sections for v1.
+All scenario pages under `/withyou/{route_slug}` MUST use one shared landing-page
+template. The template receives route-specific config and resolves preview
+playback from the canonical scenario family.
 
 See also: [../../shared/withyou_audio_asset_delivery_v1.md](../../shared/withyou_audio_asset_delivery_v1.md)
 
----
-
 ## Canonical Public Routes
 
-| Route               | Description                           |
-|----------------------|---------------------------------------|
-| `/withyou`           | Entry point — redirects to default scenario |
-| `/withyou/uber`      | Uber scenario landing                 |
-| `/withyou/walk-home` | Walk-home scenario landing            |
-| `/withyou/bus-stop`  | Bus-stop scenario landing             |
+| Route | Canonical family |
+|---|---|
+| `/withyou/uber` | `presence` |
+| `/withyou/walk-home` | `presence` |
+| `/withyou/bus-stop` | `presence` |
+| `/withyou/party-exit` | `social_pull` |
+| `/withyou/date-fading` | `social_pull` |
+| `/withyou/new-place` | `social_pull` |
+| `/withyou/trapped-conversation` | `exit_pressure` |
+| `/withyou/they-wont-let-me-leave` | `exit_pressure` |
+| `/withyou/bad-date-exit` | `exit_pressure` |
 
-Public routes represent scenario only. Language is handled inside the page as state.
-
----
-
-## `/withyou` Redirect Behaviour
-
-On visit:
-
-1. Detect preferred language.
-2. If Chinese → set default page language to `zh`.
-3. Otherwise → set default page language to `en`.
-4. Redirect to `/withyou/uber`.
-
-No country-based route structure. No locale-based route structure.
-
----
+`/withyou` MUST redirect to `/withyou/uber`.
 
 ## Language Model
 
-Supported web languages: `en`, `zh`.
+Supported public preview languages: `en`, `zh`.
 
 Resolution order:
 
-1. Query param `?lang=zh`
-2. Stored preference
-3. Browser language
-4. Fallback to `en`
+1. query param `?lang=...`
+2. stored preference
+3. browser language
+4. fallback to `en`
 
-Language switching MUST NOT change the route. It MUST update the page in place.
+Language switching MUST NOT change the route slug.
 
----
+## Config Model
 
-## Scenario Config Shape
+Each route config MUST define:
 
-Each scenario config MUST define:
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `slug` | `string` | yes | Public route slug |
+| `scenario_family` | `presence \| social_pull \| exit_pressure` | yes | Canonical audio family key |
+| `title` | `Record<Language, string>` | yes | Localized route title |
+| `problem_framing` | `Record<Language, string>` | yes | Localized route framing |
+| `what_they_need` | `Record<Language, string>` | yes | Localized need copy |
+| `example_outcome` | `Record<Language, string>` | yes | Localized outcome copy |
+| `preview_mode` | `single_clip \| timed_sequence` | yes | Derived from scenario family |
+| `timed_labels` | localized labels | no | Route-specific labels for staged families |
+| `lead_cta` | localized text | yes | CTA to `/withyou/get` |
 
-| Field               | Type                          | Required | Description                                      |
-|---------------------|-------------------------------|----------|--------------------------------------------------|
-| `slug`              | `string`                      | yes      | Scenario identifier (e.g. `uber`)                |
-| `title`             | `Record<Language, string>`    | yes      | Localized scenario title                         |
-| `problem_framing`   | `Record<Language, string>`    | yes      | Localized problem-framing copy                   |
-| `preview_experience`| `PreviewExperienceConfig`     | yes      | Per-scenario preview interaction model            |
-| `app_links`         | `{ appStore: string; googlePlay: string }` | yes | App Store + Google Play URLs          |
-| `qr_metadata`       | `object`                      | no       | Optional QR metadata                             |
-| `lead_cta_variant`  | `string`                      | no       | Optional lead CTA variant                        |
+## Canonical Family Rules
 
----
+| Family | Preview mode | Clip ids |
+|---|---|---|
+| `presence` | `single_clip` | `primary` |
+| `social_pull` | `timed_sequence` | `stage_1`, `stage_2`, `stage_3` |
+| `exit_pressure` | `timed_sequence` | `stage_1`, `stage_2`, `stage_3` |
+
+Route-specific UI labels MAY vary, but canonical clip ids MUST remain stable.
 
 ## Required Page Sections
 
-### Problem Framing
+- route title and problem framing
+- audio preview
+- what the user needs
+- example outcome
+- app download CTAs
+- lead CTA to `/withyou/get`
 
-Localized text explaining the discomfort or situation. Rendered from `problem_framing` in the scenario config.
+## Audio Preview Rules
 
-### Audio Preview
+Preview assets MUST be resolved by family, not by route slug:
 
-The shared landing template MUST support two preview experience types:
-
-- `single_clip`: one immediate preview action for simple scenarios.
-- `timed_sequence`: multiple staged clips with explicit controls and optional auto-advance.
-
-`PreviewExperienceConfig` shape:
-
-```ts
-type PreviewExperienceConfig =
-  | {
-      type: 'single_clip';
-      clips: {
-        primary: Record<Language, string>;
-      };
-    }
-  | {
-      type: 'timed_sequence';
-      clips: {
-        immediate: Record<Language, string>;
-        plus_2_min: Record<Language, string>;
-        plus_4_min: Record<Language, string>;
-      };
-      controls: {
-        immediate_label: Record<Language, string>;
-        plus_2_min_label: Record<Language, string>;
-        plus_4_min_label: Record<Language, string>;
-        plus_4_min_auto: boolean;
-      };
-    };
-```
+- `/withyou/assets/audio-preview/{language}/{scenario_family}/primary.m4a`
+- `/withyou/assets/audio-preview/{language}/{scenario_family}/stage_1.m4a`
+- `/withyou/assets/audio-preview/{language}/{scenario_family}/stage_2.m4a`
+- `/withyou/assets/audio-preview/{language}/{scenario_family}/stage_3.m4a`
 
 Rules:
 
-- Uber-style scenarios SHOULD use `single_clip`.
-- Social-pressure exit scenarios MAY use `timed_sequence`.
-- Preview clips MUST remain marketing assets, separate from offline app packs.
-- Preview clips MUST be statically addressable by scenario, language, and stage.
-
-Suggested asset paths:
-
-- Single clip: `/withyou/assets/audio-preview/{language}/{scenario}/primary.m4a`
-- Timed sequence:
-  - `/withyou/assets/audio-preview/{language}/{scenario}/immediate.m4a`
-  - `/withyou/assets/audio-preview/{language}/{scenario}/plus_2_min.m4a`
-  - `/withyou/assets/audio-preview/{language}/{scenario}/plus_4_min.m4a`
-
-Examples:
-
-- Uber:
-  - `/withyou/assets/audio-preview/en/uber/primary.m4a`
-- Party exit:
-  - `/withyou/assets/audio-preview/zh/social_pull/immediate.m4a`
-  - `/withyou/assets/audio-preview/zh/social_pull/plus_2_min.m4a`
-  - `/withyou/assets/audio-preview/zh/social_pull/plus_4_min.m4a`
-
-### App Links
-
-- App Store link.
-- Google Play link.
-- Optional waitlist CTA if store links are not live for a market.
-
-### Lead CTA
-
-Either inline form or link to `/withyou/get`.
-
----
+- `presence` pages render one primary play action
+- `social_pull` and `exit_pressure` pages render staged controls for
+  `stage_1..3`
+- preview clips remain marketing/demo assets, separate from offline packs
 
 ## QR Code Targeting
 
-QR codes MUST point directly to canonical scenario routes:
+QR codes MUST point directly to canonical public routes. Language targeting MAY
+use query params, for example `/withyou/uber?lang=zh`.
 
-- `/withyou/uber`
-- `/withyou/walk-home`
-- `/withyou/bus-stop`
+## Non-Goals
 
-Optional language targeting via query param: `/withyou/uber?lang=zh`.
-
-Static QR creation is acceptable in v1. Future QR utilities MAY be provided by Kinly backend.
-
----
-
-## Non-Goals (v1)
-
-- No locale-based route tree.
-- No video.
-- No authenticated sessions.
+- no locale-based route tree
+- no authenticated sessions
+- no requirement that public route slugs equal canonical family keys

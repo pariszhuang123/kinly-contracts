@@ -10,7 +10,7 @@ Version: v1.0
 
 # withYou Audio Asset Delivery Contract v1.0
 
-## 1. Purpose
+## Purpose
 
 Define the canonical asset model for withYou audio so the same scenario content
 can be published to:
@@ -19,70 +19,51 @@ can be published to:
 - offline app ZIP packs for Flutter
 - backend-integrated tracked download flows
 
-This contract exists to keep naming, language coverage, and scenario/stage
-mapping stable across web, app, and backend implementations.
-
-## 2. Canonical source model
+## Canonical Source Model
 
 Audio content MUST be authored against the following logical identity:
 
 - `language`
-- `scenario`
+- `scenario_family`
 - `clip`
 
 Canonical key:
 
 ```text
-{language}/{scenario}/{clip}
+{language}/{scenario_family}/{clip}
 ```
 
 Examples:
 
-- `en/uber/primary`
+- `en/presence/primary`
 - `zh/social_pull/stage_1`
-- `zh/social_pull/stage_2`
-- `zh/social_pull/stage_3`
+- `zh/exit_pressure/stage_3`
 
 The canonical key MUST stay stable across all delivery surfaces.
 
-## 3. Delivery surfaces
+## Delivery Surfaces
 
-The same logical audio set MAY be published into two different delivery forms.
+### Public web preview assets
 
-### 3.1 Public web preview assets
-
-Purpose:
-
-- marketing landing pages
-- instant browser playback
-- scenario testing before install
-
-Public Vercel path:
+Public path:
 
 ```text
-/withyou/assets/audio-preview/{language}/{scenario}/{clip}.m4a
+/withyou/assets/audio-preview/{language}/{scenario_family}/{clip}.m4a
 ```
 
 Examples:
 
-- `/withyou/assets/audio-preview/en/uber/primary.m4a`
-- `/withyou/assets/audio-preview/zh/social_pull/stage_1.m4a`
+- `/withyou/assets/audio-preview/en/presence/primary.m4a`
 - `/withyou/assets/audio-preview/zh/social_pull/stage_2.m4a`
-- `/withyou/assets/audio-preview/zh/social_pull/stage_3.m4a`
+- `/withyou/assets/audio-preview/zh/exit_pressure/stage_1.m4a`
 
 Rules:
 
-- Preview assets MUST be individually addressable static files.
-- Preview assets MUST NOT require ZIP extraction.
-- Preview assets MAY expose only the subset needed for marketing/testing.
+- preview assets MUST be individually addressable static files
+- preview assets MUST NOT require ZIP extraction
+- preview assets MAY expose only the subset needed for marketing/testing
 
-### 3.2 Offline app pack assets
-
-Purpose:
-
-- downloadable language pack for Flutter
-- offline playback
-- consistent clip lookup after extraction
+### Offline app pack assets
 
 Download route:
 
@@ -96,125 +77,64 @@ Resolved ZIP path:
 /withyou/audio/{language}/core.zip
 ```
 
-Recommended extracted layout inside each ZIP:
+Recommended extracted layout:
 
 ```text
 metadata.json
-uber/primary.m4a
+presence/primary.m4a
 social_pull/stage_1.m4a
 social_pull/stage_2.m4a
 social_pull/stage_3.m4a
+exit_pressure/stage_1.m4a
+exit_pressure/stage_2.m4a
+exit_pressure/stage_3.m4a
 ```
 
 Rules:
 
-- ZIP contents MUST be language-scoped already.
-- ZIP contents SHOULD NOT repeat the language as an inner folder.
-- The extracted app lookup key MUST remain `{scenario}/{clip}`.
+- ZIP contents MUST be language-scoped already
+- ZIP contents SHOULD NOT repeat the language as an inner folder
+- extracted lookup keys MUST remain `{scenario_family}/{clip}`
 
-## 4. Scenario playback modes
+## Scenario Playback Modes
 
-Each scenario MUST declare one playback mode:
+| Family | Mode | Required clips |
+|---|---|---|
+| `presence` | `single_clip` | `primary` |
+| `social_pull` | `timed_sequence` | `stage_1`, `stage_2`, `stage_3` |
+| `exit_pressure` | `timed_sequence` | `stage_1`, `stage_2`, `stage_3` |
 
-- `single_clip`
-- `timed_sequence`
-
-### 4.1 `single_clip`
-
-Used for scenarios like Uber where one believable call clip is enough.
-
-Required clip set:
-
-- `primary`
-
-### 4.2 `timed_sequence`
-
-Used for scenarios like social-pressure exit where staged escalation is needed.
-
-Required clip set:
-
-- `stage_1`
-- `stage_2`
-- `stage_3`
-
-Suggested interpretation:
-
-- `stage_1` = immediate
-- `stage_2` = 2 minutes later
-- `stage_3` = 4 minutes later
-
-UI labels MAY vary by language and product surface, but clip keys MUST remain
+UI labels MAY vary by route and by language, but canonical clip ids MUST remain
 stable.
 
-## 5. Language rules
+## Public Route Mapping
 
-Supported languages MUST be declared in the audio manifest.
+Public route slugs are not canonical asset keys. They map onto families:
 
-Rules:
+- `/withyou/uber` -> `presence`
+- `/withyou/walk-home` -> `presence`
+- `/withyou/bus-stop` -> `presence`
+- `/withyou/party-exit` -> `social_pull`
+- `/withyou/date-fading` -> `social_pull`
+- `/withyou/new-place` -> `social_pull`
+- `/withyou/trapped-conversation` -> `exit_pressure`
+- `/withyou/they-wont-let-me-leave` -> `exit_pressure`
+- `/withyou/bad-date-exit` -> `exit_pressure`
 
-- A language MAY support only a subset of scenarios in early rollout.
-- If a scenario is available in a language, all required clips for that
-  scenario mode MUST exist.
-- Implementations MUST NOT assume all languages have identical scenario
-  coverage.
-
-Example:
-
-- `en` may support `uber` and `social_pull`
-- `ko` may support only `uber` initially
-
-## 6. Manifest contract
+## Manifest Contract
 
 The audio manifest MUST declare:
 
 - language pack identity
 - tracked download route
-- scenario availability
+- canonical family availability
 - playback mode
 - clip ids
 
-Suggested shape:
+Web preview UI and Flutter playback MUST consume this canonical model instead of
+re-deriving file names from route slugs.
 
-```json
-{
-  "packs": [
-    {
-      "language": "zh",
-      "pack_version": "1.0",
-      "download_url": "/withyou/download/audio/zh",
-      "scenarios": {
-        "uber": {
-          "mode": "single_clip",
-          "clips": ["primary"]
-        },
-        "social_pull": {
-          "mode": "timed_sequence",
-          "clips": ["stage_1", "stage_2", "stage_3"]
-        }
-      }
-    }
-  ],
-  "default_language": "en"
-}
-```
-
-## 7. Web implementation contract
-
-The web scenario page MUST use the manifest/config model, not hardcoded
-filename assumptions.
-
-Rules:
-
-- Web preview UI MUST map scenario config to known clip ids.
-- `single_clip` pages SHOULD render one primary play action.
-- `timed_sequence` pages SHOULD render staged actions such as:
-  - play now
-  - 2 minutes later
-  - 4 minutes later
-- Web MAY support auto-play scheduling metadata, but clip identity MUST remain
-  based on stable clip ids.
-
-## 8. Backend handoff contract
+## Backend Handoff Contract
 
 Backend consumers need only the tracked download boundary, not public preview
 asset hosting.
@@ -224,23 +144,10 @@ Backend-facing requirements:
 - backend MUST accept tracked download events per `language`
 - backend MAY record `pack_version`, `platform`, and `app_version`
 - backend MUST NOT need to understand public preview URLs
-- backend SHOULD treat scenario/clip naming as product-owned metadata, unless a
-  future analytics contract explicitly requires per-scenario or per-clip events
+- backend SHOULD treat family and clip naming as product-owned metadata
 
-## 9. Build and publishing guidance
+## Non-Goals
 
-The preferred pipeline is:
-
-1. Maintain one canonical source set per `{language}/{scenario}/{clip}`
-2. Publish web preview assets as public static files
-3. Publish app pack assets into per-language ZIP files
-4. Generate/update `audio-manifest.json`
-
-This allows shared source content without coupling browser playback to ZIP
-delivery.
-
-## 10. Non-goals
-
-- No requirement that preview assets equal full app-pack coverage
-- No requirement that backend stores public asset URLs
-- No requirement that all languages launch with the same scenario set
+- no requirement that preview assets equal full app-pack coverage
+- no requirement that backend stores public asset URLs
+- no requirement that public route slugs appear in the manifest

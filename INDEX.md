@@ -276,6 +276,7 @@
 - [platform/runbooks/ci_secrets.md](platform/runbooks/ci_secrets.md)
 - [platform/runbooks/smoke.md](platform/runbooks/smoke.md)
 - [platform/runbooks/smoke_addenda.md](platform/runbooks/smoke_addenda.md)
+- [platform/runbooks/withyou_backend_handoff_checklist_v1.md](platform/runbooks/withyou_backend_handoff_checklist_v1.md)
 - [platform/templates/deploy.md](platform/templates/deploy.md)
 - [platform/templates/dod.md](platform/templates/dod.md)
 - [platform/templates/planning_skeleton.md](platform/templates/planning_skeleton.md)

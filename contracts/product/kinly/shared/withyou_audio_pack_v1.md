@@ -10,15 +10,22 @@ Version: v1.0
 
 # withYou Audio Pack and Config Contract v1.0
 
-## 1. Purpose
+## Purpose
 
-Define the contract for offline audio packs (ZIP files), the version config, and the audio manifest used by the withYou Flutter app.
+Define the contract for offline audio packs (ZIP files), version config, and
+audio manifest used by the withYou Flutter app.
 
 See also: [withyou_audio_asset_delivery_v1.md](withyou_audio_asset_delivery_v1.md)
 
-## 2. Offline audio pack contract
+## Canonical Scenario Families
 
-### 2.1 Static ZIP hosting path
+Offline packs are keyed by canonical families, not public route slugs:
+
+- `presence`
+- `social_pull`
+- `exit_pressure`
+
+## Static ZIP Hosting Path
 
 - `/withyou/audio/{language}/core.zip`
 
@@ -28,62 +35,46 @@ Examples:
 - `/withyou/audio/zh/core.zip`
 - `/withyou/audio/ko/core.zip`
 
-### 2.2 ZIP contents
+## ZIP Contents
 
 Each ZIP MUST contain:
 
 | Entry | Description |
 |---|---|
 | `metadata.json` | Pack metadata (version, language, file listing) |
-| `presence/` | Presence scenario audio files |
-| `social_pull/` | Social-pull scenario audio files |
-| `exit_pressure/` | Exit-pressure scenario audio files |
-
-Scenario directories MAY contain one clip or a staged sequence.
+| `presence/` | Presence-family audio |
+| `social_pull/` | Social-pull audio |
+| `exit_pressure/` | Exit-pressure audio |
 
 Recommended shape:
 
 | Entry | Description |
 |---|---|
-| `{scenario}/primary.m4a` | Single-clip scenario asset |
-| `{scenario}/stage_1.m4a` | Timed-sequence first clip |
-| `{scenario}/stage_2.m4a` | Timed-sequence second clip |
-| `{scenario}/stage_3.m4a` | Timed-sequence third clip |
+| `{family}/primary.m4a` | Single-clip family asset |
+| `{family}/stage_1.m4a` | Timed-sequence first clip |
+| `{family}/stage_2.m4a` | Timed-sequence second clip |
+| `{family}/stage_3.m4a` | Timed-sequence third clip |
 
-Example:
+Rules:
 
-- `zh/social_pull/stage_1.m4a`
-- `zh/social_pull/stage_2.m4a`
-- `zh/social_pull/stage_3.m4a`
+- `presence` MUST expose `primary`
+- `social_pull` MUST expose `stage_1`, `stage_2`, `stage_3`
+- `exit_pressure` MUST expose `stage_1`, `stage_2`, `stage_3`
+- app lookup MUST use canonical family and clip ids, not public route slugs
 
-The app MUST treat the scenario directory as the stable lookup key and MUST NOT assume every scenario has the same number of clips.
-
-### 2.3 Important rule
-
-The app MUST NOT guess file structure from the web route alone. It MUST use the audio manifest plus pack metadata to know which scenarios exist and how many clips each scenario contains.
-
-## 3. Tracked download flow
-
-The app MUST NOT request the static ZIP URL directly if durable counting matters.
-
-Flow:
+## Tracked Download Flow
 
 1. App reads `/withyou/config/audio-manifest.json`
-2. App requests tracked route: `/withyou/download/audio/{language}`
-3. Vercel logs durable event → redirects to `/withyou/audio/{language}/core.zip`
+2. App requests `/withyou/download/audio/{language}`
+3. Vercel logs the durable event and redirects to `/withyou/audio/{language}/core.zip`
 4. App downloads and extracts ZIP
 5. App caches locally for offline playback
 
 See: [contracts/api/kinly/withyou/pack_download_tracking_v1.md](../../../api/kinly/withyou/pack_download_tracking_v1.md)
 
-## 4. Version config
+## Version Config
 
 Path: `/withyou/config/version.json`
-
-Purpose:
-
-- App version check
-- Force update logic
 
 Suggested shape:
 
@@ -95,17 +86,18 @@ Suggested shape:
 }
 ```
 
-## 5. Audio manifest
+## Audio Manifest
 
 Path: `/withyou/config/audio-manifest.json`
 
-Purpose:
+The manifest MUST:
 
-- List available pack languages
-- Map language to tracked download route
-- Declare pack version
-- Declare scenario clip configuration
-- Define fallback rules
+- list downloadable pack languages
+- map language to tracked download route
+- declare pack version
+- declare canonical families and clip ids
+- declare default preview language
+- declare which languages are exposed in public preview UI
 
 Suggested shape:
 
@@ -114,91 +106,64 @@ Suggested shape:
   "packs": [
     {
       "language": "en",
-      "pack_version": "1.0",
+      "pack_version": "1.0.0",
       "download_url": "/withyou/download/audio/en",
-      "size_bytes": null,
-      "checksum": null,
       "bundled": false,
       "scenarios": {
-        "uber": {
+        "presence": {
           "mode": "single_clip",
           "clips": ["primary"]
         },
         "social_pull": {
           "mode": "timed_sequence",
           "clips": ["stage_1", "stage_2", "stage_3"]
-        }
-      }
-    },
-    {
-      "language": "zh",
-      "pack_version": "1.0",
-      "download_url": "/withyou/download/audio/zh",
-      "size_bytes": null,
-      "checksum": null,
-      "bundled": false,
-      "scenarios": {
-        "uber": {
-          "mode": "single_clip",
-          "clips": ["primary"]
         },
-        "social_pull": {
+        "exit_pressure": {
           "mode": "timed_sequence",
           "clips": ["stage_1", "stage_2", "stage_3"]
-        }
-      }
-    },
-    {
-      "language": "ko",
-      "pack_version": "1.0",
-      "download_url": "/withyou/download/audio/ko",
-      "size_bytes": null,
-      "checksum": null,
-      "bundled": false,
-      "scenarios": {
-        "uber": {
-          "mode": "single_clip",
-          "clips": ["primary"]
         }
       }
     }
   ],
-  "default_language": "en"
+  "default_language": "en",
+  "preview_languages": ["en", "zh"]
 }
 ```
 
-`download_url` points to the tracked download route, keeping tracking centralized. `bundled` flag is for future use when packs MAY ship inside the app binary. `scenarios` defines the scenario key, playback mode, and required clip identifiers inside the extracted pack.
+`ko` MAY appear in `packs` as downloadable-only. It does not need to be exposed
+in public web preview controls.
 
-## 6. Preview audio (web only)
+## Preview Audio
 
-Preview audio is a marketing/demo asset, NOT the full product pack.
-
-Rule: preview assets MAY be either a single clip or a small staged sequence depending on scenario needs.
+Preview audio is a marketing/demo asset, not the full product pack.
 
 Suggested paths:
 
-- `/withyou/assets/audio-preview/{language}/{scenario}/primary.m4a`
-- `/withyou/assets/audio-preview/{language}/{scenario}/stage_1.m4a`
-- `/withyou/assets/audio-preview/{language}/{scenario}/stage_2.m4a`
-- `/withyou/assets/audio-preview/{language}/{scenario}/stage_3.m4a`
+- `/withyou/assets/audio-preview/{language}/presence/primary.m4a`
+- `/withyou/assets/audio-preview/{language}/social_pull/stage_1.m4a`
+- `/withyou/assets/audio-preview/{language}/social_pull/stage_2.m4a`
+- `/withyou/assets/audio-preview/{language}/social_pull/stage_3.m4a`
+- `/withyou/assets/audio-preview/{language}/exit_pressure/stage_1.m4a`
+- `/withyou/assets/audio-preview/{language}/exit_pressure/stage_2.m4a`
+- `/withyou/assets/audio-preview/{language}/exit_pressure/stage_3.m4a`
 
 Preview audio MUST remain separate from offline packs.
 
-## 7. Flutter app responsibilities
+## Flutter App Responsibilities
 
 The app owns:
 
-- Reading audio-manifest config
-- Choosing language pack
-- Resolving scenario clip sets from manifest metadata
-- Requesting tracked pack download route
-- Downloading ZIP
-- Extracting ZIP
-- Local caching
-- Offline playback
+- reading manifest config
+- choosing language pack
+- resolving canonical families and clip ids from manifest metadata
+- requesting tracked pack download route
+- downloading ZIP
+- extracting ZIP
+- local caching
+- offline playback
 
-## 8. Non-goals (v1)
+## Non-Goals
 
-- No streaming audio
-- No in-app audio hosting via Supabase
-- No video
+- no streaming audio
+- no in-app audio hosting via Supabase
+- no requirement that public route slugs appear inside the offline pack

@@ -223,5 +223,5 @@
 
 ### Domain: withyou\n
 * **lead_capture** (v1.0): [contracts/product/kinly/web/withyou/lead_capture_v1.md](contracts/product/kinly/web/withyou/lead_capture_v1.md)
-* **scenario_landing** (v1.0): [contracts/product/kinly/web/withyou/scenario_landing_v1.md](contracts/product/kinly/web/withyou/scenario_landing_v1.md)
+* **scenario_landing** (v1.1): [contracts/product/kinly/web/withyou/scenario_landing_v1.md](contracts/product/kinly/web/withyou/scenario_landing_v1.md)
 

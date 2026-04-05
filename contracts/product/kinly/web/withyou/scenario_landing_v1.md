@@ -5,7 +5,7 @@ Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: draft
-Version: v1.0
+Version: v1.1
 ---
 
 # Contract: withYou Scenario Landing Page Template
@@ -57,10 +57,8 @@ Each route config MUST define:
 | `scenario_family` | `presence \| social_pull \| exit_pressure` | yes | Canonical audio family key |
 | `title` | `Record<Language, string>` | yes | Localized route title |
 | `problem_framing` | `Record<Language, string>` | yes | Localized route framing |
-| `what_they_need` | `Record<Language, string>` | yes | Localized need copy |
-| `example_outcome` | `Record<Language, string>` | yes | Localized outcome copy |
 | `preview_mode` | `single_clip \| timed_sequence` | yes | Derived from scenario family |
-| `timed_labels` | localized labels | no | Route-specific labels for staged families |
+| `timed_labels` | localized labels | no | Route-specific labels for staged families. Labels MUST include relative timing (e.g. "First call", "2nd call · ~45s later", "3rd call · ~30s later"). Timing values are scenario-family-specific. |
 | `lead_cta` | localized text | yes | CTA to `/withyou/get` |
 
 ## Canonical Family Rules
@@ -77,10 +75,12 @@ Route-specific UI labels MAY vary, but canonical clip ids MUST remain stable.
 
 - route title and problem framing
 - audio preview
-- what the user needs
-- example outcome
-- app download CTAs
+- store badge images (official App Store / Google Play badge assets; the store
+  section MUST render badge images, not text buttons)
 - lead CTA to `/withyou/get`
+
+If the app is not yet available in the user's area, the store section SHOULD
+show the lead CTA (join waitlist) instead of store badges.
 
 ## Audio Preview Rules
 

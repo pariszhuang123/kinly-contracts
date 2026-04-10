@@ -1,19 +1,29 @@
-# Contracts Registry — Kinly\n
-## Surface: backend\n
-### Domain: backend\n
+# Contracts Registry - Kinly
+
+## Surface: backend
+
+### Domain: backend
+
 * **api** (v1.0): [contracts/api/kinly/backend/README.md](contracts/api/kinly/backend/README.md)
 
-### Domain: forms\n
+### Domain: command
+
+* **voice_and_text_command_router** (v1.1): [contracts/api/kinly/command/command_router_contract_v1_1.md](contracts/api/kinly/command/command_router_contract_v1_1.md)
+
+### Domain: forms
+
 * **form_hydration** (v1.0): [contracts/api/kinly/forms/form_hydration_v1.md](contracts/api/kinly/forms/form_hydration_v1.md)
 
-### Domain: growth\n
+### Domain: growth
+
 * **outreach_poll_result_messages** (v1.0): [contracts/api/kinly/growth/outreach_poll_result_messages_v1.md](contracts/api/kinly/growth/outreach_poll_result_messages_v1.md)
 * **outreach_polls** (v1.0): [contracts/api/kinly/growth/outreach_polls_v1.md](contracts/api/kinly/growth/outreach_polls_v1.md)
 * **outreach_short_links** (v1.0.1): [contracts/api/kinly/growth/outreach_short_links_v1.md](contracts/api/kinly/growth/outreach_short_links_v1.md)
 * **outreach_tracking** (v1.0): [contracts/api/kinly/growth/outreach_tracking_v1.md](contracts/api/kinly/growth/outreach_tracking_v1.md)
 * **outreach_tracking** (v1.1): [contracts/api/kinly/growth/outreach_tracking_v1_1.md](contracts/api/kinly/growth/outreach_tracking_v1_1.md)
 
-### Domain: homes\n
+### Domain: homes
+
 * **flatmate_fit_check_api** (v1.1): [contracts/api/kinly/homes/flatmate_fit_check_api_v1.md](contracts/api/kinly/homes/flatmate_fit_check_api_v1.md)
 * **flatmate_fit_check_api** (v2.0): [contracts/api/kinly/homes/flatmate_fit_check_api_v2.md](contracts/api/kinly/homes/flatmate_fit_check_api_v2.md)
 * **home_units** (v1.3): [contracts/api/kinly/homes/home_units_api_v1.md](contracts/api/kinly/homes/home_units_api_v1.md)
@@ -29,58 +39,69 @@
 * **house_vibe_mapping_effects** (v1.0): [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
 * **shopping_list** (v1.6): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
 
-### Domain: identity\n
+### Domain: identity
+
 * **personal_directory_api** (v1.0): [contracts/api/kinly/identity/personal_directory_api_v1.md](contracts/api/kinly/identity/personal_directory_api_v1.md)
 * **personal_directory_api** (v2.0): [contracts/api/kinly/identity/personal_directory_api_v2.md](contracts/api/kinly/identity/personal_directory_api_v2.md)
 * **users** (v1.0): [contracts/api/kinly/identity/users_v1.md](contracts/api/kinly/identity/users_v1.md)
 * **users_deactivation** (v1.0): [contracts/api/kinly/identity/users_deactivation_v1.md](contracts/api/kinly/identity/users_deactivation_v1.md)
 
-### Domain: monetization\n
+### Domain: monetization
+
 * **plan_status_query** (v1.0): [contracts/api/kinly/homes/get_plan_status_v1.md](contracts/api/kinly/homes/get_plan_status_v1.md)
 
-### Domain: platform\n
+### Domain: platform
+
 * **testing** (v1.0): [contracts/api/kinly/platform/testing_v1.md](contracts/api/kinly/platform/testing_v1.md)
 
-### Domain: product\n
-* **complaint_rewrite** (v1.2): [contracts/api/kinly/complaint/complaint_rewrite_ai_classifier_v1.md](contracts/api/kinly/complaint/complaint_rewrite_ai_classifier_v1.md)
-* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_ai_routing_providers_v1.md](contracts/api/kinly/complaint/complaint_rewrite_ai_routing_providers_v1.md)
-* **complaint_rewrite** (v1.4): [contracts/api/kinly/complaint/complaint_rewrite_async_jobs_v1.md](contracts/api/kinly/complaint/complaint_rewrite_async_jobs_v1.md)
-* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_backend_context_pack_v1.md](contracts/api/kinly/complaint/complaint_rewrite_backend_context_pack_v1.md)
-* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_states.md](contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_states.md)
-* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_v1.md](contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_v1.md)
-* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_eval_and_lexicon_v1.md](contracts/api/kinly/complaint/complaint_rewrite_eval_and_lexicon_v1.md)
+### Domain: product
+
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_eval_dataset_v1.md](contracts/api/kinly/complaint/complaint_rewrite_eval_dataset_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_eval_judge_v1.md](contracts/api/kinly/complaint/complaint_rewrite_eval_judge_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_lexicon_v1.md](contracts/api/kinly/complaint/complaint_rewrite_lexicon_v1.md)
-* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_queue_processing_v1.md](contracts/api/kinly/complaint/complaint_rewrite_queue_processing_v1.md)
-* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_storage_schema_v1.md](contracts/api/kinly/complaint/complaint_rewrite_storage_schema_v1.md)
-* **complaint_rewrite** (v1.2): [contracts/api/kinly/complaint/complaint_rewrite_system_map.md](contracts/api/kinly/complaint/complaint_rewrite_system_map.md)
-* **complaint_rewrite** (v1.5): [contracts/api/kinly/complaint/complaint_rewrite_two_lanes_async_v1.md](contracts/api/kinly/complaint/complaint_rewrite_two_lanes_async_v1.md)
-* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_types_v1.md](contracts/api/kinly/complaint/complaint_rewrite_types_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/complaint_rewrite_weekly_feedback_api_v1.md](contracts/api/kinly/complaint/complaint_rewrite_weekly_feedback_api_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/examples/eval_cases/README.md](contracts/api/kinly/complaint/examples/eval_cases/README.md)
-* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/examples/README.md](contracts/api/kinly/complaint/examples/README.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/prompt_alignment_guide.md](contracts/api/kinly/complaint/prompt_alignment_guide.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/prompts/README.md](contracts/api/kinly/complaint/prompts/README.md)
 * **complaint_rewrite** (v1.0): [contracts/api/kinly/complaint/prompts/v1/README.md](contracts/api/kinly/complaint/prompts/v1/README.md)
+* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_backend_context_pack_v1.md](contracts/api/kinly/complaint/complaint_rewrite_backend_context_pack_v1.md)
+* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_states.md](contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_states.md)
+* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_eval_and_lexicon_v1.md](contracts/api/kinly/complaint/complaint_rewrite_eval_and_lexicon_v1.md)
+* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/complaint_rewrite_types_v1.md](contracts/api/kinly/complaint/complaint_rewrite_types_v1.md)
+* **complaint_rewrite** (v1.1): [contracts/api/kinly/complaint/examples/README.md](contracts/api/kinly/complaint/examples/README.md)
+* **complaint_rewrite** (v1.2): [contracts/api/kinly/complaint/complaint_rewrite_ai_classifier_v1.md](contracts/api/kinly/complaint/complaint_rewrite_ai_classifier_v1.md)
+* **complaint_rewrite** (v1.2): [contracts/api/kinly/complaint/complaint_rewrite_system_map.md](contracts/api/kinly/complaint/complaint_rewrite_system_map.md)
+* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_ai_routing_providers_v1.md](contracts/api/kinly/complaint/complaint_rewrite_ai_routing_providers_v1.md)
+* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_v1.md](contracts/api/kinly/complaint/complaint_rewrite_edge_orchestrator_v1.md)
+* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_queue_processing_v1.md](contracts/api/kinly/complaint/complaint_rewrite_queue_processing_v1.md)
+* **complaint_rewrite** (v1.3): [contracts/api/kinly/complaint/complaint_rewrite_storage_schema_v1.md](contracts/api/kinly/complaint/complaint_rewrite_storage_schema_v1.md)
+* **complaint_rewrite** (v1.4): [contracts/api/kinly/complaint/complaint_rewrite_async_jobs_v1.md](contracts/api/kinly/complaint/complaint_rewrite_async_jobs_v1.md)
+* **complaint_rewrite** (v1.5): [contracts/api/kinly/complaint/complaint_rewrite_two_lanes_async_v1.md](contracts/api/kinly/complaint/complaint_rewrite_two_lanes_async_v1.md)
 
-### Domain: share\n
+### Domain: share
+
 * **expenses** (v1.0): [contracts/api/kinly/share/expenses_v1.md](contracts/api/kinly/share/expenses_v1.md)
 * **expenses** (v2.6): [contracts/api/kinly/share/expenses_v2.md](contracts/api/kinly/share/expenses_v2.md)
 * **share_recurring_api** (v1.0): [contracts/api/kinly/share/share_recurring_api_v1.md](contracts/api/kinly/share/share_recurring_api_v1.md)
 
-### Domain: shared\n
-* **chores** (v1.0): [contracts/api/kinly/chores/chore_wheel_api_v1.md](contracts/api/kinly/chores/chore_wheel_api_v1.md)
+### Domain: shared
 
-### Domain: withyou\n
+* **chores** (v1.0): [contracts/api/kinly/chores/chore_wheel_api_v1.md](contracts/api/kinly/chores/chore_wheel_api_v1.md)
+* **shared_calendar** (v1.0): [contracts/api/kinly/homes/shared_calendar_api_v1.md](contracts/api/kinly/homes/shared_calendar_api_v1.md)
+
+### Domain: withyou
+
 * **leads_amendment** (v1.0): [contracts/api/kinly/withyou/leads_amendment_v1.md](contracts/api/kinly/withyou/leads_amendment_v1.md)
 * **pack_download_tracking** (v1.0): [contracts/api/kinly/withyou/pack_download_tracking_v1.md](contracts/api/kinly/withyou/pack_download_tracking_v1.md)
 
-## Surface: design\n
-### Domain: design\n
+## Surface: design
+
+### Domain: design
+
 * **readme** (v1.0): [contracts/design/reference/kinly/README.md](contracts/design/reference/kinly/README.md)
 
-### Domain: kinly\n
+### Domain: kinly
+
 * **atmospheric_backgrounds** (v1.0): [contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md](contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md)
 * **components** (v1.0): [contracts/design/reference/kinly/components.md](contracts/design/reference/kinly/components.md)
 * **copy_taste** (v1.1): [contracts/design/copy/kinly/copy_taste_v1_1.md](contracts/design/copy/kinly/copy_taste_v1_1.md)
@@ -97,28 +118,45 @@
 * **paywall_gate_copy** (v1.0): [contracts/design/copy/kinly/paywall_gate_copy_v1.md](contracts/design/copy/kinly/paywall_gate_copy_v1.md)
 * **shared_understanding_copy** (v1.0): [contracts/design/copy/kinly/shared_understanding_copy_v1.md](contracts/design/copy/kinly/shared_understanding_copy_v1.md)
 
-## Surface: mobile\n
-### Domain: homes\n
+## Surface: frontend
+
+### Domain: marketing_ops
+
+* **qr_generator** (v1.0): [contracts/product/kinly/shared/qr_generator_hub_v1.md](contracts/product/kinly/shared/qr_generator_hub_v1.md)
+
+### Domain: product
+
+* **complaint_rewrite** (v1.1): [contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md](contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md)
+
+## Surface: mobile
+
+### Domain: homes
+
 * **home_units** (v1.2): [contracts/product/kinly/mobile/home_units_v1.md](contracts/product/kinly/mobile/home_units_v1.md)
 * **house_directory_mobile** (v1.0): [contracts/product/kinly/mobile/house_directory_mobile_v1.md](contracts/product/kinly/mobile/house_directory_mobile_v1.md)
 
-### Domain: links\n
-* **deep_link_intake___invite_join_resolution** (v1.0): [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)
+### Domain: links
 
-### Domain: mobile\n
+* **deep_link_intake_invite_join_resolution** (v1.0): [contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md](contracts/product/kinly/mobile/links/links_invite_intake_v1_0.md)
+
+### Domain: mobile
+
 * **house_vibe_share_contract** (v1.0): [contracts/product/kinly/mobile/house_vibe_share_contract_v1.md](contracts/product/kinly/mobile/house_vibe_share_contract_v1.md)
 * **hub_house_norms_visibility** (v1.0): [contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md](contracts/product/kinly/mobile/hub_house_norms_visibility_v1.md)
 * **hub_personal_preferences_visibility** (v1.0): [contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md](contracts/product/kinly/mobile/hub_personal_preferences_visibility_v1.md)
 * **today_house_norms_prompt** (v1.0): [contracts/product/kinly/mobile/today_house_norms_prompt_v1.md](contracts/product/kinly/mobile/today_house_norms_prompt_v1.md)
 * **welcome_avatar_personal_profile** (v1.0): [contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md](contracts/product/kinly/mobile/welcome_avatar_personal_profile_v1.md)
 
-### Domain: monetization\n
-* **plan_status_visibility___entry_point** (v1.0): [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
+### Domain: monetization
 
-### Domain: product\n
+* **plan_status_visibility_entry_point** (v1.0): [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
+
+### Domain: product
+
 * **app_store_review** (v1.1): [contracts/product/kinly/mobile/app_store_reviewer_access_v1.md](contracts/product/kinly/mobile/app_store_reviewer_access_v1.md)
 
-### Domain: shared\n
+### Domain: shared
+
 * **app** (v1.0): [contracts/product/kinly/mobile/app_v1.md](contracts/product/kinly/mobile/app_v1.md)
 * **chores** (v1.0): [contracts/product/kinly/mobile/chore_wheel_v1.md](contracts/product/kinly/mobile/chore_wheel_v1.md)
 * **chores** (v1.0): [contracts/product/kinly/mobile/chores_v1.md](contracts/product/kinly/mobile/chores_v1.md)
@@ -142,48 +180,58 @@
 * **share_recurring_product** (v1.1): [contracts/product/kinly/mobile/share_recurring_product_v1.md](contracts/product/kinly/mobile/share_recurring_product_v1.md)
 * **weekly_house_pulse** (v1.0): [contracts/product/kinly/mobile/weekly_house_pulse_v1.md](contracts/product/kinly/mobile/weekly_house_pulse_v1.md)
 
-## Surface: shared\n
-### Domain: homes\n
-* **flatmate_fit_check** (v3.6): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
+## Surface: shared
+
+### Domain: homes
+
 * **flatmate_fit_check** (v2.0): [contracts/product/kinly/shared/flatmate_fit_check_v2.md](contracts/product/kinly/shared/flatmate_fit_check_v2.md)
+* **flatmate_fit_check** (v3.6): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
 * **house_directory** (v1.1): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
 * **shopping_list** (v1.3): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
 * **shopping_list** (v1.4): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
 
-### Domain: identity\n
+### Domain: identity
+
 * **personal_directory** (v1.0): [contracts/product/kinly/shared/personal_directory_v1.md](contracts/product/kinly/shared/personal_directory_v1.md)
 
-### Domain: links\n
+### Domain: links
+
 * **deferred_install_boundary_invite_intent** (v1.0): [contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md](contracts/product/kinly/shared/links/links_invite_deferred_install_v1_0.md)
 
-### Domain: marketing_ops\n
-* **qr_generator** (v1.0): [contracts/product/kinly/shared/qr_generator_hub_v1.md](contracts/product/kinly/shared/qr_generator_hub_v1.md)
+### Domain: product
 
-### Domain: product\n
-* **complaint_rewrite** (v1.1): [contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md](contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_index_v1.md](contracts/product/kinly/shared/complaint_rewrite_index_v1.md)
 * **complaint_rewrite** (v1.0): [contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md](contracts/product/kinly/shared/complaint_rewrite_schemas_v1.md)
 * **readme** (v1.0): [contracts/product/kinly/shared/README.md](contracts/product/kinly/shared/README.md)
 
-### Domain: shared\n
+### Domain: shared
+
 * **house_norms** (v1.1): [contracts/product/kinly/shared/house_norms_v1.md](contracts/product/kinly/shared/house_norms_v1.md)
 * **house_norms_scenarios** (v1.0): [contracts/product/kinly/shared/house_norms_scenarios_v1.md](contracts/product/kinly/shared/house_norms_scenarios_v1.md)
 * **house_norms_taxonomy** (v1.0): [contracts/product/kinly/shared/house_norms_taxonomy_v1.md](contracts/product/kinly/shared/house_norms_taxonomy_v1.md)
 * **house_rules** (v1.0): [contracts/product/kinly/shared/house_rules_v1.md](contracts/product/kinly/shared/house_rules_v1.md)
+* **preference_reports** (v1.0): [contracts/product/kinly/shared/preference_reports_v1.md](contracts/product/kinly/shared/preference_reports_v1.md)
+* **reflective_generation** (v1.0): [contracts/product/kinly/shared/reflective_generation_v1.md](contracts/product/kinly/shared/reflective_generation_v1.md)
+* **shared_calendar** (v1.0): [contracts/product/kinly/shared/shared_calendar_v1.md](contracts/product/kinly/shared/shared_calendar_v1.md)
 * **today_house_norms_member_review** (v1.0): [contracts/product/kinly/shared/today_house_norms_member_review_v1.md](contracts/product/kinly/shared/today_house_norms_member_review_v1.md)
 
-### Domain: withyou\n
+### Domain: withyou
+
 * **audio_asset_delivery** (v1.0): [contracts/product/kinly/shared/withyou_audio_asset_delivery_v1.md](contracts/product/kinly/shared/withyou_audio_asset_delivery_v1.md)
 * **audio_pack_and_config** (v1.0): [contracts/product/kinly/shared/withyou_audio_pack_v1.md](contracts/product/kinly/shared/withyou_audio_pack_v1.md)
 
-## Surface: web\n
-### Domain: kinly\n
+## Surface: web
+
+### Domain: kinly
+
 * **scenario_landing_copy** (v1.0): [contracts/design/copy/kinly/web/scenario_landing_copy_contract_v1.md](contracts/design/copy/kinly/web/scenario_landing_copy_contract_v1.md)
 
-### Domain: kinly_web\n
+### Domain: kinly_web
+
 * **contracts_registry** (v1.5): [contracts/product/kinly/web/contracts_registry.md](contracts/product/kinly/web/contracts_registry.md)
 
-### Domain: links\n
+### Domain: links
+
 * **deep_link_mapping** (v1.0): [contracts/product/kinly/web/links/links_deep_links_v1.md](contracts/product/kinly/web/links/links_deep_links_v1.md)
 * **deep_link_mapping** (v1.1): [contracts/product/kinly/web/links/links_deep_links_v1_1.md](contracts/product/kinly/web/links/links_deep_links_v1_1.md)
 * **fallback_behavior** (v1.0): [contracts/product/kinly/web/links/links_fallback_v1.md](contracts/product/kinly/web/links/links_fallback_v1.md)
@@ -199,10 +247,12 @@
 * **share_links** (v1.4): [contracts/product/kinly/web/links/links_share_links_v1_4.md](contracts/product/kinly/web/links/links_share_links_v1_4.md)
 * **uri_association** (v1.0): [contracts/product/kinly/web/links/uri_association_v1.md](contracts/product/kinly/web/links/uri_association_v1.md)
 
-### Domain: norms\n
+### Domain: norms
+
 * **public_norms** (v1.1): [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
 
-### Domain: product\n
+### Domain: product
+
 * **growth** (v1.0): [contracts/product/kinly/web/growth/interest_capture_v1.md](contracts/product/kinly/web/growth/interest_capture_v1.md)
 * **growth** (v1.1): [contracts/product/kinly/web/growth/interest_capture_v1_1.md](contracts/product/kinly/web/growth/interest_capture_v1_1.md)
 * **marketing_landing** (v1.0): [contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md](contracts/product/kinly/web/growth/marketing_landing_recognition_first_v1.md)
@@ -215,13 +265,15 @@
 * **qr_short_link_resolution** (v1.0.2): [contracts/product/kinly/web/growth/qr_short_link_resolution_v1.md](contracts/product/kinly/web/growth/qr_short_link_resolution_v1.md)
 * **scenario_landing_evaluation** (v1.0): [contracts/product/kinly/web/growth/scenario_landing_evaluation_v1.md](contracts/product/kinly/web/growth/scenario_landing_evaluation_v1.md)
 
-### Domain: theme\n
+### Domain: theme
+
 * **theme_resolution** (v1.0): [contracts/product/kinly/web/theme/theme_resolution_v1.md](contracts/product/kinly/web/theme/theme_resolution_v1.md)
 
-### Domain: web_ui\n
+### Domain: web_ui
+
 * **primitive_based_ui_composition** (v1.0): [contracts/design/copy/kinly/web/web_primitives_v1.md](contracts/design/copy/kinly/web/web_primitives_v1.md)
 
-### Domain: withyou\n
+### Domain: withyou
+
 * **lead_capture** (v1.0): [contracts/product/kinly/web/withyou/lead_capture_v1.md](contracts/product/kinly/web/withyou/lead_capture_v1.md)
 * **scenario_landing** (v1.1): [contracts/product/kinly/web/withyou/scenario_landing_v1.md](contracts/product/kinly/web/withyou/scenario_landing_v1.md)
-

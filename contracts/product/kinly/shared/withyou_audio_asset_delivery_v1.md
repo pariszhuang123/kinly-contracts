@@ -6,6 +6,9 @@ Artifact-Type: contract
 Stability: evolving
 Status: draft
 Version: v1.0
+Canonical-Id: withyou_audio_asset_delivery
+Relates-To: contracts/product/kinly/shared/withyou_audio_pack_v1.md, contracts/product/kinly/web/withyou/scenario_landing_v1.md, architecture/withyou_system_overview_v1.md
+See-Also: contracts/api/kinly/withyou/pack_download_tracking_v1.md
 ---
 
 # withYou Audio Asset Delivery Contract v1.0

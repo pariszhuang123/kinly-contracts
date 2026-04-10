@@ -11,6 +11,12 @@ App repos (kinly-app, kinly-web, future apps) should *consume* these docs but sh
 - Enforce stability through lightweight guardrails (headers, paths, links, index)
 - Make it easy for humans to find “what is the rule?” quickly
 
+## Canonical vs Derived
+- Files under `contracts/**`, `architecture/**`, `decisions/**`, and `platform/**` are canonical.
+- Files under `wiki/**` are derived outputs for reading, navigation, and Obsidian graphing.
+- Agents MUST NOT hand-author `wiki/**`; regenerate it from canonical docs via tooling.
+- If canonical docs and generated wiki disagree, canonical docs win and the wiki must be regenerated.
+
 ## Where things go (routing rules)
 
 ### API Contracts (backend interface)
@@ -94,6 +100,18 @@ Required keys:
 - Status
 - Version
 
+Optional relationship keys:
+- Canonical-Id
+- Relates-To
+- Depends-On
+- Supersedes
+- Superseded-By
+- Implements
+- Implemented-By
+- See-Also
+
+Relationship fields SHOULD use lowercase snake_case Canonical-Ids or repo-relative markdown paths.
+
 Example header:
 
 ---
@@ -119,10 +137,21 @@ Version: v1.0
 When making changes:
 1) Put the doc in the correct folder
 2) Ensure the YAML header is valid
-3) Update internal links (relative paths)
-4) Add/Update `INDEX.md`
-5) Run checks locally:
+3) Update relationship metadata when the change introduces or changes cross-doc dependencies
+4) Regenerate derived outputs:
    - `python tools/contracts_ci/run_checks.py`
+5) Review generated wiki/alignment outputs under `wiki/**`
+6) Update internal links (relative paths)
+7) Add/Update `INDEX.md`
+8) Run checks locally:
+   - `python tools/contracts_ci/run_checks.py`
+
+## Alignment enforcement
+- Contracts that describe the same concept across surfaces SHOULD share a stable `Canonical-Id` when practical.
+- Contracts with explicit relationship metadata MUST resolve to real docs or Canonical-Ids.
+- Agents MUST surface exact conflicting files and invariants when alignment checks fail.
+- Agents MUST NOT silently choose one side of a contradiction; the canonical docs must be amended and the wiki regenerated.
+- Work is not done while `python tools/contracts_ci/run_checks.py` fails.
 
 ## Writing style
 - Prefer clear, bounded rules over essays
@@ -147,3 +176,5 @@ If classification is unclear:
 - No orphan docs (INDEX updated)
 - No broken internal links
 - Header metadata is correct and consistent with folder scope
+- Generated wiki is up to date
+- Alignment report contains no blocking issues

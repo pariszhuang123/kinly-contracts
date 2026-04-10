@@ -10,6 +10,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.contracts_ci.common import as_posix, in_scope_markdown_files, repo_root
+from tools.contracts_ci.metadata import LIST_RELATIONSHIP_KEYS, RELATIONSHIP_KEYS, normalize_reference, parse_front_matter
 
 REQUIRED_KEYS = [
     "Domain",
@@ -21,37 +22,13 @@ REQUIRED_KEYS = [
     "Version",
 ]
 
+OPTIONAL_KEYS = set(RELATIONSHIP_KEYS)
 SCOPE_ALLOWED = {"backend", "frontend", "shared", "platform"}
 ARTIFACT_ALLOWED = {"contract", "guide", "reference", "architecture", "adr", "process"}
 STABILITY_ALLOWED = {"stable", "evolving", "ephemeral"}
 STATUS_ALLOWED = {"draft", "active", "deprecated"}
+CANONICAL_ID_PATTERN = re.compile(r"^[a-z0-9_]+$")
 VERSION_PATTERN = re.compile(r"^v\d+\.\d+(?:\.\d+)?$")
-
-
-def parse_front_matter(text: str) -> Tuple[Dict[str, str], List[str]]:
-    lines = text.splitlines()
-    errors: List[str] = []
-    if not lines or lines[0].strip() != "---":
-        errors.append("missing front matter delimiter '---' at start of file")
-        return {}, errors
-
-    try:
-        end_index = next(i for i, line in enumerate(lines[1:], start=1) if line.strip() == "---")
-    except StopIteration:
-        errors.append("unterminated front matter block (missing closing '---')")
-        return {}, errors
-
-    header_lines = lines[1:end_index]
-    data: Dict[str, str] = {}
-    for raw in header_lines:
-        if not raw.strip():
-            continue
-        if ":" not in raw:
-            errors.append(f"invalid header line (no colon): '{raw}'")
-            continue
-        key, value = raw.split(":", 1)
-        data[key.strip()] = value.strip()
-    return data, errors
 
 
 def validate_header(path: Path, header: Dict[str, str]) -> List[str]:
@@ -80,6 +57,22 @@ def validate_header(path: Path, header: Dict[str, str]) -> List[str]:
     version = header.get("Version")
     if version and not VERSION_PATTERN.match(version):
         errors.append("invalid Version format (expected vMAJOR.MINOR or vMAJOR.MINOR.PATCH)")
+
+    canonical_id = header.get("Canonical-Id")
+    if canonical_id and not CANONICAL_ID_PATTERN.match(canonical_id):
+        errors.append("invalid Canonical-Id format (expected lowercase letters, digits, underscores)")
+
+    for key in LIST_RELATIONSHIP_KEYS:
+        raw_value = header.get(key)
+        if not raw_value:
+            continue
+        values = [item for item in raw_value.strip("[]").split(",") if item.strip()]
+        if not values:
+            errors.append(f"{key} is present but empty")
+            continue
+        normalized_values = [normalize_reference(item.strip()) for item in values]
+        if any(not value for value in normalized_values):
+            errors.append(f"{key} contains an empty relationship target")
 
     return errors
 

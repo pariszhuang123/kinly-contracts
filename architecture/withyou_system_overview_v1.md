@@ -6,6 +6,8 @@ Artifact-Type: architecture
 Stability: evolving
 Status: draft
 Version: v1.0
+Canonical-Id: withyou_system_overview
+Relates-To: contracts/product/kinly/web/withyou/scenario_landing_v1.md, contracts/product/kinly/web/withyou/lead_capture_v1.md, contracts/product/kinly/shared/withyou_audio_asset_delivery_v1.md, contracts/product/kinly/shared/withyou_audio_pack_v1.md, contracts/api/kinly/withyou/leads_amendment_v1.md, contracts/api/kinly/withyou/pack_download_tracking_v1.md
 ---
 
 # withYou System Overview (v1)

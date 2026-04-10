@@ -8,7 +8,17 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.contracts_ci import check_contract_paths, check_doc_headers, check_index, check_links, check_registry, generate_registry
+from tools.contracts_ci import (
+    check_alignment,
+    check_contract_paths,
+    check_doc_headers,
+    check_index,
+    check_links,
+    check_registry,
+    check_wiki_coverage,
+    generate_registry,
+    generate_wiki,
+)
 from tools.contracts_ci.common import as_posix, in_scope_markdown_files, repo_root
 
 CheckResult = Tuple[str, bool, int, List[str]]
@@ -31,10 +41,11 @@ def run_check(
 def main() -> int:
     root = repo_root()
     print(f"Running contracts guardrails from {as_posix(root)}")
-    
-    # Auto-generate registry
-    print("Auto-generating registry...")
-    generate_registry.audit_contracts()
+
+    generated_changes: List[str] = []
+    print("Regenerating derived artifacts...")
+    generated_changes.extend(generate_registry.audit_contracts(root))
+    generated_changes.extend(generate_wiki.generate_wiki(root))
 
     checks: List[Tuple[str, Callable[[Path | None], Tuple[bool, int, List[str]]]]] = [
         ("Doc headers", check_doc_headers.run),
@@ -42,6 +53,8 @@ def main() -> int:
         ("Internal links", check_links.run),
         ("Index integrity", check_index.run),
         ("Registry validity", check_registry.run),
+        ("Alignment", check_alignment.run),
+        ("Wiki coverage", check_wiki_coverage.run),
     ]
 
     results: List[CheckResult] = []
@@ -51,13 +64,24 @@ def main() -> int:
     total_files = len(in_scope_markdown_files(root))
     failures = {label: len(errs) for label, ok, _count, errs in results if not ok}
 
+    if generated_changes:
+        failures["Generated artifacts"] = len(generated_changes)
+
     print("\\n=== Summary ===")
     print(f"In-scope markdown files scanned: {total_files}")
     for label, ok, _count, errs in results:
         status = "ok" if ok else f"{len(errs)} error(s)"
         print(f"- {label}: {status}")
+    if generated_changes:
+        print(f"- Generated artifacts: {len(generated_changes)} updated")
+        for path in generated_changes:
+            print(f"  - {path}")
+    else:
+        print("- Generated artifacts: ok")
 
     if failures:
+        if generated_changes:
+            print("\\nGenerated artifacts changed during the run. Commit regenerated files and rerun checks.")
         print("\\nGuardrails failed.")
         return 1
 

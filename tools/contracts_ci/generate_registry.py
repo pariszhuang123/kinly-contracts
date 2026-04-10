@@ -1,125 +1,71 @@
-import re
+from __future__ import annotations
+
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional
- 
-# actually let's use simple parsing because we can't guarantee deps.
+from typing import Dict, List
 
-from tools.contracts_ci.common import repo_root, iter_markdown_files
+from tools.contracts_ci.metadata import ContractDocument, load_documents, normalize_token
 
-class ContractMetadata(NamedTuple):
-    path: Path
-    domain: str
-    capability: str
-    version: str
-    status: str
-    surface: str
+REGISTRY_PATH = Path("registry/REGISTRY.md")
 
-def parse_front_matter(content: str) -> Dict[str, str]:
-    """Simple parser for front matter between ---"""
-    meta = {}
-    lines = content.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return meta
-    
-    for line in lines[1:]:
-        if line.strip() == "---":
-            break
-        if ":" in line:
-            key, val = line.split(":", 1)
-            meta[key.strip().lower()] = val.strip()
-    return meta
 
-def normalize_token(text: str) -> str:
-    """Lowercase and replace spaces with underscores"""
-    return re.sub(r"[^a-z0-9_]", "_", text.lower()).strip("_")
-
-def infer_surface(path: Path) -> str:
-    parts = path.parts
-    # contracts/product/kinly/mobile -> mobile
-    if "mobile" in parts:
+def infer_surface(doc: ContractDocument) -> str:
+    rel = doc.rel_path
+    if "/mobile/" in rel:
         return "mobile"
-    if "web" in parts:
+    if "/web/" in rel:
         return "web"
-    if "backend" in parts or "api" in parts:
-        return "backend" # Default API to backend? or usually API IS the contract surface? 
-                         # Let's use 'api' if explicitly api, but the user example used 'web' for 'contracts/links' which implies consumer surface.
-                         # If it's `contracts/api/...`, it's likely the backend surface or shared?
-                         # Let's map 'api' -> 'backend' for now based on 'Scope: backend' seen in homes_v1.
-    if "design" in parts:
+    if rel.startswith("contracts/api/"):
+        return "backend"
+    if rel.startswith("contracts/design/"):
         return "design"
-    return "shared"
+    if doc.scope == "platform":
+        return "platform"
+    return doc.scope or "shared"
 
-def audit_contracts():
-    root = repo_root()
-    contracts_dir = root / "contracts"
-    
-    surfaces: Dict[str, List[ContractMetadata]] = {}
 
-    for path in iter_markdown_files(contracts_dir):
-        # relative path from repo root
-        rel_path = path.relative_to(root)
-        content = path.read_text(encoding="utf-8")
-        meta = parse_front_matter(content)
-        
-        # Required fields check (lazy)
-        if not meta:
-            # Skip files without front matter (likely READMEs)
+def render_registry(documents: List[ContractDocument]) -> str:
+    surfaces: Dict[str, Dict[str, List[ContractDocument]]] = defaultdict(lambda: defaultdict(list))
+
+    for doc in documents:
+        if not doc.rel_path.startswith("contracts/"):
             continue
-            
-        domain = normalize_token(meta.get("domain", "unknown"))
-        capability = normalize_token(meta.get("capability", "unknown"))
-        version = meta.get("version", "v1.0") # parsing?
-        status = meta.get("status", "Draft") # User wants "Active" in registry but file says "draft".
-        # The registry is for ACTIVE contracts. If they are draft in file, should they be in registry?
-        # User asked: "audit and see what are the existing contracts and put it in the registry.md"
-        # So I should put them there. I will force Status to "Active" for the registry purpose if we assume they are active.
-        # OR I should check if they are deprecated. 
-        # But the User Sample said: "Status must be exactly Active". 
-        # So I will set them to Active in the registry regardless of file status, unless it's deprecated?
-        # Let's just default to Active for now as per instructions to "put it in".
-        
-        registry_status = "Active"
-        
-        surface = infer_surface(rel_path)
-        
-        entry = ContractMetadata(
-            path=rel_path,
-            domain=domain,
-            capability=capability,
-            version=version,
-            status=registry_status,
-            surface=surface
-        )
-        
-        if surface not in surfaces:
-            surfaces[surface] = []
-        surfaces[surface].append(entry)
+        surface = infer_surface(doc)
+        domain = normalize_token(doc.domain or "unknown")
+        surfaces[surface][domain].append(doc)
 
-    # Output Markdown
-    # Output Markdown
-    registry_file = root / "registry/REGISTRY.md"
-    with registry_file.open("w", encoding="utf-8") as f:
-        print("# Contracts Registry — Kinly\\n", file=f)
-        
-        for surface in sorted(surfaces.keys()):
-            print(f"## Surface: {surface}\\n", file=f)
-            
-            # Group by domain
-            entries_by_domain: Dict[str, List[ContractMetadata]] = {}
-            for entry in surfaces[surface]:
-                if entry.domain not in entries_by_domain:
-                    entries_by_domain[entry.domain] = []
-                entries_by_domain[entry.domain].append(entry)
-            
-            for domain in sorted(entries_by_domain.keys()):
-                print(f"### Domain: {domain}\\n", file=f)
-                
-                for entry in sorted(entries_by_domain[domain], key=lambda x: x.capability):
-                    p = entry.path.as_posix()
-                    print(f"* **{entry.capability}** ({entry.version}): [{p}]({p})", file=f)
-                print("", file=f)
-    print(f"Registry generated at {registry_file}")
+    lines: List[str] = ["# Contracts Registry - Kinly", ""]
+    for surface in sorted(surfaces):
+        lines.append(f"## Surface: {surface}")
+        lines.append("")
+        for domain in sorted(surfaces[surface]):
+            lines.append(f"### Domain: {domain}")
+            lines.append("")
+            for doc in sorted(surfaces[surface][domain], key=lambda item: (normalize_token(item.capability), item.version, item.rel_path)):
+                capability = normalize_token(doc.capability or doc.filename_family or "unknown")
+                lines.append(f"* **{capability}** ({doc.version}): [{doc.rel_path}]({doc.rel_path})")
+            lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def audit_contracts(root: Path | None = None) -> List[str]:
+    base = root or Path(__file__).resolve().parents[2]
+    registry_file = base / REGISTRY_PATH
+    rendered = render_registry(load_documents(base))
+    previous = registry_file.read_text(encoding="utf-8") if registry_file.exists() else ""
+    changed: List[str] = []
+    if previous != rendered:
+        registry_file.parent.mkdir(parents=True, exist_ok=True)
+        registry_file.write_text(rendered, encoding="utf-8")
+        changed.append(REGISTRY_PATH.as_posix())
+    return changed
 
 
 if __name__ == "__main__":
-    audit_contracts()
+    changed = audit_contracts()
+    if changed:
+        print("Updated generated files:")
+        for path in changed:
+            print(f"- {path}")
+    else:
+        print("Registry already up to date.")

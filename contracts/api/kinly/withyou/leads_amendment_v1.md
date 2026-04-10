@@ -6,6 +6,9 @@ Artifact-Type: contract
 Stability: evolving
 Status: draft
 Version: v1.0
+Canonical-Id: withyou_leads_amendment
+Implemented-By: contracts/product/kinly/web/withyou/lead_capture_v1.md
+Relates-To: architecture/withyou_system_overview_v1.md
 ---
 
 # Contract — Leads Table Amendment for withYou v1.0

@@ -6,6 +6,10 @@ Artifact-Type: contract
 Stability: evolving
 Status: draft
 Version: v1.0
+Canonical-Id: withyou_lead_capture
+Relates-To: architecture/withyou_system_overview_v1.md, contracts/product/kinly/web/withyou/scenario_landing_v1.md
+Depends-On: contracts/api/kinly/withyou/leads_amendment_v1.md, contracts/product/kinly/web/growth/interest_capture_v1_1.md
+Implemented-By: contracts/api/kinly/withyou/leads_amendment_v1.md
 ---
 
 # Contract — withYou Lead Capture v1.0

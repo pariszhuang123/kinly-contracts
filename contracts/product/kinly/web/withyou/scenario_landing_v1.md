@@ -6,6 +6,10 @@ Artifact-Type: contract
 Stability: evolving
 Status: draft
 Version: v1.1
+Canonical-Id: withyou_scenario_landing
+Relates-To: contracts/product/kinly/web/withyou/lead_capture_v1.md, architecture/withyou_system_overview_v1.md
+Depends-On: withyou_audio_asset_delivery, withyou_audio_pack_and_config
+See-Also: contracts/api/kinly/withyou/pack_download_tracking_v1.md
 ---
 
 # Contract: withYou Scenario Landing Page Template

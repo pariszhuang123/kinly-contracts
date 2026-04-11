@@ -4,11 +4,11 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Snapshot
 
-- Canonical docs: 262
+- Canonical docs: 269
 - Domains: 44
-- Capability pages: 215
+- Capability pages: 222
 - Active docs: 64
-- Draft docs: 198
+- Draft docs: 205
 - Deprecated docs: 0
 - Alignment issues: 0
 
@@ -26,7 +26,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/agents|agents]] (10 docs, 0 active)
 - [[domains/architecture_guardrails_v1_1_md|architecture_guardrails_v1_1_md]] (1 docs, 0 active)
 - [[domains/backend|backend]] (1 docs, 1 active)
-- [[domains/command|command]] (1 docs, 0 active)
+- [[domains/command|command]] (7 docs, 0 active)
 - [[domains/complexity_budget_v1_md|complexity_budget_v1_md]] (1 docs, 0 active)
 - [[domains/contracts|contracts]] (2 docs, 0 active)
 - [[domains/coordination|coordination]] (10 docs, 0 active)
@@ -48,7 +48,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/marketing_ops|marketing_ops]] (1 docs, 0 active)
 - [[domains/mobile|mobile]] (5 docs, 0 active)
 - [[domains/modules_md|modules_md]] (1 docs, 0 active)
-- [[domains/monetization|monetization]] (2 docs, 2 active)
+- [[domains/monetization|monetization]] (3 docs, 2 active)
 - [[domains/norms|norms]] (1 docs, 0 active)
 - [[domains/platform|platform]] (3 docs, 2 active)
 - [[domains/product|product]] (37 docs, 32 active)
@@ -66,18 +66,18 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Recently Changed Areas
 
-- 2026-04-10: Kinly Command Router Contract v1.1 -> [[capabilities/command_router_contract|command_router_contract]] (contracts/api/kinly/command/command_router_contract_v1_1.md)
-- 2026-04-09: Shared Calendar API Contract v1 -> [[capabilities/shared_calendar|shared_calendar]] (contracts/api/kinly/homes/shared_calendar_api_v1.md)
-- 2026-04-09: Shared Calendar Contract v1 -> [[capabilities/shared_calendar|shared_calendar]] (contracts/product/kinly/shared/shared_calendar_v1.md)
-- 2026-04-09: Reflective Generation Contract (v1) -> [[capabilities/reflective_generation|reflective_generation]] (contracts/product/kinly/shared/reflective_generation_v1.md)
-- 2026-04-09: Kinly Preference Report Contract v1 -> [[capabilities/preference_reports|preference_reports]] (contracts/product/kinly/shared/preference_reports_v1.md)
-- 2026-04-09: Contract - Fallback Routing & Failure Handling v1.1 -> [[capabilities/links_fallback|links_fallback]] (contracts/product/kinly/web/links/links_fallback_v1_1.md)
-- 2026-04-09: withYou System Overview (v1) -> [[capabilities/withyou_system_overview|withyou_system_overview]] (architecture/withyou_system_overview_v1.md)
-- 2026-04-09: Contract — Pack Download Tracking v1.0 -> [[capabilities/withyou_pack_download_tracking|withyou_pack_download_tracking]] (contracts/api/kinly/withyou/pack_download_tracking_v1.md)
-- 2026-04-09: Contract — Leads Table Amendment for withYou v1.0 -> [[capabilities/withyou_leads_amendment|withyou_leads_amendment]] (contracts/api/kinly/withyou/leads_amendment_v1.md)
-- 2026-04-09: withYou Audio Pack and Config Contract v1.0 -> [[capabilities/withyou_audio_pack_and_config|withyou_audio_pack_and_config]] (contracts/product/kinly/shared/withyou_audio_pack_v1.md)
-- 2026-04-09: withYou Audio Asset Delivery Contract v1.0 -> [[capabilities/withyou_audio_asset_delivery|withyou_audio_asset_delivery]] (contracts/product/kinly/shared/withyou_audio_asset_delivery_v1.md)
-- 2026-04-09: Contract — withYou Lead Capture v1.0 -> [[capabilities/withyou_lead_capture|withyou_lead_capture]] (contracts/product/kinly/web/withyou/lead_capture_v1.md)
+- 2026-04-11: Shopping List Purchase Memory Contract v1.5 -> [[capabilities/shopping_list_purchase_memory|shopping_list_purchase_memory]] (contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
+- 2026-04-11: Shopping List API Contract v1.7 -> [[capabilities/shopping_list_api|shopping_list_api]] (contracts/api/kinly/homes/shopping_list_api_v1.md)
+- 2026-04-11: Command AI Quota Contract v1.0 -> [[capabilities/command_ai_quota|command_ai_quota]] (contracts/api/kinly/command/command_ai_quota_v1.md)
+- 2026-04-11: Kinly Command Router Contract v1.1 -> [[capabilities/command_router_contract|command_router_contract]] (contracts/api/kinly/command/command_router_contract_v1_1.md)
+- 2026-04-11: paywall_status_get RPC v1.0 -> [[capabilities/paywall_status_get|paywall_status_get]] (contracts/api/kinly/homes/paywall_status_get_v1.md)
+- 2026-04-11: Paywall Gate Contract (Product / Client Behavior) -> [[capabilities/paywall_gate_product|paywall_gate_product]] (contracts/product/kinly/mobile/paywall_gate_product_v1.md)
+- 2026-04-11: Kinly Premium Paywall — Phase 1 Contract -> [[capabilities/paywall|paywall]] (contracts/product/kinly/mobile/paywall_v1.md)
+- 2026-04-11: Voice → Multi-Item Grocery Capture (+ Routing Foundation) -> [[capabilities/voice_grocery_capture|voice_grocery_capture]] (contracts/product/kinly/shared/voice_grocery_capture_v1.md)
+- 2026-04-11: Command Navigation Module v1.0 -> [[capabilities/command_navigation_module|command_navigation_module]] (contracts/api/kinly/command/command_navigation_module_v1.md)
+- 2026-04-11: Command Task Module Contract v1.0 -> [[capabilities/command_task_module|command_task_module]] (contracts/api/kinly/command/command_task_module_v1.md)
+- 2026-04-11: Command Expense Module Contract v1.0 -> [[capabilities/command_expense_module|command_expense_module]] (contracts/api/kinly/command/command_expense_module_v1.md)
+- 2026-04-11: Command Grocery Module Contract v1.0 -> [[capabilities/command_grocery_module|command_grocery_module]] (contracts/api/kinly/command/command_grocery_module_v1.md)
 
 ## Key Architecture And Decision Docs
 

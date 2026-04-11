@@ -10,12 +10,14 @@
 
 ## Relationships
 
-- [Chore Wheel API Contract v1](../../contracts/api/kinly/chores/chore_wheel_api_v1.md)
-- [House Norms API v1.1](../../contracts/api/kinly/homes/house_norms_api_v1.md)
-- [Shopping List API Contract v1.6](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
+- [Command AI Quota Contract v1.0](../../contracts/api/kinly/command/command_ai_quota_v1.md)
+- [Command Expense Module Contract v1.0](../../contracts/api/kinly/command/command_expense_module_v1.md)
+- [Command Grocery Module Contract v1.0](../../contracts/api/kinly/command/command_grocery_module_v1.md)
+- [Command Navigation Module v1.0](../../contracts/api/kinly/command/command_navigation_module_v1.md)
+- [Command Task Module Contract v1.0](../../contracts/api/kinly/command/command_task_module_v1.md)
+- [paywall_status_get RPC v1.0](../../contracts/api/kinly/homes/paywall_status_get_v1.md)
+- [Shopping List API Contract v1.7](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
 - [Expenses Contracts v2.6](../../contracts/api/kinly/share/expenses_v2.md)
-- [Chores Contracts v2](../../contracts/product/kinly/mobile/chores_v2.md)
-- [Shopping List Product Contract v1.3](../../contracts/product/kinly/shared/shopping_list_contract_v1.md)
 
 ## Source Docs
 

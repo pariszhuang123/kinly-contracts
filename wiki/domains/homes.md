@@ -22,9 +22,9 @@
 - [[../capabilities/house_vibe_canonical_preference_schema|house_vibe_canonical_preference_schema]] -> latest v1.0 (draft)
 - [[../capabilities/house_vibe_compute_rpc_contract|house_vibe_compute_rpc_contract]] -> latest v1.0 (draft)
 - [[../capabilities/house_vibe_mapping_effects|house_vibe_mapping_effects]] -> latest v1.0 (draft)
-- [[../capabilities/shopping_list_api|shopping_list_api]] -> latest v1.6 (draft)
+- [[../capabilities/shopping_list_api|shopping_list_api]] -> latest v1.7 (draft)
 - [[../capabilities/shopping_list_contract|shopping_list_contract]] -> latest v1.3 (draft)
-- [[../capabilities/shopping_list_purchase_memory|shopping_list_purchase_memory]] -> latest v1.4 (draft)
+- [[../capabilities/shopping_list_purchase_memory|shopping_list_purchase_memory]] -> latest v1.5 (draft)
 
 ## Source Docs
 
@@ -50,5 +50,5 @@
 - [House Vibe Mapping Effects v1 (pref_id → axes)](../../contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
 - [Shopping List Architecture Contract v1.3](../../architecture/contracts/shopping_list_contract.md)
 - [Shopping List Product Contract v1.3](../../contracts/product/kinly/shared/shopping_list_contract_v1.md)
-- [Shopping List Purchase Memory Contract v1.4](../../contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
-- [Shopping List API Contract v1.6](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
+- [Shopping List Purchase Memory Contract v1.5](../../contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
+- [Shopping List API Contract v1.7](../../contracts/api/kinly/homes/shopping_list_api_v1.md)

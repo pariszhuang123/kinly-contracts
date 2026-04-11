@@ -6,91 +6,166 @@ Artifact-Type: contract
 Stability: evolving
 Status: draft
 Version: v1.1
-Relates-To: contracts/api/kinly/homes/shopping_list_api_v1.md, contracts/api/kinly/share/expenses_v2.md, contracts/api/kinly/chores/chore_wheel_api_v1.md, contracts/api/kinly/homes/house_norms_api_v1.md
-See-Also: contracts/product/kinly/shared/shopping_list_contract_v1.md, contracts/product/kinly/mobile/chores_v2.md
+Relates-To: contracts/api/kinly/command/command_grocery_module_v1.md, contracts/api/kinly/command/command_expense_module_v1.md, contracts/api/kinly/command/command_task_module_v1.md, contracts/api/kinly/command/command_navigation_module_v1.md, contracts/api/kinly/command/command_ai_quota_v1.md
+See-Also: contracts/api/kinly/homes/shopping_list_api_v1.md, contracts/api/kinly/share/expenses_v2.md, contracts/api/kinly/homes/paywall_status_get_v1.md
 ---
 
 # Kinly Command Router Contract v1.1
 
-## Purpose
+## 1. Purpose
 
-This contract defines the **structured output** produced after a user says or types something into Kinly. It is the **decision-ready draft** that the app and backend act on — not the execution itself.
+This contract defines the **intent classification layer** — the thin first step after a user says or types something into Kinly.
 
-It answers:
+The router's ONLY job:
 
-1. What did the user mean? → `intent`
-2. Do we have enough info? → `status` / `missing_fields`
-3. Is this about creating something new or updating something existing? → `resolution.mode`
-4. If it matches an existing thing, how confident are we? → `resolution.match_confidence_band` / `top_candidate_score`
-5. What should Kinly do next? → `ui_hint` / `policy`
+1. **Classify intent** — what does the user want to do?
+2. **Route to the correct module(s)** — hand off to module contracts that own field extraction, validation, and resolution
+
+The router does NOT:
+
+- Extract or parse structured fields (module's job)
+- Resolve existing entities (module's job)
+- Decide UI outcomes (module's job)
+- Know what fields any module requires
+- Know how modules parse their input
 
 ---
 
-## Architecture Overview
+## 2. Architecture
 
 ```
 User input (voice / text)
         │
         ▼
-┌──────────────┐
-│  LLM Router  │  → intent + arguments + status
-└──────┬───────┘
-       │
-       ▼
-┌──────────────┐
-│  Resolver    │  → resolution (match existing entities, score candidates)
-└──────┬───────┘
-       │
-       ▼
-┌──────────────────────┐
-│  Deterministic Rules │  → ui_hint + policy (execute / inline / confirm / route)
-└──────────────────────┘
-       │
-       ▼
-   Command Contract JSON  →  app / backend acts on it
+┌─────────────────────────────────┐
+│  Phase 1: Intent Classifier     │  LLM call (lightweight, cheap)
+│  "What does the user want?"     │
+│  → intent classification        │
+└──────────┬──────────────────────┘
+           │
+           ▼
+┌─────────────────────────────────┐
+│  Deterministic Router           │  No LLM — intent → module mapping
+│  → single module or multi-route │
+└──────────┬──────────────────────┘
+           │
+     ┌─────┼──────┬───────────┐
+     ▼     ▼      ▼           ▼
+  Grocery  Task   Expense   Navigation
+  Module   Module Module    Module
 ```
 
-The LLM's job is narrow: understand intent and extract arguments. The resolver scores candidates against existing data. The deterministic rules decide the UX outcome. This separation means thresholds can be tuned without re-prompting.
+### Why two phases?
+
+| Concern | Single-pass (wrong) | Two-phase (correct) |
+|---------|---------------------|---------------------|
+| Cost | Full LLM prompt with all possible fields | Call 1 is tiny; module parsing is free or scoped |
+| Hallucination | LLM fills currency, participants, scope | LLM only classifies; module gets real data from DB |
+| Field rules | Router must know "tasks: 1 assignee, expenses: ≥ 2 participants" | Each module owns its own rules |
+| New modules | Router contract must change | Add a new module contract — router stays the same |
 
 ---
 
-## 1. Contract Shape
+### AI quota gate
+
+Before the router invokes the classifier LLM, the command entrypoint MUST enforce the AI request quota.
+
+Quota rules:
+
+- Metric name: `ai_command_requests`
+- Scope: per user
+- Entitlement interaction: if the caller's current home is premium, the free-tier AI quota does not apply
+- Window: UTC calendar day
+- Reset boundary: `00:00:00 UTC`
+- Allowance: backend-configured integer `N`
+- Free-tier users MAY create up to `N` AI command requests per UTC calendar day
+- Paid users are not subject to the free-tier daily quota, but MAY still be subject to separate abuse-prevention or service-protection rate controls
+- Grace overage is NOT allowed
+
+Counting rules:
+
+- Count an AI command request when it is accepted into the classifier pipeline
+- The quota charge MUST be idempotent on `request_id` within the same UTC calendar day
+- Do NOT count retries caused solely by internal system failure, timeout, or transport failure before classification completes
+- Do NOT count `module_continue` follow-up turns that bypass the router/classifier
+- Do NOT count a post-upgrade replay of the same blocked request when the replay reuses the original `request_id`
+- Low-confidence `unknown` requests still count when they consumed the classifier call
+- If quota is exhausted, the system MUST NOT invoke the classifier or any business module
+
+Backend enforcement requirements:
+
+- Quota enforcement MUST happen server-side before the classifier LLM call
+- The backend MUST be source-of-truth for allowance, usage, and reset timing
+- The backend MUST reject requests over quota even if the client fails to pre-check status
+- The backend MUST persist or derive quota state in a way that is safe against concurrent double-charging
+- The backend MUST be able to answer: `used`, `limit`, `resets_at`, and whether the current home entitlement bypasses the free quota
+
+### Backend LLM call requirements
+
+The router's classifier LLM call is backend-owned and MUST follow these rules:
+
+- The backend MUST gate the LLM call behind auth, home-context validation, and quota enforcement
+- The backend MUST use the router contract as the canonical output schema for classification
+- The backend MUST pass a stable `request_id` through quota, logging, and downstream module invocations
+- The backend MUST log classifier failures, timeouts, and low-confidence unknowns for observability and feature discovery
+- The backend MUST NOT allow client-supplied classification results to bypass server classification
+- The backend MUST bound model cost and latency with a lightweight prompt suitable for intent classification only
+- The backend SHOULD record model/provider version metadata in audit logs for later evaluation
+- The backend SHOULD apply abuse controls separately from entitlement quota, for example burst rate limits or anomaly throttles
+
+Quota exhaustion outcome:
+
+- Return a paywall-cap error to the client
+- The client opens the same premium paywall used for other capped features
+- The response SHOULD include the metric name and next reset boundary so the UI can explain that access resets tomorrow
+- If the client retries after upgrade, it SHOULD replay the original request using the same `request_id`
+
+---
+
+## 3. Router Output Shape
+
+This is the ONLY output the router produces.
 
 ```json
 {
   "contract_version": "1.1",
   "source": { ... },
-  "intent": "...",
-  "arguments": { ... },
-  "status": "...",
-  "missing_fields": [],
-  "ambiguities": [],
-  "risk_level": "...",
-  "resolution": { ... },
-  "ui_hint": { ... },
-  "summary": "...",
-  "policy": { ... },
-  "audit": { ... }
+  "classification": {
+    "intent": "...",
+    "confidence": "...",
+    "intents_detected": [ ... ]
+  },
+  "routing": {
+    "module": "...",
+    "is_multi_intent": false,
+    "modules_targeted": [ ... ]
+  },
+  "audit": {
+    "router_version": "command-router-v1",
+    "schema_version": "1.1"
+  }
 }
 ```
 
 ---
 
-## 2. `source`
-
-Where the command came from.
+## 4. `source`
 
 | Field              | Type     | Description                              |
 |--------------------|----------|------------------------------------------|
 | `input_mode`       | string   | `"text"` or `"voice"`                    |
 | `raw_text`         | string   | Original typed text (empty for voice)    |
-| `transcript_text`  | string?  | Speech-to-text output (null for text)    |
-| `user_id`          | string   | `"current_user"`                         |
-| `home_id`          | string   | `"current_home"`                         |
+| `transcript_text`  | string?  | STT output (null for text)               |
+| `user_id`          | string   | Current authenticated user               |
+| `home_id`          | string   | Current home context                     |
 | `timezone`         | string   | IANA timezone, e.g. `"Pacific/Auckland"` |
+| `locale`           | string   | Language/region hint, e.g. `"en-NZ"`     |
 | `client_timestamp` | string   | ISO 8601 with offset                     |
+| `request_id`       | string   | Unique ID for idempotency                |
 
-### Allowed `input_mode` values
+Modules receive the full `source` object. The effective user input is `source.raw_text` (for text) or `source.transcript_text` (for voice).
+
+### Allowed `input_mode`
 
 ```json
 ["text", "voice"]
@@ -98,366 +173,299 @@ Where the command came from.
 
 ---
 
-## 3. `intent`
+## 5. `classification`
 
-The normalized action Kinly thinks the user wants.
+The LLM's output — intent classification only.
 
-### Recommended v1 intents
+| Field              | Type     | Description                                          |
+|--------------------|----------|------------------------------------------------------|
+| `intent`           | string   | Primary detected intent                              |
+| `confidence`       | string   | `"high"`, `"medium"`, `"low"`                        |
+| `intents_detected` | array    | All intents detected (for multi-intent utterances)   |
+
+### Allowed intents
 
 ```json
 [
-  "add_grocery_item",
+  "add_grocery_items",
   "create_task",
   "mark_task_done",
   "create_reminder",
   "create_expense",
   "open_house_norms",
   "view_due_items",
-  "view_service"
+  "view_service",
+  "unknown"
 ]
 ```
 
----
+### Low confidence handling
 
-## 4. `arguments`
+When `confidence == "low"` and `intent == "unknown"`:
 
-Structured values for the action. Missing values MUST be `null`, never guessed.
+1. Route to `navigation` module (fallback to home)
+2. Log the input to `unrecognized_intents` table with: `request_id`, `raw_text`/`transcript_text`, `timestamp`, `home_id`
+3. Respond: "I'm not sure what you mean. Here's what I can help with." + list of capabilities
 
-### Canonical argument shape
+The `unrecognized_intents` table enables feature discovery — patterns in unrecognized inputs reveal features users want but Kinly doesn't have yet.
+
+When `confidence == "low"` and `intent` is a supported intent:
+
+- The router MAY still route to that module
+- The module MUST NOT auto-execute solely because the router named an intent
+- The module MUST downgrade the outcome to `inline`, `confirm`, or `route` unless its own deterministic rules reach a safe non-destructive action
+- Low router confidence MUST NOT bypass module validation, ambiguity checks, or confirmation rules
+
+### Multi-intent detection
+
+When the classifier detects multiple intents in one utterance:
+
+- `intents_detected` contains all detected intents
+- `is_multi_intent` is `true`
+- Each intent maps to its module via the intent → module table
+
+Example: "Add milk and eggs, and I paid $30 for groceries with John"
 
 ```json
 {
-  "task_id": null,
-  "task_title": null,
-  "assigned_to": null,
-  "due_at": null,
-  "amount": null,
-  "currency": null,
-  "category": null,
-  "participants": null,
-  "paid_by": null,
-  "target_service": null,
-  "note": null,
-  "item": null
+  "intent": "add_grocery_items",
+  "confidence": "high",
+  "intents_detected": ["add_grocery_items", "create_expense"]
 }
 ```
 
-Not every field is used every time.
+### Same-module multi-intent
+
+When multiple intents map to the SAME module (e.g. "wash clothes and take out bins" = two `create_task`), the router sends it to the module ONCE. The module is responsible for detecting and handling multiple items from the input internally.
+
+This keeps the router thin — it does not segment utterances.
 
 ---
 
-## 5. `status`
+## 6. `routing`
 
-Whether Kinly has enough information.
+Deterministic mapping from intent to module. No LLM involved.
 
-| Value            | Meaning                                                 |
-|------------------|---------------------------------------------------------|
-| `complete`       | Enough info to act                                      |
-| `missing_fields` | Intent is clear, but something important is missing     |
-| `ambiguous`      | More than one valid interpretation or target exists      |
+| Field              | Type     | Description                                    |
+|--------------------|----------|------------------------------------------------|
+| `module`           | string   | Primary target module                          |
+| `is_multi_intent`  | boolean  | Whether multiple modules will be invoked       |
+| `modules_targeted` | array    | All modules to invoke (matches `intents_detected`) |
 
----
+### Intent → Module mapping
 
-## 6. `missing_fields`
-
-Fields still needed before safe execution.
-
-```json
-["assigned_to"]
-```
-
----
-
-## 7. `ambiguities`
-
-Explicit uncertainty markers.
-
-### Allowed values
-
-```json
-[
-  "intent_unclear",
-  "multiple_possible_tasks",
-  "split_group_unclear",
-  "service_target_unclear",
-  "no_existing_task_match"
-]
-```
+| Intent | Module | Module contract |
+|--------|--------|-----------------|
+| `add_grocery_items` | `grocery` | `command_grocery_module_v1.md` |
+| `create_task` | `task` | `command_task_module_v1.md` |
+| `mark_task_done` | `task` | `command_task_module_v1.md` |
+| `create_reminder` | `task` | `command_task_module_v1.md` |
+| `create_expense` | `expense` | `command_expense_module_v1.md` |
+| `open_house_norms` | `navigation` | `command_navigation_module_v1.md` |
+| `view_due_items` | `navigation` | `command_navigation_module_v1.md` |
+| `view_service` | `navigation` | `command_navigation_module_v1.md` |
+| `unknown` | `navigation` | `command_navigation_module_v1.md` (fallback route) |
 
 ---
 
-## 8. `risk_level`
+## 7. Module Input
 
-How risky it would be to act wrongly.
-
-| Value    | Examples                                       |
-|----------|------------------------------------------------|
-| `low`    | Add grocery item, mark task done, open page    |
-| `medium` | Reminder creation, lightweight assignment      |
-| `high`   | Expenses, splits, service/payment changes      |
-
----
-
-## 9. `resolution`
-
-The key layer for matching user input to existing entities (tasks, expenses, services).
-
-### Shape
+Every module receives the same input shape:
 
 ```json
 {
-  "mode": "matched_existing",
-  "entity_type": "task",
-  "entity_id": "task_123",
-  "match_confidence_band": "high",
-  "top_candidate_score": 94,
-  "top_candidate_reasons": [
-    "assigned_to_current_user",
-    "due_today",
-    "strong_title_match",
-    "recently_active"
-  ],
-  "candidate_count": 3,
-  "requires_user_selection": false,
-  "selection_thresholds": {
-    "auto_execute_min": 80,
-    "confirm_min": 50
-  }
+  "source": { ... },
+  "source_intent": "create_task",
+  "request_id": "req_001"
 }
 ```
 
-### Allowed `mode`
+| Field          | Type   | Description |
+|----------------|--------|-------------|
+| `source`       | object | Full `source` from router output (user_id, home_id, timezone, locale, raw_text, transcript_text, etc.) |
+| `source_intent`| string | The specific intent this module invocation is for |
+| `request_id`   | string | From `source.request_id` — for idempotency and linking |
 
-| Value                 | Meaning                                         |
-|-----------------------|-------------------------------------------------|
-| `not_applicable`      | No matching needed (e.g. add grocery item)      |
-| `matched_existing`    | Found the likely existing item                  |
-| `needs_selection`     | User should choose from a few matches           |
-| `no_match_create_new` | Nothing matched, offer create-new flow          |
-| `route_for_resolution`| Too complex, open the page                      |
-
-### Allowed `entity_type`
-
-```json
-["task", "expense", "service", "reminder", "none"]
-```
-
-### Allowed `match_confidence_band`
-
-```json
-["high", "medium", "low", "none"]
-```
-
-### `top_candidate_score` interpretation
-
-| Range  | Meaning          |
-|--------|------------------|
-| 90+    | Very likely      |
-| 50–79  | Maybe, confirm   |
-| < 50   | Ask/select/route |
-
-### Allowed `top_candidate_reasons`
-
-```json
-[
-  "assigned_to_current_user",
-  "due_today",
-  "due_recently",
-  "strong_title_match",
-  "weak_title_match",
-  "recently_active",
-  "recurring_task",
-  "last_referenced_entity"
-]
-```
-
-These reasons support debugging, analytics, trust, and explainability.
+The effective user input is `source.raw_text` (for text input) or `source.transcript_text` (for voice input). The module reads whichever is non-null.
 
 ---
 
-## 10. `ui_hint`
+## 8. Module Output Envelope (shared shape)
 
-Tells the app what UI pattern to use next.
-
-### Shape
+All modules produce output following this shared envelope. Field schemas, resolution logic, and decision rules are defined in each module's own contract.
 
 ```json
 {
-  "type": "inline",
-  "component": "assign",
-  "target": null,
-  "prefill": {
-    "task_title": "Wash the clothes"
-  },
-  "options": [
-    { "id": "me", "label": "Me" },
-    { "id": "alex", "label": "Alex" }
+  "contract_version": "1.1",
+  "request_id": "...",
+  "source_intent": "...",
+  "module": "...",
+  "status": "...",
+  "missing_fields": [],
+  "risk_level": "...",
+  "fields": { ... },
+  "resolution": { ... },
+  "ui_hint": { ... },
+  "summary": "...",
+  "policy": { ... }
+}
+```
+
+### `status`
+
+| Value            | Meaning                                |
+|------------------|----------------------------------------|
+| `complete`       | Module has enough info to act          |
+| `missing_fields` | Fields are partially extracted         |
+| `ambiguous`      | Cannot resolve entity / interpretation |
+| `no_action`      | Module found nothing relevant          |
+
+### `ui_hint`
+
+| Field       | Type    | Description                                          |
+|-------------|---------|------------------------------------------------------|
+| `type`      | string  | `"execute"`, `"inline"`, `"confirm"`, `"route"`      |
+| `component` | string? | UI component to render (module-specific)             |
+| `target`    | string? | Deep link path (only when `type == "route"`)         |
+| `prefill`   | object? | Draft values for the UI                              |
+| `options`   | array   | Choices for inline pickers: `[{ "id": "...", "label": "..." }]` |
+
+#### `ui_hint.type` meanings
+
+| Type | Meaning | User experience |
+|------|---------|-----------------|
+| `execute` | All fields present, low risk — act immediately on behalf of the user | No user interaction needed |
+| `inline` | One specific field needed — show a picker/input to complete it | Quick tap to finish |
+| `confirm` | All fields present but needs user sign-off before acting | User reviews and confirms |
+| `route` | Too complex for inline — navigate to the full page for the user to complete | Deep link with prefilled data |
+
+### `policy`
+
+| Field                  | Type    | Description                                    |
+|------------------------|---------|------------------------------------------------|
+| `suggested_outcome`    | string  | `"execute"`, `"inline"`, `"confirm"`, `"route"` — MUST match `ui_hint.type` |
+| `requires_confirmation`| boolean | Whether user must explicitly confirm           |
+| `is_executable_now`    | boolean | Whether all required fields are present        |
+| `executor`             | string  | Target RPC. `"none"` when `status` is `no_action` or type is `route` |
+
+`policy.suggested_outcome` MUST use one of: `"execute"`, `"inline"`, `"confirm"`, `"route"`. No module-specific values.
+
+---
+
+## 9. Multi-Intent Handling
+
+### Routing
+
+The router invokes ONLY the modules listed in `modules_targeted` — not all modules in the system. Each targeted module receives the full `source` and extracts only its relevant parts, ignoring the rest.
+
+### Module no-action
+
+If a module receives input but finds nothing relevant to extract, it returns:
+
+```json
+{
+  "module": "grocery",
+  "status": "no_action"
+}
+```
+
+`no_action` modules are excluded from the batch response.
+
+### Batch envelope
+
+```json
+{
+  "contract_version": "1.1",
+  "request_id": "req_abc",
+  "is_batch": true,
+  "modules": [
+    { "module": "grocery", ... },
+    { "module": "expense", ... }
   ]
 }
 ```
 
-### Allowed `type`
+The generic fallback shown above does NOT apply to `paywall_ai_command_daily_limit`.
 
-| Value     | Meaning                                              |
-|-----------|------------------------------------------------------|
-| `execute` | Safe to perform now                                  |
-| `inline`  | Show quick buttons/chips/picker                      |
-| `confirm` | Show summary and confirm button                      |
-| `route`   | Deep link into a page with prefilled draft state     |
+### Batch execution rules
 
-### Allowed `component`
-
-```json
-[
-  null,
-  "assign",
-  "assign_payer",
-  "split",
-  "pick_date",
-  "disambiguate",
-  "select_task",
-  "select_service"
-]
-```
-
-### `target`
-
-Only used when `type = "route"`. Example: `"/expenses/create"`
-
-### `prefill`
-
-Draft values carried into the page or confirmation sheet.
-
-### `options`
-
-Used for inline actions. Example:
-
-```json
-[
-  { "id": "me", "label": "Me" },
-  { "id": "alex", "label": "Alex" },
-  { "id": "sam", "label": "Sam" }
-]
-```
+- Each module contract is evaluated independently
+- If ANY module requires `confirm`, the batch shows a combined confirmation
+- Grocery can `execute` while expense awaits `confirm` — partial success is allowed
+- Undo applies per-module
 
 ---
 
-## 11. `summary`
+## 10. Inline Continuation (Conversation Turns)
 
-Human-readable action summary.
+When a module returns `ui_hint.type == "inline"` and the user responds (e.g. picks an assignee from the inline picker), the client sends a `module_continue` request **directly to the module** — no re-classification through the router.
 
-```json
-"Split $84 groceries across everyone"
-```
-
----
-
-## 12. `policy`
-
-Suggested outcome from router/resolver. Final decision stays deterministic in app/backend logic.
+### `module_continue` input
 
 ```json
 {
-  "suggested_outcome": "confirm",
-  "requires_confirmation": true,
-  "is_executable_now": true,
-  "executor": "expense_create_rpc"
+  "request_id": "req_001",
+  "source_intent": "create_task",
+  "module": "task",
+  "prefilled_fields": {
+    "task_title": "Wash the clothes"
+  },
+  "user_selection": {
+    "field": "assigned_to",
+    "value": "user_alex"
+  }
 }
 ```
 
-### Allowed `suggested_outcome`
+The module merges `prefilled_fields` + `user_selection`, re-evaluates its decision rules, and produces a new module output. If all fields are now present, the module returns `status: "complete"` with `ui_hint.type` of `execute` or `confirm` depending on risk.
 
-```json
-["execute", "inline", "confirm", "route"]
-```
+This avoids:
+- Re-classifying intent (already known)
+- Re-running the LLM (not needed)
+- Losing context from the first turn
 
 ---
 
-## 13. `audit`
-
-Optional metadata for versioning.
+## 11. Error Envelope
 
 ```json
 {
-  "router_version": "voice-command-router-v1",
-  "schema_version": "1.1"
+  "contract_version": "1.1",
+  "request_id": "req_abc",
+  "error": {
+    "code": "...",
+    "message": "...",
+    "fallback": {
+      "ui_hint": {
+        "type": "route",
+        "target": "/home"
+      }
+    }
+  }
 }
 ```
 
----
+| Code | When |
+|------|------|
+| `classification_failed` | LLM could not classify intent |
+| `transcription_failed` | STT returned empty or failed |
+| `transcription_timeout` | STT exceeded timeout (show partial transcript + manual edit) |
+| `paywall_ai_command_daily_limit` | Free-tier user has exhausted daily `ai_command_requests` quota |
+| `module_error` | Module-level failure during field extraction |
 
-## 14. Deterministic Decision Rules
+For `paywall_ai_command_daily_limit`:
 
-These rules MUST execute outside the LLM, in app/backend logic.
-
-```
-IF status == complete
-   AND risk_level == low
-   AND resolution.match_confidence_band IN [high, none]:
-   → execute
-
-IF status == complete
-   AND risk_level IN [medium, high]:
-   → confirm
-
-IF status == missing_fields
-   AND missing_fields.count <= 2:
-   → inline
-
-IF status == missing_fields
-   AND missing_fields.count > 2:
-   → route
-
-IF status == ambiguous
-   AND resolution.mode == needs_selection
-   AND candidate_count <= 3:
-   → inline
-
-IF status == ambiguous
-   AND resolution.mode == route_for_resolution:
-   → route
-
-IF resolution.mode == no_match_create_new:
-   → confirm (create-new or create-and-complete)
-
-IF resolution.mode == matched_existing
-   AND top_candidate_score >= auto_execute_min:
-   → execute
-
-IF resolution.mode == matched_existing
-   AND top_candidate_score >= confirm_min
-   AND top_candidate_score < auto_execute_min:
-   → confirm
-
-IF resolution.mode == matched_existing
-   AND top_candidate_score < confirm_min:
-   → inline selection or route
-```
+- the client MUST open the premium paywall rather than route to `/home`
+- the backend SHOULD include quota context such as `metric` and `resets_at`
+- the client SHOULD preserve the blocked command payload for deterministic replay after upgrade
 
 ---
 
-## 15. Candidate Scoring Logic
+## 12. Examples
 
-This powers the `resolution` block. The contract only exposes the final score and reasons — not the full calculation.
+Examples show ONLY router output. Module output examples live in each module's contract.
 
-### Suggested weights
-
-| Factor                     | Score |
-|----------------------------|-------|
-| Assigned to current user   | +40   |
-| Due today                  | +30   |
-| Due recently               | +20   |
-| Strong title match         | +30   |
-| Weak title match           | +15   |
-| Recently active            | +25   |
-| Recurring task             | +10   |
-| Last referenced entity     | +20   |
-
----
-
-## 16. Examples
-
-### A. Simple execute — "milk"
+### A. Single intent — "milk"
 
 ```json
 {
@@ -469,577 +477,105 @@ This powers the `resolution` block. The contract only exposes the final score an
     "user_id": "current_user",
     "home_id": "current_home",
     "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
+    "locale": "en-NZ",
+    "client_timestamp": "2026-04-11T10:15:00+12:00",
+    "request_id": "req_001"
   },
-  "intent": "add_grocery_item",
-  "arguments": {
-    "item": "milk",
-    "task_id": null,
-    "task_title": null,
-    "assigned_to": null,
-    "due_at": null,
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null
+  "classification": {
+    "intent": "add_grocery_items",
+    "confidence": "high",
+    "intents_detected": ["add_grocery_items"]
   },
-  "status": "complete",
-  "missing_fields": [],
-  "ambiguities": [],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "not_applicable",
-    "entity_type": "none",
-    "entity_id": null,
-    "match_confidence_band": "none",
-    "top_candidate_score": null,
-    "top_candidate_reasons": [],
-    "candidate_count": 0,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "execute",
-    "component": null,
-    "target": null,
-    "prefill": null,
-    "options": []
-  },
-  "summary": "Add milk to grocery list",
-  "policy": {
-    "suggested_outcome": "execute",
-    "requires_confirmation": false,
-    "is_executable_now": true,
-    "executor": "shopping_list_add_item_rpc"
+  "routing": {
+    "module": "grocery",
+    "is_multi_intent": false,
+    "modules_targeted": ["grocery"]
   },
   "audit": {
-    "router_version": "voice-command-router-v1",
+    "router_version": "command-router-v1",
     "schema_version": "1.1"
   }
 }
 ```
 
-### B. Inline assign — "wash the clothes"
+### B. Multi-intent — "Add milk and eggs, and I paid $30 for groceries with John"
+
+```json
+{
+  "contract_version": "1.1",
+  "source": {
+    "input_mode": "voice",
+    "raw_text": "",
+    "transcript_text": "Add milk and eggs, and I paid $30 for groceries with John",
+    "user_id": "current_user",
+    "home_id": "current_home",
+    "timezone": "Pacific/Auckland",
+    "locale": "en-NZ",
+    "client_timestamp": "2026-04-11T10:15:00+12:00",
+    "request_id": "req_002"
+  },
+  "classification": {
+    "intent": "add_grocery_items",
+    "confidence": "high",
+    "intents_detected": ["add_grocery_items", "create_expense"]
+  },
+  "routing": {
+    "module": "grocery",
+    "is_multi_intent": true,
+    "modules_targeted": ["grocery", "expense"]
+  },
+  "audit": {
+    "router_version": "command-router-v1",
+    "schema_version": "1.1"
+  }
+}
+```
+
+### C. Low confidence unknown — logged for feature discovery
 
 ```json
 {
   "contract_version": "1.1",
   "source": {
     "input_mode": "text",
-    "raw_text": "wash the clothes",
+    "raw_text": "what's the weather",
     "transcript_text": null,
     "user_id": "current_user",
     "home_id": "current_home",
     "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
+    "locale": "en-NZ",
+    "client_timestamp": "2026-04-11T10:15:00+12:00",
+    "request_id": "req_003"
   },
-  "intent": "create_task",
-  "arguments": {
-    "task_id": null,
-    "task_title": "Wash the clothes",
-    "assigned_to": null,
-    "due_at": null,
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null,
-    "item": null
+  "classification": {
+    "intent": "unknown",
+    "confidence": "low",
+    "intents_detected": ["unknown"]
   },
-  "status": "missing_fields",
-  "missing_fields": ["assigned_to"],
-  "ambiguities": [],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "not_applicable",
-    "entity_type": "none",
-    "entity_id": null,
-    "match_confidence_band": "none",
-    "top_candidate_score": null,
-    "top_candidate_reasons": [],
-    "candidate_count": 0,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "inline",
-    "component": "assign",
-    "target": null,
-    "prefill": {
-      "task_title": "Wash the clothes"
-    },
-    "options": [
-      { "id": "me", "label": "Me" },
-      { "id": "alex", "label": "Alex" },
-      { "id": "sam", "label": "Sam" }
-    ]
-  },
-  "summary": "Create task: Wash the clothes",
-  "policy": {
-    "suggested_outcome": "inline",
-    "requires_confirmation": false,
-    "is_executable_now": false,
-    "executor": "task_create_rpc"
+  "routing": {
+    "module": "navigation",
+    "is_multi_intent": false,
+    "modules_targeted": ["navigation"]
   },
   "audit": {
-    "router_version": "voice-command-router-v1",
+    "router_version": "command-router-v1",
     "schema_version": "1.1"
   }
 }
 ```
 
-### C. High-risk confirm — "groceries 84 split all"
-
-```json
-{
-  "contract_version": "1.1",
-  "source": {
-    "input_mode": "voice",
-    "raw_text": "",
-    "transcript_text": "groceries 84 split all",
-    "user_id": "current_user",
-    "home_id": "current_home",
-    "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
-  },
-  "intent": "create_expense",
-  "arguments": {
-    "task_id": null,
-    "task_title": null,
-    "assigned_to": null,
-    "due_at": null,
-    "amount": 84,
-    "currency": "NZD",
-    "category": "groceries",
-    "participants": ["everyone"],
-    "paid_by": "current_user",
-    "target_service": null,
-    "note": null,
-    "item": null
-  },
-  "status": "complete",
-  "missing_fields": [],
-  "ambiguities": [],
-  "risk_level": "high",
-  "resolution": {
-    "mode": "not_applicable",
-    "entity_type": "none",
-    "entity_id": null,
-    "match_confidence_band": "none",
-    "top_candidate_score": null,
-    "top_candidate_reasons": [],
-    "candidate_count": 0,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "confirm",
-    "component": null,
-    "target": null,
-    "prefill": {
-      "amount": 84,
-      "currency": "NZD",
-      "category": "groceries",
-      "participants": ["everyone"],
-      "paid_by": "current_user"
-    },
-    "options": []
-  },
-  "summary": "Split $84 groceries across everyone",
-  "policy": {
-    "suggested_outcome": "confirm",
-    "requires_confirmation": true,
-    "is_executable_now": true,
-    "executor": "expense_create_rpc"
-  },
-  "audit": {
-    "router_version": "voice-command-router-v1",
-    "schema_version": "1.1"
-  }
-}
-```
-
-### D. Direct route — "house norms"
-
-```json
-{
-  "contract_version": "1.1",
-  "source": {
-    "input_mode": "text",
-    "raw_text": "house norms",
-    "transcript_text": null,
-    "user_id": "current_user",
-    "home_id": "current_home",
-    "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
-  },
-  "intent": "open_house_norms",
-  "arguments": {
-    "task_id": null,
-    "task_title": null,
-    "assigned_to": null,
-    "due_at": null,
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null,
-    "item": null
-  },
-  "status": "complete",
-  "missing_fields": [],
-  "ambiguities": [],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "not_applicable",
-    "entity_type": "none",
-    "entity_id": null,
-    "match_confidence_band": "none",
-    "top_candidate_score": null,
-    "top_candidate_reasons": [],
-    "candidate_count": 0,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "route",
-    "component": null,
-    "target": "/house-norms",
-    "prefill": null,
-    "options": []
-  },
-  "summary": "Open house norms",
-  "policy": {
-    "suggested_outcome": "route",
-    "requires_confirmation": false,
-    "is_executable_now": false,
-    "executor": "none"
-  },
-  "audit": {
-    "router_version": "voice-command-router-v1",
-    "schema_version": "1.1"
-  }
-}
-```
-
-### E. Matched existing (high confidence) — "washing completed"
-
-```json
-{
-  "contract_version": "1.1",
-  "source": {
-    "input_mode": "voice",
-    "raw_text": "",
-    "transcript_text": "washing completed",
-    "user_id": "current_user",
-    "home_id": "current_home",
-    "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
-  },
-  "intent": "mark_task_done",
-  "arguments": {
-    "task_id": "task_123",
-    "task_title": "Wash clothes",
-    "assigned_to": "current_user",
-    "due_at": "2026-04-11T18:00:00+12:00",
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null,
-    "item": null
-  },
-  "status": "complete",
-  "missing_fields": [],
-  "ambiguities": [],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "matched_existing",
-    "entity_type": "task",
-    "entity_id": "task_123",
-    "match_confidence_band": "high",
-    "top_candidate_score": 94,
-    "top_candidate_reasons": [
-      "assigned_to_current_user",
-      "due_today",
-      "strong_title_match",
-      "recently_active"
-    ],
-    "candidate_count": 3,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "execute",
-    "component": null,
-    "target": null,
-    "prefill": null,
-    "options": []
-  },
-  "summary": "Mark task 'Wash clothes' as completed",
-  "policy": {
-    "suggested_outcome": "execute",
-    "requires_confirmation": false,
-    "is_executable_now": true,
-    "executor": "task_completion_rpc"
-  },
-  "audit": {
-    "router_version": "voice-command-router-v1",
-    "schema_version": "1.1"
-  }
-}
-```
-
-### F. Medium-confidence match — confirm
-
-```json
-{
-  "contract_version": "1.1",
-  "source": {
-    "input_mode": "voice",
-    "raw_text": "",
-    "transcript_text": "washing completed",
-    "user_id": "current_user",
-    "home_id": "current_home",
-    "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
-  },
-  "intent": "mark_task_done",
-  "arguments": {
-    "task_id": "task_456",
-    "task_title": "Wash towels",
-    "assigned_to": "current_user",
-    "due_at": "2026-04-10T18:00:00+12:00",
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null,
-    "item": null
-  },
-  "status": "ambiguous",
-  "missing_fields": [],
-  "ambiguities": ["multiple_possible_tasks"],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "matched_existing",
-    "entity_type": "task",
-    "entity_id": "task_456",
-    "match_confidence_band": "medium",
-    "top_candidate_score": 64,
-    "top_candidate_reasons": [
-      "assigned_to_current_user",
-      "due_recently",
-      "weak_title_match"
-    ],
-    "candidate_count": 2,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "confirm",
-    "component": null,
-    "target": null,
-    "prefill": {
-      "task_id": "task_456"
-    },
-    "options": []
-  },
-  "summary": "Mark task 'Wash towels' as completed?",
-  "policy": {
-    "suggested_outcome": "confirm",
-    "requires_confirmation": true,
-    "is_executable_now": true,
-    "executor": "task_completion_rpc"
-  },
-  "audit": {
-    "router_version": "voice-command-router-v1",
-    "schema_version": "1.1"
-  }
-}
-```
-
-### G. Low-confidence match — inline selection
-
-```json
-{
-  "contract_version": "1.1",
-  "source": {
-    "input_mode": "voice",
-    "raw_text": "",
-    "transcript_text": "washing completed",
-    "user_id": "current_user",
-    "home_id": "current_home",
-    "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
-  },
-  "intent": "mark_task_done",
-  "arguments": {
-    "task_id": null,
-    "task_title": "washing",
-    "assigned_to": null,
-    "due_at": null,
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null,
-    "item": null
-  },
-  "status": "ambiguous",
-  "missing_fields": ["task_id"],
-  "ambiguities": ["multiple_possible_tasks"],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "needs_selection",
-    "entity_type": "task",
-    "entity_id": null,
-    "match_confidence_band": "low",
-    "top_candidate_score": 42,
-    "top_candidate_reasons": [
-      "multiple_weak_matches"
-    ],
-    "candidate_count": 3,
-    "requires_user_selection": true,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "inline",
-    "component": "select_task",
-    "target": null,
-    "prefill": null,
-    "options": [
-      { "id": "task_123", "label": "Wash clothes" },
-      { "id": "task_456", "label": "Wash towels" },
-      { "id": "task_789", "label": "Wash sheets" }
-    ]
-  },
-  "summary": "Which task did you complete?",
-  "policy": {
-    "suggested_outcome": "inline",
-    "requires_confirmation": false,
-    "is_executable_now": false,
-    "executor": "task_completion_rpc"
-  },
-  "audit": {
-    "router_version": "voice-command-router-v1",
-    "schema_version": "1.1"
-  }
-}
-```
-
-### H. No match — confirm create-and-complete
-
-```json
-{
-  "contract_version": "1.1",
-  "source": {
-    "input_mode": "voice",
-    "raw_text": "",
-    "transcript_text": "washing completed",
-    "user_id": "current_user",
-    "home_id": "current_home",
-    "timezone": "Pacific/Auckland",
-    "client_timestamp": "2026-04-11T10:15:00+12:00"
-  },
-  "intent": "mark_task_done",
-  "arguments": {
-    "task_id": null,
-    "task_title": "Washing",
-    "assigned_to": null,
-    "due_at": null,
-    "amount": null,
-    "currency": null,
-    "category": null,
-    "participants": null,
-    "paid_by": null,
-    "target_service": null,
-    "note": null,
-    "item": null
-  },
-  "status": "ambiguous",
-  "missing_fields": ["task_id"],
-  "ambiguities": ["no_existing_task_match"],
-  "risk_level": "low",
-  "resolution": {
-    "mode": "no_match_create_new",
-    "entity_type": "task",
-    "entity_id": null,
-    "match_confidence_band": "none",
-    "top_candidate_score": 0,
-    "top_candidate_reasons": [],
-    "candidate_count": 0,
-    "requires_user_selection": false,
-    "selection_thresholds": {
-      "auto_execute_min": 80,
-      "confirm_min": 50
-    }
-  },
-  "ui_hint": {
-    "type": "confirm",
-    "component": null,
-    "target": null,
-    "prefill": {
-      "task_title": "Washing",
-      "mark_completed": true
-    },
-    "options": []
-  },
-  "summary": "No matching task found. Create 'Washing' and mark it completed?",
-  "policy": {
-    "suggested_outcome": "confirm",
-    "requires_confirmation": true,
-    "is_executable_now": false,
-    "executor": "task_create_and_complete_rpc"
-  },
-  "audit": {
-    "router_version": "voice-command-router-v1",
-    "schema_version": "1.1"
-  }
-}
-```
+Side effect: logged to `unrecognized_intents` table for feature discovery.
 
 ---
 
-## 17. Design Principles
+## 13. Design Principles
 
-1. **The contract is not execution** — it is the decision-ready draft that the app/backend acts on.
-2. **LLM scope is narrow** — understand intent + extract arguments. No matching, no UX decisions.
-3. **Resolution is separate** — candidate scoring happens in the resolver, using real data.
-4. **Final UX decision is deterministic** — threshold-based rules, tunable without re-prompting.
-5. **Missing values are null, never guessed** — the contract is honest about what it doesn't know.
-6. **Resolution block is optional** — only included when existing-item matching matters.
+1. **Router is thin** — classify intent + route. Nothing else.
+2. **Modules own everything else** — fields, validation, resolution, scoring, UI decisions, parsing strategy.
+3. **Multi-intent = same source to targeted modules** — each module extracts only what's relevant.
+4. **Same-module multi-intent = module's responsibility** — the module handles splitting internally.
+5. **No guessing** — the router never infers values. Modules get real data from DB lookups.
+6. **Errors have a shape** — client always knows valid contract vs failure.
+7. **New modules don't change the router** — add a new intent + module mapping, create a new module contract.
+8. **Low confidence = feature discovery** — unrecognized inputs are logged, not discarded.
+9. **Inline continuation skips the router** — second turn goes directly to the module with prefilled fields.

@@ -8,6 +8,11 @@
 
 ### Domain: command
 
+* **ai_command_quota** (v1.0): [contracts/api/kinly/command/command_ai_quota_v1.md](contracts/api/kinly/command/command_ai_quota_v1.md)
+* **expense_module** (v1.0): [contracts/api/kinly/command/command_expense_module_v1.md](contracts/api/kinly/command/command_expense_module_v1.md)
+* **grocery_module** (v1.0): [contracts/api/kinly/command/command_grocery_module_v1.md](contracts/api/kinly/command/command_grocery_module_v1.md)
+* **navigation_module** (v1.0): [contracts/api/kinly/command/command_navigation_module_v1.md](contracts/api/kinly/command/command_navigation_module_v1.md)
+* **task_module** (v1.0): [contracts/api/kinly/command/command_task_module_v1.md](contracts/api/kinly/command/command_task_module_v1.md)
 * **voice_and_text_command_router** (v1.1): [contracts/api/kinly/command/command_router_contract_v1_1.md](contracts/api/kinly/command/command_router_contract_v1_1.md)
 
 ### Domain: forms
@@ -37,7 +42,7 @@
 * **house_vibe_canonical_preference_schema** (v1.0): [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
 * **house_vibe_compute_rpc_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md](contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md)
 * **house_vibe_mapping_effects** (v1.0): [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
-* **shopping_list** (v1.6): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
+* **shopping_list** (v1.7): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
 
 ### Domain: identity
 
@@ -48,6 +53,7 @@
 
 ### Domain: monetization
 
+* **paywall_status_query** (v1.0): [contracts/api/kinly/homes/paywall_status_get_v1.md](contracts/api/kinly/homes/paywall_status_get_v1.md)
 * **plan_status_query** (v1.0): [contracts/api/kinly/homes/get_plan_status_v1.md](contracts/api/kinly/homes/get_plan_status_v1.md)
 
 ### Domain: platform
@@ -182,13 +188,17 @@
 
 ## Surface: shared
 
+### Domain: command
+
+* **voice_multi_item_grocery_capture** (v1.0): [contracts/product/kinly/shared/voice_grocery_capture_v1.md](contracts/product/kinly/shared/voice_grocery_capture_v1.md)
+
 ### Domain: homes
 
 * **flatmate_fit_check** (v2.0): [contracts/product/kinly/shared/flatmate_fit_check_v2.md](contracts/product/kinly/shared/flatmate_fit_check_v2.md)
 * **flatmate_fit_check** (v3.6): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
 * **house_directory** (v1.1): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
 * **shopping_list** (v1.3): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
-* **shopping_list** (v1.4): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
+* **shopping_list** (v1.5): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
 
 ### Domain: identity
 

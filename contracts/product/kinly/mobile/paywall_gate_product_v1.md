@@ -28,7 +28,7 @@ File: `lib/features/paywall/ui/paywall_gate.dart`
 ### Types
 - `enum PaywallRetryAction { submit /* later: invite, upload, join... */ }`
 - `enum PaywallGateStatus { granted, cancelled, failed }`
-- `class PaywallGateRequest { String requestId; String homeId; String source; PaywallRetryAction action; int tick; Set<PaywallTrigger> triggers; }`
+- `class PaywallGateRequest { String requestId; String homeId; String source; PaywallRetryAction action; int tick; Set<PaywallTrigger> triggers; String? blockedCommandRequestId; }`
 - `class PaywallGateOutcome { String requestId; PaywallRetryAction action; PaywallGateStatus status; }`
 
 ### Helper
@@ -50,16 +50,18 @@ Requirements:
 - `String? paywallInFlightRequestId` (guard)
 
 ### On cap error
-If backend error code in `{paywallActiveCap, paywallMediaCap}`:
+If backend error code in `{paywallActiveCap, paywallMediaCap, paywallAiCommandDailyLimit}`:
 - set `paywallAction = PaywallRetryAction.submit`
 - increment `paywallRequestTick`
 - create `paywallRequest` with:
-  - `requestId = uuid`
+  - `requestId = uuid` for the paywall interaction itself
   - `homeId = state.homeId`
-  - `source = PaywallSource.flowCreateChore` (constant)
+  - `source = PaywallSource.commandAiQuota` for AI quota exhaustion; otherwise use the feature-specific paywall source constant
   - `action = submit`
   - `tick = paywallRequestTick`
+  - `blockedCommandRequestId = original command request id` when the cap came from AI quota exhaustion
 - **do NOT clear in-progress form fields**
+- For AI quota exhaustion specifically, preserve the original request payload and `requestId` for deterministic post-upgrade replay
 
 ### Event
 `PaywallGateResolved({ required PaywallGateOutcome outcome })`
@@ -68,6 +70,7 @@ Handler:
 - clear `paywallInFlightRequestId`
 - if `outcome.status == granted` and `outcome.action == submit`:
   - call the same submit code path again (no new validation flow)
+  - when replaying an AI-quota-blocked command, reuse `blockedCommandRequestId` rather than the paywall interaction `requestId`
 - else do nothing (optionally emit a non-blocking message on cancelled/failed)
 
 ## UI integration (shared wrapper preferred)
@@ -86,8 +89,18 @@ Examples:
 - `static const flowCreateChore = 'flow.create_chore';`
 - `static const flowEditChore = 'flow.edit_chore';`
 - `static const shareCreateExpense = 'share.create_expense';`
+- `static const commandAiQuota = 'command.ai_quota';`
 
 Requirement: No inline strings in features.
+
+### Error code mapping
+
+If backend wire-format errors use snake_case and app-layer constants use camelCase, the mapping MUST be explicit.
+
+Example:
+
+- backend: `paywall_ai_command_daily_limit`
+- client constant: `paywallAiCommandDailyLimit`
 
 ## Acceptance tests (minimum)
 - When cap error occurs, paywall opens once.
@@ -95,3 +108,5 @@ Requirement: No inline strings in features.
 - If user completes purchase, refreshStatus is called and retry is attempted.
 - If rebuild happens during paywall open, no second paywall route is pushed.
 - Form state remains intact across paywall route.
+- AI quota replay after upgrade reuses the original `requestId`.
+- Paywall interaction `requestId` and blocked command `requestId` remain distinct.

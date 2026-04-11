@@ -13,6 +13,7 @@ Version: v1.0
 Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry for the home-only MVP.
 
 ## Goals (v1)
+- Free-tier AI help uses a renewable daily quota, not a lifetime cap.
 - Upgrade flow that feels trustworthy, priced as “<0.5% of rent,” and matches Kinly primitives.
 - Any member can fund the home; multiple subs per home are allowed; the home is premium if any attached sub is active/cancelled and unexpired (max expiry wins).
 - No Settings entry; paywall appears only when a free-tier quota would be exceeded.
@@ -28,11 +29,20 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 - Price UI uses `package.storeProduct.priceString` (do not hard-code).
 
 ## Entry & Eligibility
+- If the current home is premium, the free-tier AI quota MUST NOT block access.
+- The same paywall MUST also open when a free-tier user exhausts the backend-configured per-user daily `ai_command_requests` allowance for the current UTC calendar day.
+- AI quota exhaustion is separate from home-scoped `home_plan_limits`.
+- There is no grace overage; access resumes at the next UTC reset or after upgrade.
 - Show paywall when: (`home_entitlements.plan = 'free'` OR `expires_at <= now()`) AND the requested action would exceed `home_plan_limits` for that metric.
-- Trigger sources: exceeding free limits on flows=chores, shares=expenses, flow photos=chore_photos. No explicit entry in Settings.
+- Trigger sources: exceeding free limits on flows=chores, shares=expenses, flow photos=chore_photos, or AI command requests. No explicit entry in Settings.
 - Always scrollable, full screen; dismiss via “Continue with free home.”
 
 ## Messaging & UI Requirements
+- When the paywall is opened because the user exhausted the daily AI quota, the UI MUST explain that free AI access resets daily and MUST NOT imply a lifetime cap.
+- The UI SHOULD render the current configured free-tier quota when backend status provides it.
+- Recommended supporting copy:
+  - "Your free AI help resets daily."
+  - "Upgrade for more AI help without the free daily cap."
 - Hero: “Bring more harmony to your home for less than 0.5% of your rent”
 - Subtitle: “One simple monthly price per home. Everyone inside gets Premium.”
 - Feature bullets:
@@ -50,6 +60,14 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 - No manual Supabase “premium flag”; `home_entitlements` is derived from subscriptions.
 
 ## Data Model (existing + new)
+- User-scoped AI command quota is backend-configured and server-counted. Its storage implementation is backend-owned, but it MUST behave as:
+  - metric: `ai_command_requests`
+  - scope: per user
+  - window: UTC calendar day
+  - allowance: configurable integer
+  - no grace overage
+  - idempotent charging by `request_id` within the same UTC day
+  - premium-home bypass of the free-tier cap
 - Reuse: `home_plan_limits` (free caps), `home_usage_counters` (cached active_chores/chore_photos/active_expenses/active_members), `home_entitlements`, `user_subscriptions` (keep `home_id` nullable).
 - New table: `revenuecat_webhook_events`
   - Columns: id uuid PK default gen_random_uuid(), received_at timestamptz default now(), event_timestamp timestamptz, environment text, rc_event_id text, rc_app_user_id text, entitlement_id text, entitlement_ids text[] NULL, product_id text, store subscription_store, status subscription_status, current_period_end_at timestamptz, original_purchase_at timestamptz, last_purchase_at timestamptz, latest_transaction_id text, original_transaction_id text, home_id uuid NULL, raw jsonb, error text NULL, error_code text NULL.
@@ -67,6 +85,8 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 - New auth-required `paywall_get_status(home_id uuid)`:
   - Returns: `{ plan, expires_at, usage: {...from home_usage_counters...}, limits: array of {metric, max_value} for the current plan (free/premium) }`.
   - Consumers: Flutter repos to decide paywall vs proceed.
+- `paywall_get_status` MUST also expose user-scoped quota status for AI requests when the command feature is enabled, for example: `userQuotas.ai_command_requests = { used, limit, resets_at, window: 'utc_calendar_day', bypassed_by_premium_home: boolean }`.
+- Canonical backend RPC contract: `contracts/api/kinly/homes/paywall_status_get_v1.md`
 
 ## Edge Function (Deno) `revenuecat_webhook`
 - Auth: shared secret header (RC webhook secret). Reject if missing/invalid.
@@ -77,6 +97,8 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 - Call `paywall_record_subscription` with service key when actionable. RPC failures log audit with `error_code = rpc_failure` and return 200.
 
 ## Client Responsibilities (Flutter)
+- If the user upgrades and the original AI request is replayed, the client SHOULD reuse the original `request_id` so backend quota charging remains idempotent.
+- When paywall source is AI quota exhaustion, surface the daily-reset explanation and, when available, the backend-provided reset time / quota numbers.
 - Repository: `getPaywallStatus(homeId)` → `paywall_get_status`; `purchasePremium(homeId)` → RevenueCat flow; log paywall events (impression/CTA/dismiss/restore).
 - BLoC/UI:
   - Show loader while fetching offerings; retry state on failure.

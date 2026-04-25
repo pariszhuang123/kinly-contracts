@@ -1,7 +1,7 @@
 ---
-Domain: Kinly
+Domain: Design System
 Capability: Paywall Gate Copy
-Scope: shared
+Scope: frontend
 Artifact-Type: contract
 Stability: evolving
 Status: draft

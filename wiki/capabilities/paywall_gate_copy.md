@@ -2,7 +2,7 @@
 
 - Canonical-Id: `paywall_gate_copy`
 - Latest doc: [Paywall Gate Copy Contract (Client)](../../contracts/design/copy/kinly/paywall_gate_copy_v1.md)
-- Domain: [[../domains/kinly|kinly]]
+- Domain: [[../domains/design_system|design_system]]
 
 ## Versions
 

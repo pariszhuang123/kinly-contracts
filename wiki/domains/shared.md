@@ -1,6 +1,6 @@
 # Domain: shared
 
-- Docs in domain: 32
+- Docs in domain: 31
 - Active docs: 0
 
 ## Capabilities
@@ -24,7 +24,6 @@
 - [[../capabilities/mood_nps|mood_nps]] -> latest v1.0 (draft)
 - [[../capabilities/paywall|paywall]] -> latest v1.0 (draft)
 - [[../capabilities/paywall_gate_product|paywall_gate_product]] -> latest v1.0 (draft)
-- [[../capabilities/paywall_personalized_primary_benefit|paywall_personalized_primary_benefit]] -> latest v1.0 (draft)
 - [[../capabilities/preference_reports|preference_reports]] -> latest v1.0 (draft)
 - [[../capabilities/preference_scenarios|preference_scenarios]] -> latest v1.0 (draft)
 - [[../capabilities/preference_taxonomy|preference_taxonomy]] -> latest v1.0 (draft)
@@ -56,7 +55,6 @@
 - [Mood & NPS Contracts v1](../../contracts/product/kinly/mobile/mood_nps.md)
 - [Kinly Premium Paywall — Phase 1 Contract](../../contracts/product/kinly/mobile/paywall_v1.md)
 - [Paywall Gate Contract (Product / Client Behavior)](../../contracts/product/kinly/mobile/paywall_gate_product_v1.md)
-- [Context-Aware Paywall v1 (Personalized Primary Benefit)](../../contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md)
 - [Kinly Preference Report Contract v1](../../contracts/product/kinly/mobile/preference_reports_v1.md)
 - [Kinly Preference Report Contract v1](../../contracts/product/kinly/shared/preference_reports_v1.md)
 - [Kinly Preference Interpretation & Scenarios Contract v1](../../contracts/product/kinly/mobile/preference_scenarios_v1.md)

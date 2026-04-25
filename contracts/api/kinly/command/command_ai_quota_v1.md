@@ -61,6 +61,7 @@ An AI command request MUST NOT count when:
 - the request is empty or malformed before classifier invocation
 - transport failure, timeout, or internal failure happens before classifier completion
 - the request is a `module_continue` follow-up that bypasses the router/classifier
+- a routed module performs additional scoped LLM parsing within the same command thread after the original request was already charged
 
 Low-confidence unknown requests still count when they consumed the classifier call.
 
@@ -144,3 +145,9 @@ The backend SHOULD:
 
 - record model/provider version metadata in audit logs
 - apply abuse controls separately from entitlement quota
+
+### Interpretation notes
+
+- `ai_command_requests` is a user-visible quota for entering the command pipeline, not a raw count of every backend model invocation
+- one command thread identified by its original `request_id` MUST charge at most once
+- modules SHOULD prefer deterministic parsing for follow-up turns and only use a scoped module-specific LLM when deterministic resolution is not safe enough

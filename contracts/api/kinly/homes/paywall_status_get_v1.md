@@ -33,6 +33,7 @@ paywall_status_get(p_home_id uuid) -> jsonb
 {
   "plan": "free",
   "expires_at": null,
+  "is_premium": false,
   "usage": {
     "active_chores": 3,
     "expense_photos": 1
@@ -62,6 +63,7 @@ paywall_status_get(p_home_id uuid) -> jsonb
 
 ### Conditional fields
 
+- `is_premium` MAY be returned as a deprecated compatibility field derived from `plan` and `expires_at`
 - `userQuotas.ai_command_requests` MUST be present whenever the authenticated caller is eligible to use the command feature under current server-side feature configuration
 
 ---
@@ -69,10 +71,12 @@ paywall_status_get(p_home_id uuid) -> jsonb
 ## 4. Semantics
 
 - `plan` reflects the effective home entitlement state
+- `expires_at` reflects the effective home entitlement expiry when applicable
 - `usage` contains current home-scoped paywall counters
 - `limits` contains the effective plan limits for home-scoped metrics
 - `userQuotas.ai_command_requests` reflects the caller's current per-user AI quota state for the UTC calendar day
 - `bypassed_by_premium_home` is `true` when the current home entitlement bypasses the free-tier AI cap
+- `is_premium`, when returned, is deprecated convenience output only. Clients SHOULD derive premium state from `plan` and `expires_at` instead of depending on this field long-term.
 
 When `bypassed_by_premium_home == true`:
 
@@ -113,4 +117,5 @@ Specifically:
 
 - Paywall UI uses this RPC to render cap state and reset timing
 - Command surfaces use this RPC to preflight user-visible AI quota messaging, but backend enforcement still occurs inside the command entrypoint
+- This RPC is a status surface for both home-scoped caps and user-scoped command AI quota. It is not the enforcement surface for either.
 - Clients MAY map backend error/status fields into local enums or constants, but those mappings MUST remain explicit

@@ -1,12 +1,12 @@
 # Capability: shopping_list_api
 
 - Canonical-Id: `shopping_list_api`
-- Latest doc: [Shopping List API Contract v1.7](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
+- Latest doc: [Shopping List API Contract v1.8](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
 - Domain: [[../domains/homes|homes]]
 
 ## Versions
 
-- `v1.7` `draft` [Shopping List API Contract v1.7](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
+- `v1.8` `draft` [Shopping List API Contract v1.8](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
 
 ## Relationships
 
@@ -14,4 +14,4 @@
 
 ## Source Docs
 
-- [Shopping List API Contract v1.7](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
+- [Shopping List API Contract v1.8](../../contracts/api/kinly/homes/shopping_list_api_v1.md)

@@ -6,7 +6,7 @@ Artifact-Type: contract
 Stability: evolving
 Status: draft
 Version: v1.1
-Relates-To: contracts/api/kinly/command/command_grocery_module_v1.md, contracts/api/kinly/command/command_expense_module_v1.md, contracts/api/kinly/command/command_task_module_v1.md, contracts/api/kinly/command/command_navigation_module_v1.md, contracts/api/kinly/command/command_ai_quota_v1.md
+Relates-To: contracts/api/kinly/command/command_entry_api_v1.md, contracts/api/kinly/command/command_grocery_module_v1.md, contracts/api/kinly/command/command_expense_module_v1.md, contracts/api/kinly/command/command_task_module_v1.md, contracts/api/kinly/command/command_navigation_module_v1.md, contracts/api/kinly/command/command_ai_quota_v1.md
 See-Also: contracts/api/kinly/homes/shopping_list_api_v1.md, contracts/api/kinly/share/expenses_v2.md, contracts/api/kinly/homes/paywall_status_get_v1.md
 ---
 
@@ -14,7 +14,9 @@ See-Also: contracts/api/kinly/homes/shopping_list_api_v1.md, contracts/api/kinly
 
 ## 1. Purpose
 
-This contract defines the **intent classification layer** — the thin first step after a user says or types something into Kinly.
+This contract defines the **intent classification layer** used inside the command backend after a user says or types something into Kinly.
+
+This is an internal behavior contract for router classification and routing semantics. The client-facing compatibility boundary for command submission lives in `command_entry_api_v1.md`.
 
 The router's ONLY job:
 
@@ -25,7 +27,7 @@ The router does NOT:
 
 - Extract or parse structured fields (module's job)
 - Resolve existing entities (module's job)
-- Decide UI outcomes (module's job)
+- Decide public UI outcomes (command runtime's job)
 - Know what fields any module requires
 - Know how modules parse their input
 
@@ -46,7 +48,7 @@ User input (voice / text)
            ▼
 ┌─────────────────────────────────┐
 │  Deterministic Router           │  No LLM — intent → module mapping
-│  → single module or multi-route │
+│  → single or multiple targets   │
 └──────────┬──────────────────────┘
            │
      ┌─────┼──────┬───────────┐
@@ -204,8 +206,9 @@ The LLM's output — intent classification only.
 When `confidence == "low"` and `intent == "unknown"`:
 
 1. Route to `navigation` module (fallback to home)
-2. Log the input to `unrecognized_intents` table with: `request_id`, `raw_text`/`transcript_text`, `timestamp`, `home_id`
-3. Respond: "I'm not sure what you mean. Here's what I can help with." + list of capabilities
+2. Log the input to `unrecognized_intents` table with: `request_id`, `user_id`, `home_id`, `input_mode`, `raw_text`/`transcript_text`, `locale`, `timezone`, `confidence`, `router_version`, `timestamp`
+3. Return structured fallback metadata so the client can render deterministic localized unsupported-command copy and a list of supported capabilities
+4. Do NOT spend a second LLM call generating a custom apology or unsupported-feature explanation
 
 The `unrecognized_intents` table enables feature discovery — patterns in unrecognized inputs reveal features users want but Kinly doesn't have yet.
 
@@ -239,6 +242,14 @@ Example: "Add milk and eggs, and I paid $30 for groceries with John"
 When multiple intents map to the SAME module (e.g. "wash clothes and take out bins" = two `create_task`), the router sends it to the module ONCE. The module is responsible for detecting and handling multiple items from the input internally.
 
 This keeps the router thin — it does not segment utterances.
+
+Public runtime rule:
+
+- the router MAY detect multiple intents internally
+- command entry v1 still returns exactly one public result
+- the public single-result selection is owned by the command runtime, not the router contract
+- if the command runtime downgrades a multi-intent request to `confirm`, it
+  MUST do so before any side-effecting module execution
 
 ---
 

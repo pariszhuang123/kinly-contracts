@@ -11,7 +11,7 @@
 ## Relationships
 
 - [Kinly Command Router Contract v1.1](../../contracts/api/kinly/command/command_router_contract_v1_1.md)
-- [Shopping List API Contract v1.7](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
+- [Shopping List API Contract v1.8](../../contracts/api/kinly/homes/shopping_list_api_v1.md)
 
 ## Source Docs
 

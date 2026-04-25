@@ -4,11 +4,11 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Snapshot
 
-- Canonical docs: 269
-- Domains: 44
-- Capability pages: 222
+- Canonical docs: 274
+- Domains: 45
+- Capability pages: 227
 - Active docs: 64
-- Draft docs: 205
+- Draft docs: 210
 - Deprecated docs: 0
 - Alignment issues: 0
 
@@ -26,7 +26,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/agents|agents]] (10 docs, 0 active)
 - [[domains/architecture_guardrails_v1_1_md|architecture_guardrails_v1_1_md]] (1 docs, 0 active)
 - [[domains/backend|backend]] (1 docs, 1 active)
-- [[domains/command|command]] (7 docs, 0 active)
+- [[domains/command|command]] (11 docs, 0 active)
 - [[domains/complexity_budget_v1_md|complexity_budget_v1_md]] (1 docs, 0 active)
 - [[domains/contracts|contracts]] (2 docs, 0 active)
 - [[domains/coordination|coordination]] (10 docs, 0 active)
@@ -34,6 +34,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/delivery|delivery]] (1 docs, 0 active)
 - [[domains/deployment|deployment]] (1 docs, 0 active)
 - [[domains/design|design]] (1 docs, 0 active)
+- [[domains/design_system|design_system]] (1 docs, 0 active)
 - [[domains/di_graph_md|di_graph_md]] (1 docs, 0 active)
 - [[domains/diagrams|diagrams]] (20 docs, 0 active)
 - [[domains/engineering|engineering]] (16 docs, 0 active)
@@ -42,13 +43,13 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/growth|growth]] (5 docs, 4 active)
 - [[domains/homes|homes]] (24 docs, 2 active)
 - [[domains/identity|identity]] (5 docs, 0 active)
-- [[domains/kinly|kinly]] (17 docs, 0 active)
+- [[domains/kinly|kinly]] (16 docs, 0 active)
 - [[domains/kinly_web|kinly_web]] (1 docs, 1 active)
 - [[domains/links|links]] (18 docs, 17 active)
 - [[domains/marketing_ops|marketing_ops]] (1 docs, 0 active)
 - [[domains/mobile|mobile]] (5 docs, 0 active)
 - [[domains/modules_md|modules_md]] (1 docs, 0 active)
-- [[domains/monetization|monetization]] (3 docs, 2 active)
+- [[domains/monetization|monetization]] (5 docs, 2 active)
 - [[domains/norms|norms]] (1 docs, 0 active)
 - [[domains/platform|platform]] (3 docs, 2 active)
 - [[domains/product|product]] (37 docs, 32 active)
@@ -56,7 +57,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/report_md|report_md]] (1 docs, 0 active)
 - [[domains/runbooks|runbooks]] (3 docs, 0 active)
 - [[domains/share|share]] (3 docs, 0 active)
-- [[domains/shared|shared]] (32 docs, 0 active)
+- [[domains/shared|shared]] (31 docs, 0 active)
 - [[domains/templates|templates]] (4 docs, 0 active)
 - [[domains/testing|testing]] (6 docs, 0 active)
 - [[domains/theme|theme]] (1 docs, 1 active)
@@ -66,18 +67,18 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Recently Changed Areas
 
-- 2026-04-11: Shopping List Purchase Memory Contract v1.5 -> [[capabilities/shopping_list_purchase_memory|shopping_list_purchase_memory]] (contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
-- 2026-04-11: Shopping List API Contract v1.7 -> [[capabilities/shopping_list_api|shopping_list_api]] (contracts/api/kinly/homes/shopping_list_api_v1.md)
-- 2026-04-11: Command AI Quota Contract v1.0 -> [[capabilities/command_ai_quota|command_ai_quota]] (contracts/api/kinly/command/command_ai_quota_v1.md)
-- 2026-04-11: Kinly Command Router Contract v1.1 -> [[capabilities/command_router_contract|command_router_contract]] (contracts/api/kinly/command/command_router_contract_v1_1.md)
-- 2026-04-11: paywall_status_get RPC v1.0 -> [[capabilities/paywall_status_get|paywall_status_get]] (contracts/api/kinly/homes/paywall_status_get_v1.md)
-- 2026-04-11: Paywall Gate Contract (Product / Client Behavior) -> [[capabilities/paywall_gate_product|paywall_gate_product]] (contracts/product/kinly/mobile/paywall_gate_product_v1.md)
-- 2026-04-11: Kinly Premium Paywall — Phase 1 Contract -> [[capabilities/paywall|paywall]] (contracts/product/kinly/mobile/paywall_v1.md)
-- 2026-04-11: Voice → Multi-Item Grocery Capture (+ Routing Foundation) -> [[capabilities/voice_grocery_capture|voice_grocery_capture]] (contracts/product/kinly/shared/voice_grocery_capture_v1.md)
-- 2026-04-11: Command Navigation Module v1.0 -> [[capabilities/command_navigation_module|command_navigation_module]] (contracts/api/kinly/command/command_navigation_module_v1.md)
-- 2026-04-11: Command Task Module Contract v1.0 -> [[capabilities/command_task_module|command_task_module]] (contracts/api/kinly/command/command_task_module_v1.md)
-- 2026-04-11: Command Expense Module Contract v1.0 -> [[capabilities/command_expense_module|command_expense_module]] (contracts/api/kinly/command/command_expense_module_v1.md)
-- 2026-04-11: Command Grocery Module Contract v1.0 -> [[capabilities/command_grocery_module|command_grocery_module]] (contracts/api/kinly/command/command_grocery_module_v1.md)
+- 2026-04-16: Mobile Command Entry Surface v1 -> [[capabilities/mobile_command_entry_surface|mobile_command_entry_surface]] (contracts/product/kinly/mobile/command_entry_surface_v1.md)
+- 2026-04-16: Context-Aware Paywall v1 (Personalized Primary Benefit) -> [[capabilities/paywall_personalized_primary_benefit|paywall_personalized_primary_benefit]] (contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md)
+- 2026-04-16: Paywall Gate Contract (Client) -> [[capabilities/paywall_gate|paywall_gate]] (contracts/product/kinly/mobile/paywall_gate.md)
+- 2026-04-16: Paywall Gate Copy Contract (Client) -> [[capabilities/paywall_gate_copy|paywall_gate_copy]] (contracts/design/copy/kinly/paywall_gate_copy_v1.md)
+- 2026-04-16: Grocery Capture via Command Entry v1 -> [[capabilities/voice_grocery_capture|voice_grocery_capture]] (contracts/product/kinly/shared/voice_grocery_capture_v1.md)
+- 2026-04-15: Shopping List Purchase Memory Contract v1.6 -> [[capabilities/shopping_list_purchase_memory|shopping_list_purchase_memory]] (contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
+- 2026-04-15: Shopping List Architecture Contract v1.3 -> [[capabilities/shopping_list_contract|shopping_list_contract]] (architecture/contracts/shopping_list_contract.md)
+- 2026-04-15: Shopping List API Contract v1.8 -> [[capabilities/shopping_list_api|shopping_list_api]] (contracts/api/kinly/homes/shopping_list_api_v1.md)
+- 2026-04-15: Kinly Premium Paywall — Phase 1 Contract -> [[capabilities/paywall|paywall]] (contracts/product/kinly/mobile/paywall_v1.md)
+- 2026-04-15: paywall_status_get RPC v1.0 -> [[capabilities/paywall_status_get|paywall_status_get]] (contracts/api/kinly/homes/paywall_status_get_v1.md)
+- 2026-04-15: Paywall Gate Contract (Product / Client Behavior) -> [[capabilities/paywall_gate_product|paywall_gate_product]] (contracts/product/kinly/mobile/paywall_gate_product_v1.md)
+- 2026-04-15: Home Units Mobile Contract v1.2 -> [[capabilities/home_units|home_units]] (contracts/product/kinly/mobile/home_units_v1.md)
 
 ## Key Architecture And Decision Docs
 

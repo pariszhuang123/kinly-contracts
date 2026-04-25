@@ -82,10 +82,11 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 - New SEC-DEFINER `paywall_record_subscription(...)` (service role only):
   - Inputs: user_id, home_id NULLABLE, store, rc_app_user_id, entitlement_id, entitlement_ids[], product_id, status, current_period_end_at, original_purchase_at, last_purchase_at, latest_transaction_id, rc_event_id, original_transaction_id, event_timestamp, environment, raw, error, error_code.
   - Behavior: upsert `user_subscriptions` on (user_id, rc_entitlement_id); update status/expiry/product/transaction ids/app_user_id/home_id/last_synced_at/updated_at; call `home_entitlements_refresh(home_id)` when provided; insert audit row into `revenuecat_webhook_events` with idempotency on (environment, rc_event_id).
-- New auth-required `paywall_get_status(home_id uuid)`:
+- New auth-required `paywall_status_get(home_id uuid)`:
   - Returns: `{ plan, expires_at, usage: {...from home_usage_counters...}, limits: array of {metric, max_value} for the current plan (free/premium) }`.
   - Consumers: Flutter repos to decide paywall vs proceed.
-- `paywall_get_status` MUST also expose user-scoped quota status for AI requests when the command feature is enabled, for example: `userQuotas.ai_command_requests = { used, limit, resets_at, window: 'utc_calendar_day', bypassed_by_premium_home: boolean }`.
+- `paywall_status_get` MUST also expose user-scoped quota status for AI requests when the command feature is enabled, for example: `userQuotas.ai_command_requests = { used, limit, resets_at, window: 'utc_calendar_day', bypassed_by_premium_home: boolean }`.
+- `is_premium` MAY be returned temporarily as a deprecated derived compatibility field. `has_ai` is not canonical and SHOULD NOT be exposed unless a concrete separate AI entitlement exists.
 - Canonical backend RPC contract: `contracts/api/kinly/homes/paywall_status_get_v1.md`
 
 ## Edge Function (Deno) `revenuecat_webhook`
@@ -99,7 +100,7 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 ## Client Responsibilities (Flutter)
 - If the user upgrades and the original AI request is replayed, the client SHOULD reuse the original `request_id` so backend quota charging remains idempotent.
 - When paywall source is AI quota exhaustion, surface the daily-reset explanation and, when available, the backend-provided reset time / quota numbers.
-- Repository: `getPaywallStatus(homeId)` → `paywall_get_status`; `purchasePremium(homeId)` → RevenueCat flow; log paywall events (impression/CTA/dismiss/restore).
+- Repository: `getPaywallStatus(homeId)` → `paywall_status_get`; `purchasePremium(homeId)` → RevenueCat flow; log paywall events (impression/CTA/dismiss/restore).
 - BLoC/UI:
   - Show loader while fetching offerings; retry state on failure.
   - On upgrade: set RC subscriber attributes (user_id, locale, home_id), call `purchasePackage(monthly)`, refresh entitlements. Webhook updates Supabase; UI shows success snackbar and closes.
@@ -116,5 +117,5 @@ Scope: Paywall UI/flows, RevenueCat integration, Supabase sync, and telemetry fo
 - Migration adds tables + functions + RLS/permissions.
 - Edge function deployed for RC webhook, validates secret, writes audit, calls RPC.
 - Flutter paywall screen uses Kinly primitives, i18n, directionality-safe, shows RC price string, and handles success/failure/dismiss.
-- Repositories/BLoC integrate `paywall_get_status` and RevenueCat purchase/restore.
+- Repositories/BLoC integrate `paywall_status_get` and RevenueCat purchase/restore.
 - Tests: unit for RPC (pgtap/sql), paywall BLoC/repo, widget smoke for paywall. Strings via `S.of(context)`. Format/lint/tests green.

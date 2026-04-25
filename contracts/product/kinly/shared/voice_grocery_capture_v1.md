@@ -7,17 +7,17 @@ Stability: evolving
 Status: draft
 Version: v1.0
 Depends-On: contracts/api/kinly/command/command_router_contract_v1_1.md, contracts/api/kinly/command/command_grocery_module_v1.md, contracts/api/kinly/homes/shopping_list_api_v1.md
-Relates-To: contracts/api/kinly/share/expenses_v2.md
+Relates-To: contracts/api/kinly/share/expenses_v2.md, contracts/product/kinly/mobile/command_entry_surface_v1.md
 See-Also: contracts/product/kinly/shared/shopping_list_contract_v1.md
 ---
 
-# Voice → Multi-Item Grocery Capture (+ Routing Foundation)
+# Grocery Capture via Command Entry v1
 
 ## 1. Purpose
 
-This contract defines the product behavior around grocery voice capture — the first module in the command router's two-phase architecture.
+This contract defines the product behavior for grocery capture as the first implemented module slice on top of Kinly's general command entry surface.
 
-The grocery module receives router module input and handles its own field extraction, scope resolution, and UI decision (Phase 2) — without a second LLM call in the normal path.
+The grocery module receives routed command input from text or voice submission and handles its own field extraction, scope resolution, and UI decision (Phase 2) without a second LLM call in the normal path.
 
 **Binding product principle:**
 
@@ -31,7 +31,7 @@ The grocery module receives router module input and handles its own field extrac
 
 ### In Scope
 
-- Voice-to-text capture
+- Text or voice command entry for groceries
 - Parsing multiple grocery items from a single utterance
 - Scope resolution (shared unit vs house)
 - Adding items to a grocery list via `shopping_list_api_v1`
@@ -54,7 +54,10 @@ The grocery module receives router module input and handles its own field extrac
 
 User MUST be able to:
 
-- Trigger voice input via button, widget, or chat interface (future Telegram)
+- trigger text or voice command entry from the command surface
+- trigger voice input via button, widget, or chat interface (future Telegram)
+- on mobile, use the canonical Today-page composer or widget entry defined in
+  `contracts/product/kinly/mobile/command_entry_surface_v1.md`
 - Speak a natural sentence, e.g.:
   - "Milk, eggs, bread, chicken and apples"
   - "Add milk and eggs"
@@ -110,7 +113,7 @@ System MUST return immediate feedback.
 > • Milk (already on list)
 > • Eggs (already on list)
 
-**Multi-intent example** (when router detects grocery + expense):
+**Multi-intent example** (when command entry routes grocery + expense):
 
 > Added 2 items to grocery list
 > Split $30 with John → confirm?
@@ -152,8 +155,9 @@ This maps to the module contract's deterministic rules: `status == "ambiguous"` 
 ### 5.1 Two-Phase Flow
 
 ```
-Phase 1 (Router — LLM call)
+Phase 1 (Command entry + router)
   User says "milk, eggs, bread"
+  → command_submit_v1
   → intent: add_grocery_items
   → input text: "milk, eggs, bread"
   → module: grocery
@@ -182,7 +186,7 @@ Total: one cheap LLM call per grocery voice command.
 
 ## 6. Multi-Intent Handling
 
-When the router detects grocery + another intent (e.g. expense):
+When command entry detects grocery + another intent (e.g. expense):
 
 1. The grocery module receives the full input text and extracts only grocery items
 2. The expense module receives the same input text and extracts only expense fields

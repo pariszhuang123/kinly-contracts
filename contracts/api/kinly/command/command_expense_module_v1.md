@@ -15,13 +15,21 @@ Depends-On: contracts/api/kinly/command/command_router_contract_v1_1.md, contrac
 
 This module receives router module input with `source_intent: "create_expense"` and extracts expense/bill fields. It produces a module envelope that the executor layer uses to create an expense via the expenses RPC contract.
 
-This module ALWAYS requires a second LLM call (scoped prompt) because amount and participant extraction from natural language needs structured understanding. There is no regex shortcut.
+This module often requires a second LLM call (scoped prompt) because amount and participant extraction from natural language frequently needs structured understanding.
+
+However, the module SHOULD still prefer deterministic continuation when the user is responding to a constrained follow-up, such as selecting from explicit options or confirming a previously extracted draft.
 
 ---
 
 ## 2. Parsing Strategy
 
-Always **Step 2** (LLM, scoped prompt). No Step 1 regex attempt.
+Initial freeform expense extraction is normally **Step 2** (LLM, scoped prompt). The module does not rely on a regex-only shortcut for the first freeform parse.
+
+For follow-up turns:
+
+- deterministic merge/revalidation SHOULD be used when the user is selecting or confirming from structured options
+- a scoped LLM MAY be used when a follow-up freeform reply is still too ambiguous or complex for deterministic parsing
+- any such follow-up LLM use remains part of the same command thread and does not imply an additional user-visible AI quota charge
 
 The LLM prompt is small and tightly scoped:
 

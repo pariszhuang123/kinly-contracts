@@ -9,11 +9,14 @@
 ### Domain: command
 
 * **ai_command_quota** (v1.0): [contracts/api/kinly/command/command_ai_quota_v1.md](contracts/api/kinly/command/command_ai_quota_v1.md)
+* **ai_invocation_pipeline** (v1.0): [contracts/api/kinly/command/command_ai_pipeline_v1.md](contracts/api/kinly/command/command_ai_pipeline_v1.md)
 * **expense_module** (v1.0): [contracts/api/kinly/command/command_expense_module_v1.md](contracts/api/kinly/command/command_expense_module_v1.md)
 * **grocery_module** (v1.0): [contracts/api/kinly/command/command_grocery_module_v1.md](contracts/api/kinly/command/command_grocery_module_v1.md)
+* **natural_language_command_entry_api** (v1.0): [contracts/api/kinly/command/command_entry_api_v1.md](contracts/api/kinly/command/command_entry_api_v1.md)
 * **navigation_module** (v1.0): [contracts/api/kinly/command/command_navigation_module_v1.md](contracts/api/kinly/command/command_navigation_module_v1.md)
 * **task_module** (v1.0): [contracts/api/kinly/command/command_task_module_v1.md](contracts/api/kinly/command/command_task_module_v1.md)
 * **voice_and_text_command_router** (v1.1): [contracts/api/kinly/command/command_router_contract_v1_1.md](contracts/api/kinly/command/command_router_contract_v1_1.md)
+* **voice_command_capture** (v1.0): [contracts/api/kinly/command/voice_command_capture_v1.md](contracts/api/kinly/command/voice_command_capture_v1.md)
 
 ### Domain: forms
 
@@ -31,7 +34,7 @@
 
 * **flatmate_fit_check_api** (v1.1): [contracts/api/kinly/homes/flatmate_fit_check_api_v1.md](contracts/api/kinly/homes/flatmate_fit_check_api_v1.md)
 * **flatmate_fit_check_api** (v2.0): [contracts/api/kinly/homes/flatmate_fit_check_api_v2.md](contracts/api/kinly/homes/flatmate_fit_check_api_v2.md)
-* **home_units** (v1.3): [contracts/api/kinly/homes/home_units_api_v1.md](contracts/api/kinly/homes/home_units_api_v1.md)
+* **home_units** (v1.4): [contracts/api/kinly/homes/home_units_api_v1.md](contracts/api/kinly/homes/home_units_api_v1.md)
 * **homes** (v1.0): [contracts/api/kinly/homes/homes_v1.md](contracts/api/kinly/homes/homes_v1.md)
 * **homes** (v2.0): [contracts/api/kinly/homes/homes_v2.md](contracts/api/kinly/homes/homes_v2.md)
 * **house_directory_api** (v1.1): [contracts/api/kinly/homes/house_directory_api_v1.md](contracts/api/kinly/homes/house_directory_api_v1.md)
@@ -42,7 +45,7 @@
 * **house_vibe_canonical_preference_schema** (v1.0): [contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md](contracts/api/kinly/homes/house_vibe_canonical_preference_schema_v1.md)
 * **house_vibe_compute_rpc_contract** (v1.0): [contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md](contracts/api/kinly/homes/house_vibe_compute_rpc_contract_v1.md)
 * **house_vibe_mapping_effects** (v1.0): [contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md](contracts/api/kinly/homes/house_vibe_mapping_effects_v1.md)
-* **shopping_list** (v1.7): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
+* **shopping_list** (v1.8): [contracts/api/kinly/homes/shopping_list_api_v1.md](contracts/api/kinly/homes/shopping_list_api_v1.md)
 
 ### Domain: identity
 
@@ -106,6 +109,10 @@
 
 * **readme** (v1.0): [contracts/design/reference/kinly/README.md](contracts/design/reference/kinly/README.md)
 
+### Domain: design_system
+
+* **paywall_gate_copy** (v1.0): [contracts/design/copy/kinly/paywall_gate_copy_v1.md](contracts/design/copy/kinly/paywall_gate_copy_v1.md)
+
 ### Domain: kinly
 
 * **atmospheric_backgrounds** (v1.0): [contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md](contracts/design/tokens/kinly/kinly_atmospheric_backgrounds_v1.md)
@@ -121,7 +128,6 @@
 * **kinly_design_system** (v1.0): [contracts/design/tokens/kinly/kinly_design_system_v1.md](contracts/design/tokens/kinly/kinly_design_system_v1.md)
 * **kinly_foundation_colors** (v1.0): [contracts/design/tokens/kinly/kinly_foundation_colors_v1.md](contracts/design/tokens/kinly/kinly_foundation_colors_v1.md)
 * **kinly_foundation_surfaces_amendment** (v1.0): [contracts/design/tokens/kinly/kinly_foundation_surfaces_amendment_v1.md](contracts/design/tokens/kinly/kinly_foundation_surfaces_amendment_v1.md)
-* **paywall_gate_copy** (v1.0): [contracts/design/copy/kinly/paywall_gate_copy_v1.md](contracts/design/copy/kinly/paywall_gate_copy_v1.md)
 * **shared_understanding_copy** (v1.0): [contracts/design/copy/kinly/shared_understanding_copy_v1.md](contracts/design/copy/kinly/shared_understanding_copy_v1.md)
 
 ## Surface: frontend
@@ -135,6 +141,10 @@
 * **complaint_rewrite** (v1.1): [contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md](contracts/product/kinly/shared/complaint_rewrite_frontend_weekly_feedback_v1.md)
 
 ## Surface: mobile
+
+### Domain: command
+
+* **mobile_command_entry_surface** (v1.0): [contracts/product/kinly/mobile/command_entry_surface_v1.md](contracts/product/kinly/mobile/command_entry_surface_v1.md)
 
 ### Domain: homes
 
@@ -155,6 +165,8 @@
 
 ### Domain: monetization
 
+* **paywall_gate_behavior** (v1.0): [contracts/product/kinly/mobile/paywall_gate.md](contracts/product/kinly/mobile/paywall_gate.md)
+* **paywall_personalized_primary_benefit** (v1.0): [contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md](contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md)
 * **plan_status_visibility_entry_point** (v1.0): [contracts/product/kinly/mobile/profile_plan_button_v1.md](contracts/product/kinly/mobile/profile_plan_button_v1.md)
 
 ### Domain: product
@@ -178,7 +190,6 @@
 * **mood_nps** (v1.0): [contracts/product/kinly/mobile/mood_nps.md](contracts/product/kinly/mobile/mood_nps.md)
 * **paywall** (v1.0): [contracts/product/kinly/mobile/paywall_v1.md](contracts/product/kinly/mobile/paywall_v1.md)
 * **paywall_gate_product** (v1.0): [contracts/product/kinly/mobile/paywall_gate_product_v1.md](contracts/product/kinly/mobile/paywall_gate_product_v1.md)
-* **paywall_personalized_primary_benefit** (v1.0): [contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md](contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md)
 * **preference_reports** (v1.0): [contracts/product/kinly/mobile/preference_reports_v1.md](contracts/product/kinly/mobile/preference_reports_v1.md)
 * **preference_scenarios** (v1.0): [contracts/product/kinly/mobile/preference_scenarios_v1.md](contracts/product/kinly/mobile/preference_scenarios_v1.md)
 * **preference_taxonomy** (v1.0): [contracts/product/kinly/mobile/preference_taxonomy_v1.md](contracts/product/kinly/mobile/preference_taxonomy_v1.md)
@@ -198,7 +209,7 @@
 * **flatmate_fit_check** (v3.6): [contracts/product/kinly/shared/flatmate_fit_check_v1.md](contracts/product/kinly/shared/flatmate_fit_check_v1.md)
 * **house_directory** (v1.1): [contracts/product/kinly/shared/house_directory_v1.md](contracts/product/kinly/shared/house_directory_v1.md)
 * **shopping_list** (v1.3): [contracts/product/kinly/shared/shopping_list_contract_v1.md](contracts/product/kinly/shared/shopping_list_contract_v1.md)
-* **shopping_list** (v1.5): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
+* **shopping_list** (v1.6): [contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md](contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
 
 ### Domain: identity
 

@@ -19,7 +19,7 @@ This module handles three intents routed from the [command router](command_route
 |--------|--------|
 | `create_task` | Create a new task |
 | `mark_task_done` | Mark an existing task as complete |
-| `create_reminder` | Create a task with a due date (always needs LLM) |
+| `create_reminder` | Open the task flow with date-aware context so the user can finish reminder setup |
 
 Parsing strategy differs by intent. The module follows the two-phase architecture: the router provides module input with `source`, and this module owns field extraction, resolution, and UI decisions.
 
@@ -42,8 +42,24 @@ Parsing strategy differs by intent. The module follows the two-phase architectur
 
 ### create_reminder
 
-- Same field schema as `create_task`.
-- Always escalates to LLM (date/time extraction is always needed).
+- Uses the same parsing family as `create_task`.
+- Date-aware reminder phrases SHOULD be parsed into task-like structured fields
+  such as title, assignee hint, start date, and recurrence hints.
+- Current backend behavior does NOT auto-create a dated reminder directly from
+  `command_submit_v1`.
+- Current backend behavior routes the user into the task screen so they can
+  confirm the actual reminder date there.
+- Current backend route payload SHOULD preserve the parsed fields needed to
+  prefill the task screen:
+  - `task_title`
+  - `assigned_to`
+  - `due_at`
+  - `notes`
+  - `recurrence_every`
+  - `recurrence_unit`
+- Current backend behavior does NOT yet persist a dedicated reminder draft row
+  separate from the generic command handoff payload. The handoff stores route
+  context, but reminder setup still completes on the task screen.
 
 ---
 
@@ -53,7 +69,7 @@ Parsing strategy differs by intent. The module follows the two-phase architectur
 |-------|------|--------|------|
 | `task_title` | `string` | Regex or LLM | Extracted from the effective user input |
 | `assigned_to` | `string?` | User selection | Exactly 1 person. MUST show inline picker if missing. Cannot assign to multiple people. |
-| `due_at` | `string?` | LLM if date pattern detected, else `null` | Optional. ISO 8601. `null` if not mentioned. |
+| `due_at` | `string?` | LLM if date pattern detected, else `null` | Optional. Date-aware task/reminder hint. Current backend commonly routes these flows to the task screen for final selection rather than auto-executing directly. |
 
 ---
 
@@ -140,6 +156,18 @@ Score range is uncapped (sum of matching factors).
 | 4 | All fields present and `risk_level == "medium"` | `confirm` |
 
 Risk level: `"low"` for simple tasks, `"medium"` if `due_at` is set.
+
+Current backend clarification:
+
+- parser-owned `task_title`, `notes`, and assignee hints may directly shape the
+  created task
+- when parsed date-aware reminder structure is present, the backend currently
+  prefers routing into the task screen instead of direct execution
+- when parsed recurrence structure is present, the backend currently preserves
+  `recurrence_every` and `recurrence_unit` in the route payload so the task
+  screen can prefill the cadence rather than re-parse the raw text
+- this means the parser helps prefill and narrow the task flow, but date-aware
+  reminder completion still happens on the task screen
 
 ---
 

@@ -1,14 +1,16 @@
 ---
-Domain: Shared
-Capability: Paywall Gate Product
-Scope: shared
+Domain: MONETIZATION
+Capability: Paywall Gate Behavior
+Scope: frontend
 Artifact-Type: contract
-Stability: evolving
+Stability: stable
 Status: draft
 Version: v1.0
 ---
 
-# Paywall Gate Contract (Product / Client Behavior)
+# Paywall Gate Contract (Client)
+
+Note: Split into `paywall_gate_product_v1.md` (behavior) and `paywall_gate_copy_v1.md` (copy). Keep this file as the legacy combined view until migration completes.
 
 Scope: client-side paywall gating + deterministic retry.
 
@@ -19,7 +21,7 @@ Scope: client-side paywall gating + deterministic retry.
 
 ## Non-goals
 - No new backend tables or RLS changes.
-- No server-side retry queue.
+- No server-side “retry queue”.
 - No feature-specific callbacks for retry.
 
 ## Shared module
@@ -28,7 +30,7 @@ File: `lib/features/paywall/ui/paywall_gate.dart`
 ### Types
 - `enum PaywallRetryAction { submit /* later: invite, upload, join... */ }`
 - `enum PaywallGateStatus { granted, cancelled, failed }`
-- `class PaywallGateRequest { String requestId; String homeId; String source; PaywallRetryAction action; int tick; Set<PaywallTrigger> triggers; String? blockedCommandRequestId; }`
+- `class PaywallGateRequest { String requestId; String homeId; String source; PaywallRetryAction action; int tick; Set<PaywallTrigger> triggers; }`
 - `class PaywallGateOutcome { String requestId; PaywallRetryAction action; PaywallGateStatus status; }`
 
 ### Helper
@@ -38,7 +40,7 @@ Requirements:
 - Push `KinlyPaywallScreen` and await result (forward `request.triggers` so benefits can be ordered by trigger).
 - If result indicates purchase success/restore:
   - call `await paywallRepository.refreshStatus(homeId)`
-  - optional backoff retry refresh: 250ms + 500ms + 1000ms (max 3)
+  - optional backoff retry refresh: 250ms → 500ms → 1000ms (max 3)
 - Return outcome with status.
 
 ## Feature BLoC integration (per feature)
@@ -56,13 +58,12 @@ If backend error code in `{paywallActiveCap, paywallMediaCap, paywallExpenseActi
 - create `paywallRequest` with:
   - `requestId = uuid` for the paywall interaction itself
   - `homeId = state.homeId`
-  - `source = PaywallSource.commandAiQuota` for AI quota exhaustion; otherwise use the feature-specific paywall source constant for the blocked module/action
+  - `source = PaywallSource.commandAiQuota` for AI quota exhaustion; otherwise use the feature-specific paywall source constant
   - `action = submit`
   - `tick = paywallRequestTick`
   - `blockedCommandRequestId = original command request id` when the blocked action came from command entry and must replay the same request
 - **do NOT clear in-progress form fields**
 - For AI quota exhaustion specifically, preserve the original command payload and `requestId` for deterministic post-upgrade replay
-- For routed command actions that hit a downstream feature cap after classification, preserve enough module payload/context to retry the same action after upgrade
 
 ### Event
 `PaywallGateResolved({ required PaywallGateOutcome outcome })`
@@ -72,7 +73,6 @@ Handler:
 - if `outcome.status == granted` and `outcome.action == submit`:
   - call the same submit code path again (no new validation flow)
   - when replaying an AI-quota-blocked command, reuse `blockedCommandRequestId` rather than the paywall interaction `requestId`
-  - when replaying a routed command action blocked by a downstream feature cap, reuse the preserved module/action payload rather than rebuilding a new intent from scratch
 - else do nothing (optionally emit a non-blocking message on cancelled/failed)
 
 ## UI integration (shared wrapper preferred)

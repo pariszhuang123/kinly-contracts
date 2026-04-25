@@ -163,7 +163,7 @@ def render_change_digest(documents: Sequence[ContractDocument]) -> str:
     lines: List[str] = [
         "# Change Digest",
         "",
-        "This digest is generated from file modification times. Use it as a quick entry point, not as the canonical audit trail.",
+        "This digest is generated from each file's latest Git commit time when available. Use it as a quick entry point, not as the canonical audit trail.",
         "",
     ]
     for doc in recent_docs:

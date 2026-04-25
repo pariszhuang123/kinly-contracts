@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
@@ -144,9 +145,25 @@ class ContractDocument:
         return parse_version_from_stem(self.path.stem)
 
 
+def load_git_modified_timestamps(root: Path, rel_paths: Sequence[str]) -> Dict[str, float]:
+    timestamps: Dict[str, float] = {}
+    for rel_path in rel_paths:
+        result = subprocess.run(
+            ["git", "-C", str(root), "log", "-1", "--format=%ct", "--", rel_path],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        output = result.stdout.strip()
+        if result.returncode == 0 and output.isdigit():
+            timestamps[rel_path] = float(output)
+    return timestamps
+
+
 def load_documents(base: Path | None = None) -> List[ContractDocument]:
     root = base or repo_root()
     documents: List[ContractDocument] = []
+    candidate_paths: List[Tuple[Path, Path]] = []
     for path in sorted(root.rglob("*.md")):
         if not path.is_file():
             continue
@@ -155,6 +172,11 @@ def load_documents(base: Path | None = None) -> List[ContractDocument]:
             continue
         if rel.parts[0] == "_incoming":
             continue
+        candidate_paths.append((path, rel))
+
+    git_modified_ts = load_git_modified_timestamps(root, [as_posix(rel) for _, rel in candidate_paths])
+
+    for path, rel in candidate_paths:
 
         content = path.read_text(encoding="utf-8")
         header, errors = parse_front_matter(content)
@@ -185,7 +207,7 @@ def load_documents(base: Path | None = None) -> List[ContractDocument]:
                 relationships=relationships,
                 links=tuple(extract_internal_links(content, path, root)),
                 content=content,
-                modified_ts=path.stat().st_mtime,
+                modified_ts=git_modified_ts.get(as_posix(rel), path.stat().st_mtime),
             )
         )
     return documents

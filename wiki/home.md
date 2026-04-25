@@ -67,18 +67,18 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Recently Changed Areas
 
-- 2026-04-16: Mobile Command Entry Surface v1 -> [[capabilities/mobile_command_entry_surface|mobile_command_entry_surface]] (contracts/product/kinly/mobile/command_entry_surface_v1.md)
-- 2026-04-16: Context-Aware Paywall v1 (Personalized Primary Benefit) -> [[capabilities/paywall_personalized_primary_benefit|paywall_personalized_primary_benefit]] (contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md)
-- 2026-04-16: Paywall Gate Contract (Client) -> [[capabilities/paywall_gate|paywall_gate]] (contracts/product/kinly/mobile/paywall_gate.md)
-- 2026-04-16: Paywall Gate Copy Contract (Client) -> [[capabilities/paywall_gate_copy|paywall_gate_copy]] (contracts/design/copy/kinly/paywall_gate_copy_v1.md)
-- 2026-04-16: Grocery Capture via Command Entry v1 -> [[capabilities/voice_grocery_capture|voice_grocery_capture]] (contracts/product/kinly/shared/voice_grocery_capture_v1.md)
-- 2026-04-15: Shopping List Purchase Memory Contract v1.6 -> [[capabilities/shopping_list_purchase_memory|shopping_list_purchase_memory]] (contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md)
-- 2026-04-15: Shopping List Architecture Contract v1.3 -> [[capabilities/shopping_list_contract|shopping_list_contract]] (architecture/contracts/shopping_list_contract.md)
-- 2026-04-15: Shopping List API Contract v1.8 -> [[capabilities/shopping_list_api|shopping_list_api]] (contracts/api/kinly/homes/shopping_list_api_v1.md)
-- 2026-04-15: Kinly Premium Paywall — Phase 1 Contract -> [[capabilities/paywall|paywall]] (contracts/product/kinly/mobile/paywall_v1.md)
-- 2026-04-15: paywall_status_get RPC v1.0 -> [[capabilities/paywall_status_get|paywall_status_get]] (contracts/api/kinly/homes/paywall_status_get_v1.md)
-- 2026-04-15: Paywall Gate Contract (Product / Client Behavior) -> [[capabilities/paywall_gate_product|paywall_gate_product]] (contracts/product/kinly/mobile/paywall_gate_product_v1.md)
-- 2026-04-15: Home Units Mobile Contract v1.2 -> [[capabilities/home_units|home_units]] (contracts/product/kinly/mobile/home_units_v1.md)
+- 2026-04-25: Shopping List Architecture Contract v1.3 -> [[capabilities/shopping_list_contract|shopping_list_contract]] (architecture/contracts/shopping_list_contract.md)
+- 2026-04-25: Kinly Command AI Pipeline Contract v1.0 -> [[capabilities/command_ai_pipeline_v1|command_ai_pipeline_v1]] (contracts/api/kinly/command/command_ai_pipeline_v1.md)
+- 2026-04-25: Command AI Quota Contract v1.0 -> [[capabilities/command_ai_quota|command_ai_quota]] (contracts/api/kinly/command/command_ai_quota_v1.md)
+- 2026-04-25: Command Entry API v1.0 -> [[capabilities/command_entry_api|command_entry_api]] (contracts/api/kinly/command/command_entry_api_v1.md)
+- 2026-04-25: Command Expense Module Contract v1.0 -> [[capabilities/command_expense_module|command_expense_module]] (contracts/api/kinly/command/command_expense_module_v1.md)
+- 2026-04-25: Kinly Command Router Contract v1.1 -> [[capabilities/command_router_contract|command_router_contract]] (contracts/api/kinly/command/command_router_contract_v1_1.md)
+- 2026-04-25: Command Task Module Contract v1.0 -> [[capabilities/command_task_module|command_task_module]] (contracts/api/kinly/command/command_task_module_v1.md)
+- 2026-04-25: Voice Command Capture v1.0 -> [[capabilities/voice_command_capture|voice_command_capture]] (contracts/api/kinly/command/voice_command_capture_v1.md)
+- 2026-04-25: Home Units API Contract v1.4 -> [[capabilities/home_units_api|home_units_api]] (contracts/api/kinly/homes/home_units_api_v1.md)
+- 2026-04-25: paywall_status_get RPC v1.0 -> [[capabilities/paywall_status_get|paywall_status_get]] (contracts/api/kinly/homes/paywall_status_get_v1.md)
+- 2026-04-25: Shopping List API Contract v1.8 -> [[capabilities/shopping_list_api|shopping_list_api]] (contracts/api/kinly/homes/shopping_list_api_v1.md)
+- 2026-04-25: Paywall Gate Copy Contract (Client) -> [[capabilities/paywall_gate_copy|paywall_gate_copy]] (contracts/design/copy/kinly/paywall_gate_copy_v1.md)
 
 ## Key Architecture And Decision Docs
 

@@ -4,10 +4,10 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Snapshot
 
-- Canonical docs: 274
-- Domains: 45
-- Capability pages: 227
-- Active docs: 64
+- Canonical docs: 275
+- Domains: 46
+- Capability pages: 228
+- Active docs: 65
 - Draft docs: 210
 - Deprecated docs: 0
 - Alignment issues: 0
@@ -52,6 +52,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - [[domains/monetization|monetization]] (5 docs, 2 active)
 - [[domains/norms|norms]] (1 docs, 0 active)
 - [[domains/platform|platform]] (3 docs, 2 active)
+- [[domains/portfolio|portfolio]] (1 docs, 1 active)
 - [[domains/product|product]] (37 docs, 32 active)
 - [[domains/repo_migration_contract_v1_md|repo_migration_contract_v1_md]] (1 docs, 0 active)
 - [[domains/report_md|report_md]] (1 docs, 0 active)
@@ -67,6 +68,7 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 
 ## Recently Changed Areas
 
+- 2026-05-10: Contract - Contractor Negotiation Playbook Prototype - v1.0 -> [[capabilities/contractor_negotiation_playbook|contractor_negotiation_playbook]] (contracts/product/kinly/web/portfolio/contractor_negotiation_playbook_v1.md)
 - 2026-04-25: Shopping List Architecture Contract v1.3 -> [[capabilities/shopping_list_contract|shopping_list_contract]] (architecture/contracts/shopping_list_contract.md)
 - 2026-04-25: Kinly Command AI Pipeline Contract v1.0 -> [[capabilities/command_ai_pipeline_v1|command_ai_pipeline_v1]] (contracts/api/kinly/command/command_ai_pipeline_v1.md)
 - 2026-04-25: Command AI Quota Contract v1.0 -> [[capabilities/command_ai_quota|command_ai_quota]] (contracts/api/kinly/command/command_ai_quota_v1.md)
@@ -78,7 +80,6 @@ This wiki is generated from canonical docs in `contracts/**`, `architecture/**`,
 - 2026-04-25: Home Units API Contract v1.4 -> [[capabilities/home_units_api|home_units_api]] (contracts/api/kinly/homes/home_units_api_v1.md)
 - 2026-04-25: paywall_status_get RPC v1.0 -> [[capabilities/paywall_status_get|paywall_status_get]] (contracts/api/kinly/homes/paywall_status_get_v1.md)
 - 2026-04-25: Shopping List API Contract v1.8 -> [[capabilities/shopping_list_api|shopping_list_api]] (contracts/api/kinly/homes/shopping_list_api_v1.md)
-- 2026-04-25: Paywall Gate Copy Contract (Client) -> [[capabilities/paywall_gate_copy|paywall_gate_copy]] (contracts/design/copy/kinly/paywall_gate_copy_v1.md)
 
 ## Key Architecture And Decision Docs
 

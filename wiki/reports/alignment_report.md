@@ -4,11 +4,11 @@ This report is generated from canonical docs. Edit source docs, then regenerate.
 
 ## Snapshot
 
-- Documents scanned: 274
-- Active: 64
+- Documents scanned: 275
+- Active: 65
 - Draft: 210
 - Deprecated: 0
-- Generated wiki files: 275
+- Generated wiki files: 277
 
 ## Issues
 

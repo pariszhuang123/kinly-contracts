@@ -2,6 +2,7 @@
 
 This digest is generated from each file's latest Git commit time when available. Use it as a quick entry point, not as the canonical audit trail.
 
+- 2026-05-10 00:51 UTC: [Contract - Contractor Negotiation Playbook Prototype - v1.0](../../contracts/product/kinly/web/portfolio/contractor_negotiation_playbook_v1.md) [active, v1.0]
 - 2026-04-25 02:05 UTC: [Shopping List Architecture Contract v1.3](../../architecture/contracts/shopping_list_contract.md) [draft, v1.3]
 - 2026-04-25 02:05 UTC: [Kinly Command AI Pipeline Contract v1.0](../../contracts/api/kinly/command/command_ai_pipeline_v1.md) [draft, v1.0]
 - 2026-04-25 02:05 UTC: [Command AI Quota Contract v1.0](../../contracts/api/kinly/command/command_ai_quota_v1.md) [draft, v1.0]
@@ -21,4 +22,3 @@ This digest is generated from each file's latest Git commit time when available.
 - 2026-04-25 02:05 UTC: [Context-Aware Paywall v1 (Personalized Primary Benefit)](../../contracts/product/kinly/mobile/paywall_personalized_primary_benefit_v1.md) [draft, v1.0]
 - 2026-04-25 02:05 UTC: [Kinly Premium Paywall — Phase 1 Contract](../../contracts/product/kinly/mobile/paywall_v1.md) [draft, v1.0]
 - 2026-04-25 02:05 UTC: [Shopping List Purchase Memory Contract v1.6](../../contracts/product/kinly/shared/shopping_list_purchase_memory_v1.md) [draft, v1.6]
-- 2026-04-25 02:05 UTC: [Grocery Capture via Command Entry v1](../../contracts/product/kinly/shared/voice_grocery_capture_v1.md) [draft, v1.0]

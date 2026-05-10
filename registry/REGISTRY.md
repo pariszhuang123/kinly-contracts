@@ -272,6 +272,10 @@
 
 * **public_norms** (v1.1): [contracts/product/kinly/web/norms/norms_public_norms_v1.md](contracts/product/kinly/web/norms/norms_public_norms_v1.md)
 
+### Domain: portfolio
+
+* **contractor_negotiation_playbook** (v1.0): [contracts/product/kinly/web/portfolio/contractor_negotiation_playbook_v1.md](contracts/product/kinly/web/portfolio/contractor_negotiation_playbook_v1.md)
+
 ### Domain: product
 
 * **growth** (v1.0): [contracts/product/kinly/web/growth/interest_capture_v1.md](contracts/product/kinly/web/growth/interest_capture_v1.md)

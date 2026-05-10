@@ -99,6 +99,14 @@ capability may be implied outside supported regions.
 
 ---
 
+### Portfolio
+
+| Domain    | Capability                    | Contract                                              | Status |
+| --------- | ----------------------------- | ----------------------------------------------------- | ------ |
+| Portfolio | Contractor Negotiation Playbook | `portfolio/contractor_negotiation_playbook_v1.md`   | Active |
+
+---
+
 ### withYou
 
 | Domain  | Capability              | Contract                                                      | Status |
@@ -124,6 +132,7 @@ This registry governs:
 - outreach tracking (marketing page analytics)
 - fallback and error handling
 - public visibility of house norms
+- portfolio prototype behavior where explicitly listed
 
 This registry does **not** govern:
 
@@ -187,6 +196,7 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-05-08 | Added contractor negotiation playbook portfolio prototype contract | Planner |
 | 2026-03-03 | Activated market path + region expansion (NZ, SG, MY) | Planner     |
 | 2026-03-26 | Activated marketing surface namespacing v1.1 for crawlable `/kinly/market` discovery hub | Planner |
 | 2026-03-03 | Merged poll result messages rules into v1 and kept constant CTA routing | Planner     |

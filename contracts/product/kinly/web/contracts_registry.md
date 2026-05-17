@@ -104,6 +104,7 @@ capability may be implied outside supported regions.
 | Domain    | Capability                    | Contract                                              | Status |
 | --------- | ----------------------------- | ----------------------------------------------------- | ------ |
 | Portfolio | Contractor Negotiation Playbook | `portfolio/contractor_negotiation_playbook_v1.md`   | Active |
+| Portfolio | Orders-to-Capacity Manufacturing Reporting Prototype | `portfolio/orders_to_capacity_v1.md` | Active |
 
 ---
 
@@ -196,6 +197,7 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-05-17 | Added orders-to-capacity manufacturing reporting portfolio prototype contract | Planner |
 | 2026-05-08 | Added contractor negotiation playbook portfolio prototype contract | Planner |
 | 2026-03-03 | Activated market path + region expansion (NZ, SG, MY) | Planner     |
 | 2026-03-26 | Activated marketing surface namespacing v1.1 for crawlable `/kinly/market` discovery hub | Planner |

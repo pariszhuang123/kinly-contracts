@@ -275,6 +275,7 @@
 ### Domain: portfolio
 
 * **contractor_negotiation_playbook** (v1.0): [contracts/product/kinly/web/portfolio/contractor_negotiation_playbook_v1.md](contracts/product/kinly/web/portfolio/contractor_negotiation_playbook_v1.md)
+* **orders_to_capacity** (v1.0): [contracts/product/kinly/web/portfolio/orders_to_capacity_v1.md](contracts/product/kinly/web/portfolio/orders_to_capacity_v1.md)
 
 ### Domain: product
 

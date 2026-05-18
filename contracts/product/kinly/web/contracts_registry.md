@@ -63,7 +63,7 @@ capability may be implied outside supported regions.
 | Links  | Deferred Install Invite       | `links/links_invite_deferred_install_v1_0.md`     | Active |
 | Links  | Region Gating                 | `links/links_region_gate_v1_3.md`                 | Active |
 | Links  | Fallback Behavior             | `links/links_fallback_v1_1.md`                    | Active |
-| Links  | Marketing Surface Namespacing | `links/links_marketing_surface_namespacing_v1_1.md` | Active |
+| Links  | Marketing Surface Namespacing | `links/links_marketing_surface_namespacing_v1_2.md` | Active |
 
 ---
 
@@ -105,6 +105,7 @@ capability may be implied outside supported regions.
 | --------- | ----------------------------- | ----------------------------------------------------- | ------ |
 | Portfolio | Contractor Negotiation Playbook | `portfolio/contractor_negotiation_playbook_v1.md`   | Active |
 | Portfolio | Orders-to-Capacity Manufacturing Reporting Prototype | `portfolio/orders_to_capacity_v1.md` | Active |
+| Portfolio | Portfolio Index | `portfolio/portfolio_index_v1.md` | Active |
 
 ---
 
@@ -197,6 +198,7 @@ deployment.
 
 | Date       | Change                                             | Approved By |
 | ---------- | -------------------------------------------------- | ----------- |
+| 2026-05-18 | Activated portfolio index route and Kinly overview navigation hub via marketing surface namespacing v1.2 | Planner |
 | 2026-05-17 | Added orders-to-capacity manufacturing reporting portfolio prototype contract | Planner |
 | 2026-05-08 | Added contractor negotiation playbook portfolio prototype contract | Planner |
 | 2026-03-03 | Activated market path + region expansion (NZ, SG, MY) | Planner     |
